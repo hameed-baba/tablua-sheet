@@ -1,0 +1,136 @@
+@import url('./font.css');
+/* Role Management Styles - Custom permission components */
+
+.permissions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.permission-category {
+  border: 2px solid rgba(102, 126, 234, 0.1);
+  border-radius: 10px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.permission-category:hover {
+  border-color: rgba(102, 126, 234, 0.2);
+  background: white;
+}
+
+.category-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 12px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.permission-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.permission-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  position: relative;
+}
+
+.permission-checkbox input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  width: 0;
+  height: 0;
+}
+
+.checkmark {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  border-radius: 5px;
+  position: relative;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.8);
+  flex-shrink: 0;
+}
+
+.permission-checkbox:hover .checkmark {
+  border-color: #667eea;
+  background: white;
+}
+
+.permission-checkbox input[type="checkbox"]:checked + .checkmark {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+}
+
+.permission-checkbox input[type="checkbox"]:checked + .checkmark::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.permission-checkbox input[type="checkbox"]:focus + .checkmark {
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.permission-label {
+  font-size: 13px;
+  color: #1e293b;
+  user-select: none;
+  font-weight: 500;
+}
+
+/* .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+} */
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .role-records, .register-role, .update-role {
+    padding: 1rem;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .permissions-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .roles-table {
+    overflow-x: auto;
+  }
+}

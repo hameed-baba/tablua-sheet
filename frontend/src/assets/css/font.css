@@ -1,0 +1,149 @@
+/* =========== Inter Font Family =========== */
+/* ----------- Local Font Definitions ----------- */
+/* ============================================== */
+
+/* Inter Regular (400) */
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter_18pt-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Inter Medium (500) */
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter_18pt-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Inter SemiBold (600) */
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter_18pt-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Inter Bold (700) */
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter_24pt-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Inter Light (300) */
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter_18pt-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Inter ExtraBold (800) */
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter_24pt-ExtraBold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Italic variants */
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter_18pt-LightItalic.ttf") format("truetype");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter_18pt-MediumItalic.ttf") format("truetype");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter_18pt-SemiBoldItalic.ttf") format("truetype");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter_24pt-BoldItalic.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ----------- Utility Classes ----------- */
+/* Easy usage: just add class to element   */
+/* Example: <p class="font-bold">Text</p>  */
+
+.font-light {
+  font-family: "Inter", sans-serif !important;
+  font-weight: 300 !important;
+}
+
+.font-regular {
+  font-family: "Inter", sans-serif !important;
+  font-weight: 400 !important;
+}
+
+.font-medium {
+  font-family: "Inter", sans-serif !important;
+  font-weight: 500 !important;
+}
+
+.font-semibold {
+  font-family: "Inter", sans-serif !important;
+  font-weight: 600 !important;
+}
+
+.font-bold {
+  font-family: "Inter", sans-serif !important;
+  font-weight: 700 !important;
+}
+
+.font-extrabold {
+  font-family: "Inter", sans-serif !important;
+  font-weight: 800 !important;
+}
+
+/* Italic variants */
+.font-light-italic {
+  font-family: "Inter", sans-serif !important;
+  font-weight: 300 !important;
+  font-style: italic !important;
+}
+
+.font-medium-italic {
+  font-family: "Inter", sans-serif !important;
+  font-weight: 500 !important;
+  font-style: italic !important;
+}
+
+.font-semibold-italic {
+  font-family: "Inter", sans-serif !important;
+  font-weight: 600 !important;
+  font-style: italic !important;
+}
+
+.font-bold-italic {
+  font-family: "Inter", sans-serif !important;
+  font-weight: 700 !important;
+  font-style: italic !important;
+}
