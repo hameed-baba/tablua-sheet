@@ -1,13 +1,24 @@
 <template>
   <div class="page">
-    <div class="page-header">
+    <div class="page-header mt-4">
       <div>
         <h1>Student Search</h1>
         <p>Search and filter students across all sessions</p>
       </div>
       <button class="add-btn" @click="$router.push('/students')">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        <svg
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+          />
         </svg>
         Back to Current Students
       </button>
@@ -16,8 +27,19 @@
     <!-- Advanced Search Filters -->
     <div class="search-filters-card">
       <h3 class="filter-title">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+        <svg
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+          />
         </svg>
         Advanced Filters
       </h3>
@@ -27,23 +49,45 @@
         <div class="filter-group">
           <label class="filter-label">Search Student</label>
           <div class="search-input-wrapper">
-            <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              class="search-icon"
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
             <input
               type="text"
               v-model="filters.search"
               class="filter-input search-input"
               placeholder="Search by name or admission number..."
-              @input="handleSearch"
             />
-            <button 
-              v-if="filters.search" 
+            <button
+              v-if="filters.search"
               class="clear-btn"
               @click="clearSearch"
             >
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -52,9 +96,17 @@
         <!-- Session Filter -->
         <div class="filter-group">
           <label class="filter-label">Session</label>
-          <select v-model="filters.session" class="filter-select" @change="applyFilters">
+          <select
+            v-model="filters.session"
+            class="filter-select"
+            @change="applyFilters"
+          >
             <option value="">All Sessions</option>
-            <option v-for="session in sessions" :key="session.id" :value="session.id">
+            <option
+              v-for="session in allRowSessions"
+              :key="session.id"
+              :value="session.id"
+            >
               {{ session.session_name }}
             </option>
           </select>
@@ -63,9 +115,13 @@
         <!-- Class Filter -->
         <div class="filter-group">
           <label class="filter-label">Class</label>
-          <select v-model="filters.class" class="filter-select" @change="applyFilters">
+          <select
+            v-model="filters.class"
+            class="filter-select"
+            @change="applyFilters"
+          >
             <option value="">All Classes</option>
-            <option v-for="cls in classes" :key="cls.id" :value="cls.id">
+            <option v-for="cls in allRowClasses" :key="cls.id" :value="cls.id">
               {{ cls.class_name }}
             </option>
           </select>
@@ -74,19 +130,29 @@
         <!-- Status Filter -->
         <div class="filter-group">
           <label class="filter-label">Status</label>
-          <select v-model="filters.status" class="filter-select" @change="applyFilters">
+          <select
+            v-model="filters.status"
+            class="filter-select"
+            @change="applyFilters"
+          >
             <option value="">All Status</option>
             <option value="active">Active</option>
             <option value="graduated">Graduated</option>
-            <option value="suspended">Suspended</option>
             <option value="transferred">Transferred</option>
+            <option value="suspended">Suspended</option>
+            <option value="withdrawn">Withdrawn</option>
+            <option value="leave">Leave</option>
           </select>
         </div>
 
         <!-- Gender Filter -->
         <div class="filter-group">
           <label class="filter-label">Gender</label>
-          <select v-model="filters.gender" class="filter-select" @change="applyFilters">
+          <select
+            v-model="filters.gender"
+            class="filter-select"
+            @change="applyFilters"
+          >
             <option value="">All Genders</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
@@ -96,14 +162,36 @@
         <!-- Action Buttons -->
         <div class="filter-actions">
           <button class="btn-filter" @click="applyFilters">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
             Apply Filters
           </button>
           <button class="btn-reset" @click="resetFilters">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            <svg
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
             </svg>
             Reset
           </button>
@@ -115,29 +203,64 @@
         <span class="active-filter-label">Active Filters:</span>
         <span v-if="filters.search" class="filter-tag">
           Search: "{{ filters.search }}"
-          <button @click="filters.search = ''; applyFilters()">×</button>
+          <button
+            @click="
+              filters.search = '';
+              applyFilters();
+            "
+          >
+            ×
+          </button>
         </span>
         <span v-if="filters.session" class="filter-tag">
           Session: {{ getSessionName(filters.session) }}
-          <button @click="filters.session = ''; applyFilters()">×</button>
+          <button
+            @click="
+              filters.session = '';
+              applyFilters();
+            "
+          >
+            ×
+          </button>
         </span>
         <span v-if="filters.class" class="filter-tag">
           Class: {{ getClassName(filters.class) }}
-          <button @click="filters.class = ''; applyFilters()">×</button>
+          <button
+            @click="
+              filters.class = '';
+              applyFilters();
+            "
+          >
+            ×
+          </button>
         </span>
         <span v-if="filters.status" class="filter-tag">
           Status: {{ filters.status }}
-          <button @click="filters.status = ''; applyFilters()">×</button>
+          <button
+            @click="
+              filters.status = '';
+              applyFilters();
+            "
+          >
+            ×
+          </button>
         </span>
         <span v-if="filters.gender" class="filter-tag">
           Gender: {{ filters.gender }}
-          <button @click="filters.gender = ''; applyFilters()">×</button>
+          <button
+            @click="
+              filters.gender = '';
+              applyFilters();
+            "
+          >
+            ×
+          </button>
         </span>
       </div>
     </div>
 
     <!-- Results Summary -->
-    <div class="results-summary">
+    <!-- <div class="results-summary">
       <div class="summary-item">
         <span class="summary-label">Total Results:</span>
         <span class="summary-value">{{ filteredStudents.length }}</span>
@@ -145,10 +268,11 @@
       <div class="summary-item">
         <span class="summary-label">Showing:</span>
         <span class="summary-value">
-          {{ filteredStudents.length > 0 ? 1 : 0 }} - {{ filteredStudents.length }}
+          {{ filteredStudents.length > 0 ? 1 : 0 }} -
+          {{ filteredStudents.length }}
         </span>
       </div>
-    </div>
+    </div> -->
 
     <!-- Students Table -->
     <div class="data-table-container">
@@ -167,44 +291,72 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-if="loading">
+            <no-results-row v-if="loading" :loading="loading" :colspan="8" />
+            <no-results-row v-else-if="allStudents.length === 0" :colspan="8" />
+
+            <!-- <tr v-if="true">
               <td colspan="8" class="text-center">
                 <div class="loading-spinner">
                   <div class="spinner-large"></div>
                   <p>Loading students...</p>
                 </div>
               </td>
-            </tr>
+            </tr> -->
             <tr v-else-if="filteredStudents.length === 0">
               <td colspan="8" class="text-center">
                 <div class="no-results">
-                  <svg width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    width="64"
+                    height="64"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   <h3>No students found</h3>
                   <p>Try adjusting your filters or search criteria</p>
                 </div>
               </td>
             </tr>
-            <tr v-else v-for="(student, index) in filteredStudents" :key="student.id">
-              <td>{{ index + 1 }}</td>
+            <tr
+              v-else
+              v-for="(student, index) in filteredStudents"
+              :key="student.id"
+            >
+              <td>{{ getSerialNumber(index) }}</td>
               <td>
                 <div class="student-info">
                   <strong>{{ student.full_name }}</strong>
                   <div class="d-md-none">
-                    <small class="text-muted">{{ student.admission_number }}</small>
+                    <small class="text-muted">{{
+                      student.admission_number
+                    }}</small>
                   </div>
                 </div>
               </td>
-              <td class="d-none d-md-table-cell">{{ student.admission_number }}</td>
-              <td class="d-none d-lg-table-cell">{{ student.school_class.class_name }}</td>
-              <td class="d-none d-xl-table-cell">{{ student.session.session_name }}</td>
+              <td class="d-none d-md-table-cell">
+                {{ student.admission_number }}
+              </td>
+              <td class="d-none d-lg-table-cell">
+                {{ student.Class?.class_name }}
+              </td>
+              <td class="d-none d-xl-table-cell">
+                {{ student.Session?.session_name }}
+              </td>
               <td class="d-none d-xl-table-cell">
                 <span class="capitalize">{{ student.gender }}</span>
               </td>
               <td>
-                <span :class="['status-badge', getStatusClass(student.status)]">
-                  {{ student.status }}
+                <span
+                  :class="['status-badge', `status-${student.student_status}`]"
+                >
+                  {{ student.student_status }}
                 </span>
               </td>
               <td>
@@ -220,176 +372,232 @@
         </table>
       </div>
     </div>
+    <div class="ps-5 pe-5">
+          <Pagination
+            v-if="pagination.totalPages > 0"
+            :currentPage="pagination.currentPage"
+            :totalPages="pagination.totalPages"
+            :totalCount="pagination.totalCount"
+            :limit="pagination.limit"
+            :hasNextPage="pagination.currentPage < pagination.totalPages"
+            :hasPrevPage="pagination.currentPage > 1"
+            @page-change="handlePageChange"
+          />
+    </div>
   </div>
+  <!-- Student Quick View Modal -->
+  <StudentQuickViewModal
+    ref="quickView"
+    @edit-student="onEditStudent"
+    @manage-subjects="onManageSubjects"
+  />
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import apiServices from "../services/apiServices";
+import Pagination from "../components/public/Pagination.vue";
 
 const router = useRouter();
 const loading = ref(false);
+const isLoadingRowSessions = ref(false);
+const isLoadingRowClasses = ref(false);
+const allRowSessions = ref([]);
+const allRowClasses = ref([]);
 
 // Mock data - Replace with API calls
-const allStudents = ref([
-  {
-    id: 1,
-    full_name: "Aminu Bello",
-    gender: "male",
-    admission_number: "AGP/SS/2022/045",
-    status: "active",
-    school_class: { id: 3, class_name: "SS2" },
-    session: { id: 5, session_name: "2025/2026" },
-  },
-  {
-    id: 2,
-    full_name: "Fatima Sani",
-    gender: "female",
-    admission_number: "AGP/JS/2021/023",
-    status: "active",
-    school_class: { id: 2, class_name: "JSS3" },
-    session: { id: 4, session_name: "2024/2025" },
-  },
-  {
-    id: 3,
-    full_name: "Usman Lawal",
-    gender: "male",
-    admission_number: "AGP/SS/2020/055",
-    status: "graduated",
-    school_class: { id: 5, class_name: "Alumni" },
-    session: { id: 3, session_name: "2023/2024" },
-  },
-  {
-    id: 4,
-    full_name: "Aisha Abdullahi",
-    gender: "female",
-    admission_number: "AGP/JS/2022/019",
-    status: "active",
-    school_class: { id: 1, class_name: "JSS2" },
-    session: { id: 5, session_name: "2025/2026" },
-  },
-]);
-
-const sessions = ref([
-  { id: 3, session_name: "2023/2024" },
-  { id: 4, session_name: "2024/2025" },
-  { id: 5, session_name: "2025/2026" },
-]);
-
-const classes = ref([
-  { id: 1, class_name: "JSS1" },
-  { id: 2, class_name: "JSS2" },
-  { id: 3, class_name: "JSS3" },
-  { id: 4, class_name: "SS1" },
-  { id: 5, class_name: "SS2" },
-  { id: 6, class_name: "SS3" },
-]);
+const allStudents = ref([]);
+// paging and meta (single pagination object)
+const pagination = ref({
+  currentPage: 1,
+  totalPages: 0,
+  totalCount: 0,
+  limit: 25,
+  hasNextPage: false,
+  hasPrevPage: false,
+});
 
 const filters = ref({
-  search: '',
-  session: '',
-  class: '',
-  status: '',
-  gender: '',
+  search: "",
+  session: "",
+  class: "",
+  status: "",
+  gender: "",
 });
 
-const filteredStudents = computed(() => {
-  let result = allStudents.value;
-
-  // Search filter
-  if (filters.value.search) {
-    const searchLower = filters.value.search.toLowerCase();
-    result = result.filter(student =>
-      student.full_name.toLowerCase().includes(searchLower) ||
-      student.admission_number.toLowerCase().includes(searchLower)
-    );
-  }
-
-  // Session filter
-  if (filters.value.session) {
-    result = result.filter(student => student.session.id == filters.value.session);
-  }
-
-  // Class filter
-  if (filters.value.class) {
-    result = result.filter(student => student.school_class.id == filters.value.class);
-  }
-
-  // Status filter
-  if (filters.value.status) {
-    result = result.filter(student => student.status === filters.value.status);
-  }
-
-  // Gender filter
-  if (filters.value.gender) {
-    result = result.filter(student => student.gender === filters.value.gender);
-  }
-
-  return result;
-});
+// When data comes from server we show server results directly
+const filteredStudents = computed(() => allStudents.value || []);
 
 const hasActiveFilters = computed(() => {
-  return filters.value.search || filters.value.session || filters.value.class || 
-         filters.value.status || filters.value.gender;
+  return (
+    filters.value.search ||
+    filters.value.session ||
+    filters.value.class ||
+    filters.value.status ||
+    filters.value.gender
+  );
 });
 
-const getStatusClass = (status) => {
-  const statusMap = {
-    'active': 'status-active',
-    'graduated': 'status-info',
-    'suspended': 'status-inactive',
-    'transferred': 'status-warning'
-  };
-  return statusMap[status] || 'status-inactive';
-};
-
-const getSessionName = (sessionId) => {
-  const session = sessions.value.find(s => s.id == sessionId);
-  return session ? session.session_name : '';
-};
-
-const getClassName = (classId) => {
-  const cls = classes.value.find(c => c.id == classId);
-  return cls ? cls.class_name : '';
-};
-
-const handleSearch = () => {
-  // Search is reactive, no need for additional action
-};
-
 const clearSearch = () => {
-  filters.value.search = '';
+  filters.value.search = "";
 };
 
 const applyFilters = () => {
-  // Filters are reactive, this is just for explicit button action
-  console.log('Filters applied:', filters.value);
+  pagination.value.currentPage = 1;
+  loadStudents();
 };
 
 const resetFilters = () => {
   filters.value = {
-    search: '',
-    session: '',
-    class: '',
-    status: '',
-    gender: '',
+    search: "",
+    session: "",
+    class: "",
+    status: "",
+    gender: "",
   };
+  pagination.value.currentPage = 1;
+  loadStudents();
 };
 
+// Quick view modal (uses shared StudentQuickViewModal)
+import StudentQuickViewModal from "./class/StudentQuickViewModal.vue";
+const quickView = ref(null);
+
 const viewStudent = (student) => {
-  console.log('View student:', student);
-  // Implement view logic
+  // open the reusable quick view modal and pass the student object
+  if (quickView.value && typeof quickView.value.toggleModal === "function") {
+    quickView.value.toggleModal(student);
+    return;
+  }
+  // fallback: navigate to edit page if modal not available
+  router.push(`/students/update/${student.id}`);
+};
+
+const onEditStudent = (student) => {
+  router.push(`/students/update/${student.id}`);
+};
+
+const onManageSubjects = (student) => {
+  // route to manage subjects page if exists; adjust path as needed
+  router.push(`/students/${student.id}/subjects`);
 };
 
 const editStudent = (student) => {
   router.push(`/students/update/${student.id}`);
 };
 
+const getAllRowClases = () => {
+  isLoadingRowClasses.value = true;
+  apiServices
+    .getAllRowClases()
+    .then((response) => {
+      allRowClasses.value = response.data.data || [];
+    })
+    .catch((error) => {
+      console.error("Error fetching classes:", error);
+    })
+    .finally(() => {
+      isLoadingRowClasses.value = false;
+    });
+};
+
+const getAllRowSessions = () => {
+  isLoadingRowSessions.value = true;
+  apiServices
+    .getAllRowSessions()
+    .then((response) => {
+      allRowSessions.value = response.data.data || [];
+    })
+    .catch((error) => {
+      console.error("Error fetching sessions:", error);
+    })
+    .finally(() => {
+      isLoadingRowSessions.value = false;
+    });
+};
+
+function getSessionName(id) {
+  if (!id) return "";
+  const s = allRowSessions.value.find((x) => String(x.id) === String(id));
+  return s ? s.session_name : "";
+}
+
+function getClassName(id) {
+  if (!id) return "";
+  const c = allRowClasses.value.find((x) => String(x.id) === String(id));
+  return c ? c.class_name : "";
+}
+
+
+
+// Load students from backend using apiServices.getStudents
+function buildQueryParams() {
+  const params = {};
+
+
+  if (filters.value.search) params.admission_number = filters.value.search;
+  if (filters.value.class) params.current_class_id = filters.value.class;
+  if (filters.value.session) params.current_session_id = filters.value.session;
+  if (filters.value.status) params.student_status = filters.value.status;
+  if (filters.value.gender) params.gender = filters.value.gender;
+
+  params.page = pagination.value.currentPage;
+  params.limit = pagination.value.limit;
+
+  return params;
+}
+
+function loadStudents(extraParams = {}) {
+  loading.value = true;
+  const params = Object.assign({}, buildQueryParams(), extraParams);
+
+  return apiServices
+    .getStudents(params)
+    .then((response) => {
+      const data = response.data && response.data.data;
+      allStudents.value = (data && data.students) || [];
+      if (data && data.pagination) {
+        pagination.value = {
+          currentPage: data.pagination.currentPage,
+          totalPages: data.pagination.totalPages,
+          totalCount: data.pagination.totalItems || allStudents.value.length,
+          limit: data.pagination.limit || pagination.value.limit,
+          hasNextPage: data.pagination.hasNextPage || false,
+          hasPrevPage: data.pagination.hasPrevPage || false,
+        };
+      }
+    })
+    .catch((err) => {
+      console.error("Error loading students:", err);
+    })
+    .finally(() => {
+      loading.value = false;
+    });
+}
+
+
+
+
+function handlePageChange(p) {
+  const pageNum = parseInt(p, 10) || 1;
+  pagination.value.currentPage = pageNum;
+  loadStudents();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// Serial number helper that respects current page and limit
+function getSerialNumber(index) {
+  return (
+    (pagination.value.currentPage - 1) * pagination.value.limit + index + 1
+  );
+}
+
+
 onMounted(() => {
-  // Load data from API
-  // loadStudents();
-  // loadSessions();
-  // loadClasses();
+  getAllRowClases();
+  getAllRowSessions();
+  loadStudents();
 });
 </script>
 
@@ -658,4 +866,52 @@ onMounted(() => {
     gap: 12px;
   }
 }
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Active - Green */
+.status-active {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+/* Graduated - Blue */
+.status-graduated {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+/* Transferred - Purple */
+.status-transferred {
+  background-color: #e9d5ff;
+  color: #6b21a8;
+}
+
+/* Suspended - Orange */
+.status-suspended {
+  background-color: #fed7aa;
+  color: #9a3412;
+}
+
+/* Withdrawn - Red */
+.status-withdrawn {
+  background-color: #fecaca;
+  color: #991b1b;
+}
+
+/* Leave - Yellow */
+.status-leave {
+  background-color: #fef3c7;
+  color: #92400e;
+}
 </style>
+
+

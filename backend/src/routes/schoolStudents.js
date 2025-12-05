@@ -18,7 +18,7 @@ router.post(
   "/",
   authenticate,
   authorize("student.create"),
-  validate(schemas.studentRegistration),
+  validate(schemas.studentRegistrationWithSubjects),
   schoolStudentController.register
 );
 
@@ -44,7 +44,7 @@ router.get(
   "/search/query",
   authenticate,
   authorize("student.read"),
-  schoolStudentController.searchStudents
+  schoolStudentController.getStudents
 );
 
 // Get student by ID
@@ -53,6 +53,13 @@ router.get(
   authenticate,
   authorize("student.read"),
   schoolStudentController.getById
+);
+
+router.get(
+  "/class/:classId",
+  authenticate,
+  authorize("student.read"),
+  schoolStudentController.getStudentsByClassId
 );
 
 // Update student

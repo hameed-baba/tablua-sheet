@@ -1,7 +1,9 @@
 const BaseController = require("./baseController");
-const { SchoolSubject, SchoolSection } = require("../models");
+const { SchoolSubject, SchoolSection,SchoolClass } = require("../models");
 const { asyncHandler } = require("../middleware/errorHandler");
-const { Op } = require("sequelize");
+const { Op,Sequelize } = require("sequelize");
+    // const { Sequelize } = require("sequelize");
+
 
 class SchoolTermController extends BaseController {
   constructor() {
@@ -69,6 +71,60 @@ class SchoolTermController extends BaseController {
           limit,
           hasNextPage: page < totalPages,
           hasPrevPage: page > 1,
+        },
+      },
+    });
+  });
+
+  /**
+   * @desc Get subjects by class ID
+   * @route GET /api/subjects/class/:classId
+   */
+  getSubjectsByClassId = asyncHandler(async (req, res) => {
+    const { classId } = req.params;
+
+    if (!classId) {
+      return res.status(400).json({
+        status: "error",
+        message: "Class ID is required",
+      });
+    }
+
+    // Find the class to get its section_id
+    // const { SchoolClass } = require("../models");
+    const schoolClass = await SchoolClass.findByPk(classId, {
+      attributes: ["id", "class_name", "section_id"],
+    });
+
+    if (!schoolClass) {
+      return res.status(404).json({
+        status: "error",
+        message: "Class not found",
+      });
+    }
+
+    const sectionId = schoolClass.section_id;
+
+    // Find all subjects where section_ids contains the class's section_id
+    // Using Sequelize's literal to implement FIND_IN_SET functionality
+    const subjects = await SchoolSubject.findAll({
+      where: Sequelize.where(
+        Sequelize.literal(`FIND_IN_SET(${sectionId}, section_ids)`),
+        {
+          [Op.gt]: 0,
+        }
+      ),
+      order: [["subject_name", "ASC"]],
+    });
+
+    res.json({
+      status: "success",
+      data: {
+        subjects,
+        class: {
+          id: schoolClass.id,
+          class_name: schoolClass.class_name,
+          section_id: schoolClass.section_id,
         },
       },
     });

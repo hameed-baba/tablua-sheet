@@ -7,15 +7,36 @@
       </div>
       <div class="header-actions">
         <button class="btn-secondary" @click="$router.push('/students/search')">
-          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          <svg
+            width="18"
+            height="18"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
           </svg>
           Advanced Search
         </button>
         <button class="add-btn" @click="openModal">
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          <svg
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            />
           </svg>
           Add New Student
         </button>
@@ -26,44 +47,43 @@
     <div class="quick-filters">
       <div class="filter-item">
         <label>Class:</label>
-        <select v-model="quickFilters.class" class="quick-filter-select">
-
+        <select v-model="quickFilters.class" @change="loadStudents(1)" class="quick-filter-select">
           <option value="">All Classes</option>
-          <option v-for="(sClass, index) in allRowClasses" :key="index" :value="sClass.id">{{ sClass.class_name }}
+          <option
+            v-for="(sClass, index) in allRowClasses"
+            :key="index"
+            :value="sClass.id"
+          >
+            {{ sClass.class_name }}
           </option>
         </select>
       </div>
       <div class="filter-item">
         <label>Gender:</label>
-        <select v-model="quickFilters.gender" class="quick-filter-select">
+        <select v-model="quickFilters.gender" @change="loadStudents(1)" class="quick-filter-select">
           <option value="">All</option>
           <option value="male">Male</option>
           <option value="female">Female</option>
         </select>
       </div>
-      <div class="filter-item">
-        <label>Session:</label>
-        <select v-model="quickFilters.session" class="quick-filter-select">
-          <option value="">All Sessions</option>
-          <option v-for="(session, index) in allRowSessions" :key="index" :value="session.id">
-            {{ session.session_name }}
-          </option>
-        </select>
-      </div>
-      <div class="filter-item">
-        <label>Status:</label>
-        <select v-model="quickFilters.status" class="quick-filter-select">
-          <option value="">All Status</option>
-          <option value="active">Active</option>
-          <option value="graduated">Graduated</option>
-          <option value="transfer">Transfer</option>
-          <option value="expell">Expelled</option>
-          <option value="leave">Leave</option>
-        </select>
-      </div>
-      <button v-if="hasQuickFilters" class="btn-clear-filters" @click="clearQuickFilters">
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      <button
+        v-if="hasQuickFilters"
+        class="btn-clear-filters"
+        @click="clearQuickFilters"
+      >
+        <svg
+          width="16"
+          height="16"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
         </svg>
         Clear Filters
       </button>
@@ -73,17 +93,47 @@
       <div class="table-header">
         <h2 class="table-title">All Students</h2>
         <div class="search-container">
-          <input type="text" class="search-box" placeholder="Search students..." v-model="searchTerm"
-            @keyup.enter="searchStudents(searchTerm)" />
+          <input
+            type="text"
+            class="search-box"
+            placeholder="Search students..."
+            v-model="searchTerm"
+            @keyup.enter="searchStudents(searchTerm)"
+          />
           <button class="search-btn" @click="searchStudents(searchTerm)">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </button>
-          <button v-if="hasSearched" class="btn-clear-filters" @click="clearSearch">
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          <button
+            v-if="hasSearched"
+            class="btn-clear-filters"
+            @click="clearSearch"
+          >
+            <svg
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
             Clear Filters
           </button>
@@ -109,17 +159,19 @@
             <tr v-for="(student, index) in allStudents" :key="student.id">
               <td>{{ getSerialNumber(index) }}</td>
               <td>
-                {{ student.full_name }}
+                <strong>{{ student.full_name }}</strong>
                 <div class="d-md-none">
-                  <small class="text-muted">{{ student.admission_number }} •
-                    {{ student.Class?.class_name }}</small>
+                  <small class="text-muted"
+                    >{{ student.admission_number }} •
+                    {{ student.Class?.class_name }}</small
+                  >
                 </div>
               </td>
               <td class="d-none d-md-table-cell">
                 {{ student.admission_number }}
               </td>
               <td class="d-none d-lg-table-cell">
-                {{ student?.Class.class_name }}
+                {{ student.Class?.class_name }}
               </td>
               <td class="d-none d-xl-table-cell text-capitalize">
                 {{ student.gender }}
@@ -128,16 +180,20 @@
                 {{ student.Parent?.full_name }}
               </td>
               <td>
-                <span :class="['status-badge', `status-${student.student_status}`]">
+                <span
+                  :class="['status-badge', `status-${student.student_status}`]"
+                >
                   {{ student.student_status }}
                 </span>
               </td>
               <td>
-
                 <button class="action-btn edit" @click="editStudent(student)">
                   Edit
                 </button>
-                <button class="action-btn delete" @click="deleteStudentConfirm(student)">
+                <button
+                  class="action-btn delete"
+                  @click="deleteStudentConfirm(student)"
+                >
                   Delete
                 </button>
               </td>
@@ -146,13 +202,24 @@
         </table>
       </div>
       <div class="ps-5 pe-5">
-        <Pagination v-if="pagination.totalPages > 0" :currentPage="pagination.currentPage"
-          :totalPages="pagination.totalPages" :totalCount="pagination.totalCount" :limit="pagination.limit"
-          :hasNextPage="pagination.hasNextPage" :hasPrevPage="pagination.hasPrevPage" @page-change="handlePageChange" />
+        <Pagination
+          v-if="pagination.totalPages > 0"
+          :currentPage="pagination.currentPage"
+          :totalPages="pagination.totalPages"
+          :totalCount="pagination.totalCount"
+          :limit="pagination.limit"
+          :hasNextPage="pagination.hasNextPage"
+          :hasPrevPage="pagination.hasPrevPage"
+          @page-change="handlePageChange"
+        />
       </div>
     </div>
   </div>
-  <ConfirmDeleteModal :show="showDeleteModal" @confirm="deleteStudent" @cancel="showDeleteModal = false" />
+  <ConfirmDeleteModal
+    :show="showDeleteModal"
+    @confirm="deleteStudent"
+    @cancel="showDeleteModal = false"
+  />
 </template>
 
 <script setup>
@@ -171,7 +238,6 @@ const loading = ref(false);
 const hasSearched = ref(false);
 const currentSession = ref("2025/2026");
 const isLoadingRowClasses = ref(false);
-const isLoadingRowSessions = ref(false);
 const showDeleteModal = ref(false);
 const selectedStudent = ref({});
 const pagination = ref({
@@ -213,7 +279,6 @@ const clearQuickFilters = () => {
   loadStudents(1);
 };
 
-
 const openModal = () => {
   router.push("/students/register");
 };
@@ -244,7 +309,8 @@ const deleteStudent = () => {
     .catch((err) => {
       toast.error(
         "Failed to Delete Student",
-        err.response?.data?.message || `An error occurred while deleting the student`
+        err.response?.data?.message ||
+          `An error occurred while deleting the student`
       );
     })
     .finally(() => {
@@ -294,7 +360,7 @@ const searchStudents = (search = "") => {
   // Build query parameters with search term and filters
   const params = {
     page: 1,
-    limit: pagination.value.limit,
+    // limit: pagination.value.limit,
   };
 
   // Add search by admission number if search term exists
@@ -354,25 +420,10 @@ const getAllRowClases = () => {
     });
 };
 
-const getAllRowSessions = () => {
-  isLoadingRowSessions.value = true;
-  apiServices
-    .getAllRowSessions()
-    .then((response) => {
-      allRowSessions.value = response.data.data || [];
-    })
-    .catch((error) => {
-      console.error("Error fetching sessions:", error);
-    })
-    .finally(() => {
-      isLoadingRowSessions.value = false;
-    });
-};
-
 const getSerialNumber = (index) => {
-  return (
-    (pagination.value.currentPage - 1) * pagination.value.limit + index + 1
-  );
+  const currentPage = Number(pagination.value.currentPage) || 1;
+  const limit = Number(pagination.value.limit) || 25;
+  return (currentPage - 1) * limit + index + 1;
 };
 
 const handlePageChange = (page) => {
@@ -383,7 +434,7 @@ const handlePageChange = (page) => {
 onMounted(() => {
   // Load students data
   loadStudents();
-  getAllRowClases()
+  getAllRowClases();
 });
 </script>
 

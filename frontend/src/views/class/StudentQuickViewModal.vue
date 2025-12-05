@@ -1,10 +1,6 @@
 <template>
-  <BaseModal 
-    :show="showModal" 
-    @close="toggleModal" 
-    title="Student Details"
-    :modal-style="{ background: 'white', maxWidth: '900px', width: '90%' }"
-  >
+  <BaseModal :show="showModal" @close="toggleModal" title="Student Details"
+    :modal-style="{ background: 'white', maxWidth: '900px', width: '90%' }">
     <div v-if="student" class="student-details">
       <!-- Header Section -->
       <div class="student-header">
@@ -17,61 +13,15 @@
           <h2>{{ student.full_name }}</h2>
           <div class="info-badges">
             <span class="badge badge-primary">{{ student.admission_number }}</span>
-            <span class="badge" :class="student.status === 'Active' ? 'badge-success' : 'badge-danger'">
-              {{ student.status }}
+            <span class="badge"
+              :class="student.student_status?.toLowerCase() === 'active' ? 'badge-success' : 'badge-danger'">
+              {{ student.student_status }}
             </span>
-            <span class="badge badge-info">{{ student.gender }}</span>
+            <span class="badge badge-info text-capitalize">{{ student.gender }}</span>
           </div>
         </div>
       </div>
 
-      <!-- Stats Cards -->
-      <div class="stats-row">
-        <div class="stat-item">
-          <div class="stat-icon">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Age</span>
-            <span class="stat-value">{{ calculateAge(student.date_of_birth) }} years</span>
-          </div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-icon">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Subjects</span>
-            <span class="stat-value">{{ student.enrolled_subjects || 12 }}</span>
-          </div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-icon">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Attendance</span>
-            <span class="stat-value">{{ student.attendance_rate || '95%' }}</span>
-          </div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-icon">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Average</span>
-            <span class="stat-value">{{ student.average_grade || '85%' }}</span>
-          </div>
-        </div>
-      </div>
 
       <!-- Information Sections -->
       <div class="info-sections">
@@ -79,18 +29,19 @@
         <div class="info-section">
           <h3 class="section-title">
             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
             Personal Information
           </h3>
           <div class="info-grid">
             <div class="info-item">
               <span class="info-label">Date of Birth</span>
-              <span class="info-value">{{ formatDate(student.date_of_birth) }}</span>
+              <span class="info-value">{{ formatDate(student.dob) }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Gender</span>
-              <span class="info-value">{{ student.gender }}</span>
+              <span class="info-value text-capitalize">{{ student.gender }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Blood Group</span>
@@ -98,7 +49,7 @@
             </div>
             <div class="info-item">
               <span class="info-label">Religion</span>
-              <span class="info-value">{{ student.religion || 'Christianity' }}</span>
+              <span class="info-value text-capitalize">{{ student.religion || 'N/A' }}</span>
             </div>
           </div>
         </div>
@@ -107,26 +58,23 @@
         <div class="info-section">
           <h3 class="section-title">
             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
             Parent/Guardian Information
           </h3>
           <div class="info-grid">
             <div class="info-item">
               <span class="info-label">Parent Name</span>
-              <span class="info-value">{{ student.parent_name || 'N/A' }}</span>
+              <span class="info-value">{{ student.Parent?.full_name || 'N/A' }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Phone Number</span>
-              <span class="info-value">{{ student.parent_phone || 'N/A' }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Email</span>
-              <span class="info-value">{{ student.parent_email || 'N/A' }}</span>
+              <span class="info-value">{{ student.Parent?.phone_number || 'N/A' }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Relationship</span>
-              <span class="info-value">{{ student.parent_relationship || 'Father' }}</span>
+              <span class="info-value text-capitalize">{{ student.parent_relation || 'N/A' }}</span>
             </div>
           </div>
         </div>
@@ -135,23 +83,25 @@
         <div class="info-section">
           <h3 class="section-title">
             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
             Contact & Address
           </h3>
           <div class="info-grid">
             <div class="info-item full-width">
               <span class="info-label">Home Address</span>
-              <span class="info-value">{{ student.address || '123 Main Street, Lagos, Nigeria' }}</span>
+              <span class="info-value">{{ student.address || 'N/A' }}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">City</span>
-              <span class="info-value">{{ student.city || 'Lagos' }}</span>
+              <span class="info-label">Local Government</span>
+              <span class="info-value text-capitalize">{{ student.local_gov || 'N/A' }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">State</span>
-              <span class="info-value">{{ student.state || 'Lagos State' }}</span>
+              <span class="info-value text-capitalize">{{ student.state || 'N/A' }}</span>
             </div>
           </div>
         </div>
@@ -164,13 +114,15 @@
         </button>
         <button type="button" class="btn btn-primary" @click="editStudent">
           <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
           </svg>
           Edit Student
         </button>
         <button type="button" class="btn btn-success" @click="manageSubjects">
           <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
           Manage Subjects
         </button>
@@ -198,7 +150,7 @@ const toggleModal = (studentData = null) => {
 const getInitials = (name) => {
   if (!name) return 'NA';
   const names = name.split(' ');
-  return names.length >= 2 
+  return names.length >= 2
     ? `${names[0][0]}${names[1][0]}`.toUpperCase()
     : name.substring(0, 2).toUpperCase();
 };
@@ -218,10 +170,10 @@ const calculateAge = (dateOfBirth) => {
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   });
 };
 

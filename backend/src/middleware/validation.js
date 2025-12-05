@@ -131,6 +131,58 @@ const schemas = {
     parent_id: { type: "number", integer: true, positive: true, required: true },
   },
 
+  // New nested structure for student registration with subjects
+  studentRegistrationWithSubjects: {
+    student: {
+      type: "object",
+      required: true,
+      props: {
+        full_name: { type: "string", min: 2, max: 100, required: true },
+        gender: { type: "enum", values: ["male", "female"], required: true },
+        dob: { type: "string", required: true },
+        address: { type: "string", max: 255, required: true },
+        state: { type: "string", max: 50, required: true },
+        local_gov: { type: "string", max: 50, required: true },
+        religion: { type: "string", max: 50, optional: true },
+        blood_group: { type: "string", max: 10, optional: true },
+        admission_number: { type: "string", max: 50, required: true },
+        admitted_class: { type: "number", max: 50, required: true },
+        admitted_session: { type: "number", max: 50, required: true },
+        student_status: {
+          type: "enum",
+          values: ["active", "graduated", "transferred", "suspended", "withdrawn", "leave"],
+          default: "active",
+          optional: true,
+        },
+        current_class_id: {
+          type: "number",
+          integer: true,
+          positive: true,
+          required: true,
+        },
+        current_session_id: {
+          type: "number",
+          integer: true,
+          positive: true,
+          required: true,
+        },
+        parent_id: { type: "number", integer: true, positive: true, required: true },
+      },
+    },
+    subjects: {
+      type: "array",
+      optional: true,
+      items: {
+        type: "object",
+        props: {
+          school_subject_id: { type: "number", integer: true, positive: true, required: true },
+          current_class_id: { type: "number", integer: true, positive: true, required: true },
+          current_session_id: { type: "number", integer: true, positive: true, required: true },
+        },
+      },
+    },
+  },
+
   parentRegistration: {
     full_name: { type: "string", min: 2, max: 100, required: true },
     religion: { type: "enum", values: ["islam", "christianity", "other"], optional: true },

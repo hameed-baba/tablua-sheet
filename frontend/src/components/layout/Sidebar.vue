@@ -1,153 +1,186 @@
 <template>
-  <!-- Mobile Overlay - only show on mobile when sidebar is open -->
-  <div
-    class="sidebar-overlay"
-    :class="{ show: sidebarStore.isOpen && isMobile }"
-    @click="sidebarStore.close"
-  ></div>
+  <!-- Mobile Overlay -->
+  <div class="sidebar-overlay" :class="{ show: sidebarStore.isOpen && isMobile }" @click="sidebarStore.close"></div>
 
-  <aside
-    class="sidebar"
-    :class="{
-      collapsed: !sidebarStore.isOpen && isMobile,
-      open: sidebarStore.isOpen && isMobile,
-    }"
-  >
-    <div class="logo">
-      {{ configStore.schoolName }}
+  <aside class="sidebar" :class="{
+    collapsed: !sidebarStore.isOpen && isMobile,
+    open: sidebarStore.isOpen && isMobile,
+  }">
+    <!-- Header / Logo -->
+    <div class="sidebar-header">
+      <div class="logo-icon">
+        <!-- Placeholder logo icon -->
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#FF5722" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+          <path d="M2 17L12 22L22 17" stroke="#FF5722" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+          <path d="M2 12L12 17L22 12" stroke="#FF5722" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </div>
+      <span class="app-name">{{ configStore.schoolName || 'AmbaStack' }}</span>
     </div>
 
-    <nav class="nav-items">
-      <template v-for="item in navigationItems" :key="item.name">
-        <!-- Regular nav item without dropdown -->
-        <router-link
-          v-if="!item.children"
-          :to="item.path"
-          class="nav-item"
-          :class="{ active: $route.name === item.name }"
-          @click="closeSidebarOnMobile"
-        >
-          <svg
-            class="nav-icon"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              :d="item.icon"
-            />
-          </svg>
-          <span>{{ item.label }}</span>
+    <!-- User Profile Card -->
+    <div class="user-profile-card">
+      <div class="user-avatar">
+        <span>{{ userInitials }}</span>
+      </div>
+      <div class="user-info">
+        <span class="user-name">{{ userName }}</span>
+        <span class="user-email">{{ userEmail }}</span>
+      </div>
+      <div class="user-menu-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="sidebar-content">
+      <!-- Main Links -->
+      <nav class="nav-section">
+        <router-link to="/dashboard" class="nav-item" exact-active-class="active" @click="closeSidebarOnMobile">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M9 22V12h6v10" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <span class="nav-label">Dashboard</span>
         </router-link>
 
-        <!-- Nav item with dropdown (Bootstrap style) -->
-        <div v-else class="nav-item-wrapper">
-          <a
-            class="nav-item nav-link"
-            :class="{ 
-              active: isParentActive(item),
-              collapsed: openDropdown !== item.name 
-            }"
-            @click="toggleDropdown(item.name)"
-            role="button"
-            aria-expanded="false"
-          >
-            <svg
-              class="nav-icon"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                :d="item.icon"
-              />
+        <router-link to="/students/search" class="nav-item" active-class="active" @click="closeSidebarOnMobile">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8" stroke-linecap="round" stroke-linejoin="round" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-            <span>{{ item.label }}</span>
-            <svg
-              class="dropdown-toggle-icon"
-              :class="{ rotated: openDropdown === item.name }"
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </a>
-          
-          <!-- Bootstrap Collapse -->
-          <div 
-            class="collapse"
-            :class="{ show: openDropdown === item.name }"
-          >
-            <div class="nav flex-column">
-              <router-link
-                v-for="child in item.children"
-                :key="child.name"
-                :to="child.path"
-                class="nav-link nav-link-sub"
-                :class="{ active: $route.name === child.name }"
-                @click="closeSidebarOnMobile"
-              >
-                <svg
-                  class="nav-icon-sub"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    :d="child.icon"
-                  />
-                </svg>
-                <span>{{ child.label }}</span>
-              </router-link>
-            </div>
-          </div>
-        </div>
-      </template>
-    </nav>
+          </span>
+          <span class="nav-label">Search</span>
+        </router-link>
+      </nav>
 
-    <button class="logout-btn" @click="logout">
-      <svg
-        class="nav-icon"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-        />
-      </svg>
-      <span>Logout</span>
-    </button>
+      <!-- Collapsible Sections -->
+      <div class="collapsible-section">
+        <div class="section-header" @click="toggleSection('management')">
+          <svg class="chevron" :class="{ rotated: openSections.management }" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span>Management</span>
+          <span class="plus-icon">+</span>
+        </div>
+        <div class="section-content" :class="{ show: openSections.management }">
+          <router-link to="/students" class="nav-item sub-item" active-class="active" @click="closeSidebarOnMobile">
+            <span class="color-dot teal"></span>
+            <span class="nav-label">Students</span>
+          </router-link>
+          <router-link to="/parents" class="nav-item sub-item" active-class="active" @click="closeSidebarOnMobile">
+            <span class="color-dot blue"></span>
+            <span class="nav-label">Parents</span>
+          </router-link>
+          <router-link to="/staff" class="nav-item sub-item" active-class="active" @click="closeSidebarOnMobile">
+            <span class="color-dot purple"></span>
+            <span class="nav-label">Staff</span>
+          </router-link>
+        </div>
+      </div>
+
+      <div class="collapsible-section">
+        <div class="section-header" @click="toggleSection('academics')">
+          <svg class="chevron" :class="{ rotated: openSections.academics }" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span>Academics</span>
+          <span class="plus-icon">+</span>
+        </div>
+        <div class="section-content" :class="{ show: openSections.academics }">
+          <router-link to="/classes" class="nav-item sub-item" active-class="active" @click="closeSidebarOnMobile">
+            <span class="color-dot orange"></span>
+            <span class="nav-label">Classes</span>
+          </router-link>
+          <router-link to="/subjects" class="nav-item sub-item" active-class="active" @click="closeSidebarOnMobile">
+            <span class="color-dot yellow"></span>
+            <span class="nav-label">Subjects</span>
+          </router-link>
+          <router-link to="/attendance" class="nav-item sub-item" active-class="active" @click="closeSidebarOnMobile">
+            <span class="color-dot green"></span>
+            <span class="nav-label">Attendance</span>
+          </router-link>
+          <router-link to="/grades" class="nav-item sub-item" active-class="active" @click="closeSidebarOnMobile">
+            <span class="color-dot red"></span>
+            <span class="nav-label">Grades</span>
+          </router-link>
+        </div>
+      </div>
+
+      <div class="collapsible-section">
+        <div class="section-header" @click="toggleSection('exams')">
+          <svg class="chevron" :class="{ rotated: openSections.exams }" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span>Exams</span>
+          <span class="plus-icon">+</span>
+        </div>
+        <div class="section-content" :class="{ show: openSections.exams }">
+          <router-link to="/add-marks" class="nav-item sub-item" active-class="active" @click="closeSidebarOnMobile">
+            <span class="color-dot indigo"></span>
+            <span class="nav-label">Add Result</span>
+          </router-link>
+          <router-link to="/broadsheet" class="nav-item sub-item" active-class="active" @click="closeSidebarOnMobile">
+            <span class="color-dot pink"></span>
+            <span class="nav-label">Broadsheet</span>
+          </router-link>
+          <router-link to="/scoresheet" class="nav-item sub-item" active-class="active" @click="closeSidebarOnMobile">
+            <span class="color-dot cyan"></span>
+            <span class="nav-label">Scoresheet</span>
+          </router-link>
+          <router-link to="/report-card" class="nav-item sub-item" active-class="active" @click="closeSidebarOnMobile">
+            <span class="color-dot lime"></span>
+            <span class="nav-label">Report Card</span>
+          </router-link>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="sidebar-footer">
+      <router-link to="/configuration" class="nav-item" active-class="active" @click="closeSidebarOnMobile">
+        <span class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+        <span class="nav-label">Settings</span>
+      </router-link>
+
+      <a href="#" class="nav-item" @click.prevent="logout">
+        <span class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18.36 6.64a9 9 0 11-12.73 0" stroke-linecap="round" stroke-linejoin="round" />
+            <line x1="12" y1="2" x2="12" y2="12" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+        <span class="nav-label">Support (Logout)</span>
+      </a>
+    </div>
   </aside>
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from "vue";
+import { computed, ref, onMounted, onUnmounted, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useSidebarStore } from "../../store/sidebarStore";
 import { useConfigStore } from "../../store/configStore";
 import { useLoginStore } from "../../store/loginStore";
-
 
 const loginStore = useLoginStore();
 const router = useRouter();
@@ -155,10 +188,41 @@ const sidebarStore = useSidebarStore();
 const configStore = useConfigStore();
 
 const isMobile = ref(false);
-const openDropdown = ref(null);
+const openSections = reactive({
+  management: true,
+  academics: false,
+  exams: false
+});
+
+const userName = computed(() => loginStore.user?.full_name || "User Name");
+const userEmail = computed(() => loginStore.user?.email || "user@example.com");
+const userInitials = computed(() => {
+  const name = userName.value;
+  if (!name) return "GH";
+  const parts = name.split(' ').filter(part => part.length > 0);
+  if (parts.length === 0) return "GH";
+  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+});
 
 const checkMobile = () => {
   isMobile.value = window.innerWidth < 1024;
+};
+
+const toggleSection = (section) => {
+  openSections[section] = !openSections[section];
+};
+
+const closeSidebarOnMobile = () => {
+  if (isMobile.value) {
+    sidebarStore.close();
+  }
+};
+
+const logout = () => {
+  loginStore.logout().then(() => {
+    router.push({ name: "login" });
+  });
 };
 
 onMounted(() => {
@@ -169,140 +233,323 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("resize", checkMobile);
 });
-
-const navigationItems = computed(() => [
-  // Overview
-  {
-    name: "dashboard",
-    path: "/dashboard",
-    label: "Dashboard",
-    icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6",
-  },
-  
-  // People Management
-  {
-    name: "students",
-    path: "/students",
-    label: "Students",
-    icon: "M12 14l9-5-9-5-9 5 9 5z M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z",
-  },
-  {
-    name: "parents",
-    path: "/parents",
-    label: "Parents",
-    icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
-  },
-  {
-    name: "staff",
-    path: "/staff",
-    label: "Staff",
-    icon: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z",
-  },
-  
-  // Academic Management
-  {
-    name: "classes",
-    path: "/classes",
-    label: "Classes",
-    icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4",
-  },
-  {
-    name: "subjects",
-    path: "/subjects",
-    label: "Subjects",
-    icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253",
-  },
-  {
-    name: "attendance",
-    path: "/attendance",
-    label: "Attendance",
-    icon: "M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4",
-  },
-  
-  // Assessment & Results
-  {
-    name: "exam",
-    label: "Exam",
-    icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
-    children: [
-      {
-        name: "add-marks",
-        path: "/add-marks",
-        label: "Add Result",
-        icon: "M12 4v16m8-8H4",
-      },
-      {
-        name: "broadsheet",
-        path: "/broadsheet",
-        label: "Broadsheet",
-        icon: "M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2",
-      },
-      {
-        name: "scoresheet",
-        path: "/scoresheet",
-        label: "Scoresheet",
-        icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
-      },
-      {
-        name: "report-card",
-        path: "/report-card",
-        label: "Report Card",
-        icon: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z",
-      },
-    ],
-  },
-  {
-    name: "grades",
-    path: "/grades",
-    label: "Grades",
-    icon: "M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z",
-  },
-  
-  // System Management
-  {
-    name: "roles",
-    path: "/roles",
-    label: "Roles & Permissions",
-    icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z",
-  },
-  {
-    name: "configuration",
-    path: "/configuration",
-    label: "Settings",
-    icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z",
-  },
-  
-  // User Profile
-  {
-    name: "profile",
-    path: "/profile",
-    label: "My Profile",
-    icon: "M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z",
-  },
-]);
-
-const toggleDropdown = (name) => {
-  openDropdown.value = openDropdown.value === name ? null : name;
-};
-
-const isParentActive = (item) => {
-  if (!item.children) return false;
-  return item.children.some(child => router.currentRoute.value.name === child.name);
-};
-
-
-
-const logout = () => {
-  loginStore.logout().then(() => {
-    router.push({ name: "login" });
-  });
-};
-
-const closeSidebarOnMobile = () => {
-  // Close sidebar on mobile when navigation item is clicked
-  if (isMobile.value) {
-    sidebarStore.close();
-    openDropdown.value = null;
-  }
-};
 </script>
+
+<style lang="scss" scoped>
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+
+  &.show {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  background: #ffffff;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+  border-right: 1px solid #f3f4f6;
+
+  &.collapsed {
+    transform: translateX(-100%);
+  }
+
+  &.open {
+    transform: translateX(0);
+  }
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 87, 34, 0.1);
+    border-radius: 8px;
+  }
+
+  .app-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1f2937;
+    letter-spacing: -0.025em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.user-profile-card {
+  background: #fef3c7; // Yellowish background
+  border-radius: 12px;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    background: #78350f; // Dark brown/orange
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+
+    span {
+      color: white;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .user-info {
+    flex: 1;
+    min-width: 0;
+
+    .user-name {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #1f2937;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-email {
+      display: block;
+      font-size: 0.75rem;
+      color: #6b7280;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .user-menu-icon {
+    color: #6b7280;
+  }
+}
+
+.sidebar-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.nav-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 8px;
+  color: #4b5563;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-size: 0.9375rem;
+  font-weight: 500;
+
+  &:hover {
+    background: #f3f4f6;
+    color: #111827;
+  }
+
+  &.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .nav-icon {
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &:hover .nav-icon {
+    color: #4b5563;
+  }
+
+  &.active .nav-icon {
+    color: white;
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    background: #ef4444;
+    border-radius: 50%;
+    margin-left: auto;
+  }
+}
+
+.collapsible-section {
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    color: #111827;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    user-select: none;
+
+    .chevron {
+      color: #9ca3af;
+      transition: transform 0.2s ease;
+
+      &.rotated {
+        transform: rotate(90deg);
+      }
+    }
+
+    .plus-icon {
+      margin-left: auto;
+      color: #9ca3af;
+      font-size: 1.25rem;
+      font-weight: 400;
+    }
+  }
+
+  .section-content {
+    display: none;
+    padding-left: 0.5rem;
+    margin-top: 0.25rem;
+    flex-direction: column;
+    gap: 0.125rem;
+
+    &.show {
+      display: flex;
+    }
+
+    .sub-item {
+      padding: 0.5rem 0.75rem 0.5rem 2rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+      position: relative;
+
+      &:hover,
+      &.active {
+        color: #111827;
+        background: transparent;
+      }
+
+      .color-dot {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 8px;
+        height: 8px;
+        border-radius: 2px;
+
+        &.teal {
+          background: #2dd4bf;
+        }
+
+        &.blue {
+          background: #60a5fa;
+        }
+
+        &.purple {
+          background: #a78bfa;
+        }
+
+        &.orange {
+          background: #fb923c;
+        }
+
+        &.yellow {
+          background: #facc15;
+        }
+
+        &.green {
+          background: #4ade80;
+        }
+
+        &.red {
+          background: #f87171;
+        }
+
+        &.indigo {
+          background: #818cf8;
+        }
+
+        &.pink {
+          background: #f472b6;
+        }
+
+        &.cyan {
+          background: #22d3ee;
+        }
+
+        &.lime {
+          background: #a3e635;
+        }
+      }
+    }
+  }
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+</style>

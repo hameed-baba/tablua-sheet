@@ -18,11 +18,26 @@ router.get(
 );
 
 router.get(
+  "/class/:classId",
+  authenticate,
+  authorize("subject.read"),
+  schoolSubjectController.getSubjectsByClassId
+);
+
+router.get(
   "/:id",
   authenticate,
   authorize("subject.read"),
   schoolSubjectController.getById
 );
+
+router.get(
+  "/class/:classId",
+  authenticate,
+  authorize("subject.read"),
+  schoolSubjectController.getSubjectsByClassId
+);
+
 
 router.post(
   "/",

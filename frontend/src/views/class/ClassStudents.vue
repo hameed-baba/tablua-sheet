@@ -10,20 +10,7 @@
         </p>
       </div>
       <button class="add-btn" @click="goBack">
-        <svg
-          width="20"
-          height="20"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-          />
-        </svg>
+        <i class="fa fa-arrow-left mt-1"></i>
         Back to Classes
       </button>
     </div>
@@ -32,19 +19,9 @@
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-icon primary">
-          <svg
-            width="24"
-            height="24"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-            />
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
         </div>
         <div class="stat-content">
@@ -55,19 +32,9 @@
 
       <div class="stat-card">
         <div class="stat-icon success">
-          <svg
-            width="24"
-            height="24"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            />
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
         </div>
         <div class="stat-content">
@@ -78,19 +45,9 @@
 
       <div class="stat-card">
         <div class="stat-icon warning">
-          <svg
-            width="24"
-            height="24"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            />
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
         </div>
         <div class="stat-content">
@@ -101,19 +58,9 @@
 
       <div class="stat-card">
         <div class="stat-icon info">
-          <svg
-            width="24"
-            height="24"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
         <div class="stat-content">
@@ -125,45 +72,17 @@
 
     <!-- Tabs Navigation -->
     <div class="tabs-container">
-      <button
-        class="tab-btn"
-        :class="{ active: activeTab === 'students' }"
-        @click="activeTab = 'students'"
-      >
-        <svg
-          width="18"
-          height="18"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-          />
+      <button class="tab-btn" :class="{ active: activeTab === 'students' }" @click="activeTab = 'students'">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
         </svg>
         Students
       </button>
-      <button
-        class="tab-btn"
-        :class="{ active: activeTab === 'subjects' }"
-        @click="activeTab = 'subjects'"
-      >
-        <svg
-          width="18"
-          height="18"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-          />
+      <button class="tab-btn" :class="{ active: activeTab === 'subjects' }" @click="activeTab = 'subjects'">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
         Subjects
       </button>
@@ -175,55 +94,29 @@
       <div class="filters-section">
         <div class="filter-group">
           <label class="filter-label">Gender:</label>
-          <select
-            v-model="filters.gender"
-            class="filter-select"
-            @change="applyFilters"
-          >
+          <select v-model="filters.gender" class="filter-select" @change="applyFilters">
             <option value="">All</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label class="filter-label">Status:</label>
-          <select
-            v-model="filters.status"
-            class="filter-select"
-            @change="applyFilters"
-          >
-            <option value="">All</option>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
           </select>
         </div>
 
         <div class="search-filter-group">
           <label class="filter-label">Search:</label>
           <div class="search-container">
-            <input
-              type="text"
-              v-model="filters.search"
-              class="search-box"
-              placeholder="Search by name or admission number..."
-              @keyup.enter="handleSearch"
-            />
+            <input type="text" v-model="filters.search" class="search-box"
+              placeholder="Search by name or admission number..." @keyup.enter="handleSearch" />
             <button class="search-btn" @click="handleSearch">
-              <svg
-                width="18"
-                height="18"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
+            </button>
+            <button v-if="filters.search" class="btn-clear-filters ms-0" @click="clearSearch">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Clear Filters
             </button>
           </div>
         </div>
@@ -234,19 +127,9 @@
         <div class="table-header">
           <h2 class="table-title">Students List</h2>
           <button class="export-btn" @click="exportToExcel">
-            <svg
-              width="18"
-              height="18"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             Export
           </button>
@@ -268,16 +151,9 @@
             </thead>
             <tbody>
               <no-results-row v-if="loading" :loading="loading" :colspan="9" />
-              <no-results-row
-                v-else-if="filteredStudents.length === 0"
-                :colspan="9"
-              />
-              <tr
-                v-else
-                v-for="(student, index) in filteredStudents"
-                :key="student.id"
-              >
-                <td>{{ index + 1 }}</td>
+              <no-results-row v-else-if="filteredStudents.length === 0" :colspan="9" />
+              <tr v-else v-for="(student, index) in filteredStudents" :key="student.id">
+                <td>{{ getSerialNumber(index) }}</td>
                 <td>
                   <strong>{{ student.admission_number }}</strong>
                 </td>
@@ -287,39 +163,30 @@
                     <small class="text-muted">{{ student.gender }}</small>
                   </div>
                 </td>
-                <td class="d-none d-md-table-cell">
-                  <span
-                    class="gender-badge"
-                    :class="student.gender?.toLowerCase()"
-                  >
+                <td class="d-none d-md-table-cell text-capitalize">
+                  <span class="gender-badge" :class="student.gender?.toLowerCase()">
                     {{ student.gender }}
                   </span>
                 </td>
                 <td class="d-none d-lg-table-cell">
-                  {{ formatDate(student.date_of_birth) }}
+                  {{ formatDate(student.dob) }}
                 </td>
                 <td class="d-none d-xl-table-cell">
-                  {{ student.parent_name || "N/A" }}
+                  {{ student.Parent?.full_name || "N/A" }}
                 </td>
                 <td class="d-none d-xl-table-cell">
-                  {{ student.parent_phone || "N/A" }}
+                  {{ student.Parent?.phone_number || "N/A" }}
                 </td>
                 <td>
-                  <span
-                    class="status-badge"
-                    :class="student.status?.toLowerCase()"
-                  >
-                    {{ student.status }}
+                  <span class="status-badge" :class="student.student_status?.toLowerCase()">
+                    {{ student.student_status }}
                   </span>
                 </td>
                 <td>
                   <button class="action-btn info" @click="viewStudent(student)">
                     View
                   </button>
-                  <button
-                    class="action-btn success"
-                    @click="manageStudentSubjects(student)"
-                  >
+                  <button class="action-btn success" @click="manageStudentSubjects(student)">
                     Subjects
                   </button>
                   <button class="action-btn edit" @click="editStudent(student)">
@@ -330,6 +197,12 @@
             </tbody>
           </table>
         </div>
+        <div class="ps-5 pe-5">
+          <Pagination v-if="pagination.totalPages > 0" :currentPage="pagination.currentPage"
+            :totalPages="pagination.totalPages" :totalCount="pagination.totalCount" :limit="pagination.limit"
+            :hasNextPage="pagination.hasNextPage" :hasPrevPage="pagination.hasPrevPage"
+            @page-change="handlePageChange" />
+        </div>
       </div>
     </div>
 
@@ -339,19 +212,8 @@
         <div class="table-header">
           <h2 class="table-title">Assigned Subjects</h2>
           <button class="add-btn" @click="openAssignSubjectModal">
-            <svg
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
             Assign Subject
           </button>
@@ -369,20 +231,9 @@
               </tr>
             </thead>
             <tbody>
-              <no-results-row
-                v-if="loadingSubjects"
-                :loading="loadingSubjects"
-                :colspan="6"
-              />
-              <no-results-row
-                v-else-if="assignedSubjects.length === 0"
-                :colspan="6"
-              />
-              <tr
-                v-else
-                v-for="(subject, index) in assignedSubjects"
-                :key="subject.id"
-              >
+              <no-results-row v-if="loadingSubjects" :loading="loadingSubjects" :colspan="6" />
+              <no-results-row v-else-if="assignedSubjects.length === 0" :colspan="6" />
+              <tr v-else v-for="(subject, index) in assignedSubjects" :key="subject.id">
                 <td>{{ index + 1 }}</td>
                 <td>
                   <strong>{{ subject.subject_name }}</strong>
@@ -393,23 +244,17 @@
                 <td class="d-none d-md-table-cell">
                   <span class="subject-code-badge">{{
                     subject.subject_code
-                  }}</span>
+                    }}</span>
                 </td>
                 <td>{{ subject.teacher_name || "Not Assigned" }}</td>
                 <td class="d-none d-lg-table-cell">
                   {{ formatDate(subject.assigned_date) }}
                 </td>
                 <td>
-                  <button
-                    class="action-btn edit"
-                    @click="editSubjectAssignment(subject)"
-                  >
+                  <button class="action-btn edit" @click="editSubjectAssignment(subject)">
                     Edit
                   </button>
-                  <button
-                    class="action-btn delete"
-                    @click="removeSubjectConfirmation(subject)"
-                  >
+                  <button class="action-btn delete" @click="removeSubjectConfirmation(subject)">
                     Remove
                   </button>
                 </td>
@@ -422,26 +267,16 @@
   </div>
 
   <!-- Assign Subject Modal -->
-  <AssignSubjectModal
-    ref="assignSubjectRef"
-    :class-id="classId"
-    :class-info="classInfo"
-    @subject-assigned="handleSubjectAssigned"
-  />
+  <AssignSubjectModal v-if="classId" ref="assignSubjectRef" :class-id="classId" :class-info="classInfo"
+    @subject-assigned="handleSubjectAssigned" />
 
   <!-- Confirm Delete Modal -->
-  <ConfirmDeleteModal
-    :show="showDeleteSubjectModal"
-    @confirm="removeSubject"
-    @cancel="showDeleteSubjectModal = false"
-  />
+  <ConfirmDeleteModal :show="showDeleteSubjectModal" @confirm="removeSubject"
+    @cancel="showDeleteSubjectModal = false" />
 
   <!-- Student Quick View Modal -->
-  <StudentQuickViewModal
-    ref="studentQuickViewRef"
-    @edit-student="handleEditFromModal"
-    @manage-subjects="handleManageSubjectsFromModal"
-  />
+  <StudentQuickViewModal ref="studentQuickViewRef" @edit-student="handleEditFromModal"
+    @manage-subjects="handleManageSubjectsFromModal" />
 </template>
 
 <script setup>
@@ -453,6 +288,7 @@ import NoResultsRow from "../../components/public/NoResultsRow.vue";
 import AssignSubjectModal from "./AssignSubjectModal.vue";
 import ConfirmDeleteModal from "../../components/public/ConfirmDeleteModal.vue";
 import StudentQuickViewModal from "./StudentQuickViewModal.vue";
+import Pagination from "../../components/public/Pagination.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -463,6 +299,14 @@ const classId = ref(null);
 const students = ref([]);
 const loading = ref(false);
 const activeTab = ref("students");
+const pagination = ref({
+  currentPage: 1,
+  totalPages: 0,
+  totalCount: 0,
+  limit: 25,
+  hasNextPage: false,
+  hasPrevPage: false,
+});
 
 // Subjects related
 const assignedSubjects = ref([]);
@@ -476,53 +320,40 @@ const studentQuickViewRef = ref(null);
 
 const filters = ref({
   gender: "",
-  status: "",
   search: "",
 });
 
 // Computed properties for stats
 const maleCount = computed(
-  () => students.value.filter((s) => s.gender === "Male").length
+  () => students.value.filter((s) => s.gender?.toLowerCase() === "male").length
 );
 
 const femaleCount = computed(
-  () => students.value.filter((s) => s.gender === "Female").length
+  () => students.value.filter((s) => s.gender?.toLowerCase() === "female").length
 );
 
 const activeCount = computed(
-  () => students.value.filter((s) => s.status === "Active").length
+  () => students.value.filter((s) => s.student_status?.toLowerCase() === "active").length
 );
 
-// Filtered students based on search and filters
+// Filtered students - now done on backend, so just return all students
 const filteredStudents = computed(() => {
-  let result = students.value;
-
-  if (filters.value.gender) {
-    result = result.filter((s) => s.gender === filters.value.gender);
-  }
-
-  if (filters.value.status) {
-    result = result.filter((s) => s.status === filters.value.status);
-  }
-
-  if (filters.value.search) {
-    const searchLower = filters.value.search.toLowerCase();
-    result = result.filter(
-      (s) =>
-        s.full_name?.toLowerCase().includes(searchLower) ||
-        s.admission_number?.toLowerCase().includes(searchLower)
-    );
-  }
-
-  return result;
+  return students.value;
 });
 
 const applyFilters = () => {
-  // Filters are reactive
+  // Trigger API call with filters
+  getClassStudents(classId.value, 1);
 };
 
 const handleSearch = () => {
-  // Search is reactive
+  // Trigger API call with search term
+  getClassStudents(classId.value, 1);
+};
+
+const clearSearch = () => {
+  filters.value.search = "";
+  getClassStudents(classId.value, 1);
 };
 
 const formatDate = (dateString) => {
@@ -577,15 +408,15 @@ const exportToExcel = () => {
       "Admission Number": student.admission_number,
       "Full Name": student.full_name,
       Gender: student.gender,
-      "Date of Birth": formatDate(student.date_of_birth),
-      "Parent/Guardian": student.parent_name || "N/A",
-      Contact: student.parent_phone || "N/A",
-      Status: student.status,
+      "Date of Birth": formatDate(student.dob),
+      "Parent/Guardian": student.Parent?.full_name || "N/A",
+      Contact: student.Parent?.phone_number || "N/A",
+      Status: student.student_status,
       "Blood Group": student.blood_group || "N/A",
       Religion: student.religion || "N/A",
       Address: student.address || "N/A",
-      City: student.city || "N/A",
       State: student.state || "N/A",
+      "Local Government": student.local_gov || "N/A",
     }));
 
     // Convert to CSV
@@ -611,8 +442,7 @@ const exportToExcel = () => {
     link.setAttribute("href", url);
     link.setAttribute(
       "download",
-      `${classInfo.value.class_name || "Class"}_Students_${
-        new Date().toISOString().split("T")[0]
+      `${classInfo.value.class_name || "Class"}_Students_${new Date().toISOString().split("T")[0]
       }.csv`
     );
     link.style.visibility = "hidden";
@@ -634,177 +464,55 @@ const exportToExcel = () => {
   }
 };
 
-const getClassStudents = async (id) => {
+const getClassStudents = (id, page = 1) => {
   loading.value = true;
 
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  const params = {
+    page,
+    limit: pagination.value.limit,
+  };
 
-  // Hardcoded students data
-  students.value = [
-    {
-      id: 1,
-      admission_number: "STD001",
-      full_name: "John Doe",
-      gender: "Male",
-      date_of_birth: "2010-05-15",
-      parent_name: "Mr. James Doe",
-      parent_phone: "+234 801 234 5678",
-      parent_email: "james.doe@email.com",
-      parent_relationship: "Father",
-      status: "Active",
-      blood_group: "O+",
-      religion: "Christianity",
-      address: "15 Victoria Island Road, Lagos",
-      city: "Lagos",
-      state: "Lagos State",
-      enrolled_subjects: 12,
-      attendance_rate: "95%",
-      average_grade: "85%",
-    },
-    {
-      id: 2,
-      admission_number: "STD002",
-      full_name: "Jane Smith",
-      gender: "Female",
-      date_of_birth: "2010-08-22",
-      parent_name: "Mrs. Mary Smith",
-      parent_phone: "+234 802 345 6789",
-      parent_email: "mary.smith@email.com",
-      parent_relationship: "Mother",
-      status: "Active",
-      blood_group: "A+",
-      religion: "Christianity",
-      address: "28 Lekki Phase 1, Lagos",
-      city: "Lagos",
-      state: "Lagos State",
-      enrolled_subjects: 13,
-      attendance_rate: "92%",
-      average_grade: "88%",
-    },
-    {
-      id: 3,
-      admission_number: "STD003",
-      full_name: "Michael Johnson",
-      gender: "Male",
-      date_of_birth: "2010-03-10",
-      parent_name: "Mr. Robert Johnson",
-      parent_phone: "+234 803 456 7890",
-      parent_email: "robert.johnson@email.com",
-      parent_relationship: "Father",
-      status: "Active",
-      blood_group: "B+",
-      religion: "Christianity",
-      address: "42 Ikoyi Crescent, Lagos",
-      city: "Lagos",
-      state: "Lagos State",
-      enrolled_subjects: 14,
-      attendance_rate: "98%",
-      average_grade: "92%",
-    },
-    {
-      id: 4,
-      admission_number: "STD004",
-      full_name: "Sarah Williams",
-      gender: "Female",
-      date_of_birth: "2010-11-05",
-      parent_name: "Mrs. Linda Williams",
-      parent_phone: "+234 804 567 8901",
-      parent_email: "linda.williams@email.com",
-      parent_relationship: "Mother",
-      status: "Active",
-      blood_group: "AB+",
-      religion: "Christianity",
-      address: "7 Surulere Street, Lagos",
-      city: "Lagos",
-      state: "Lagos State",
-      enrolled_subjects: 11,
-      attendance_rate: "90%",
-      average_grade: "78%",
-    },
-    {
-      id: 5,
-      admission_number: "STD005",
-      full_name: "David Brown",
-      gender: "Male",
-      date_of_birth: "2010-07-18",
-      parent_name: "Mr. Thomas Brown",
-      parent_phone: "+234 805 678 9012",
-      parent_email: "thomas.brown@email.com",
-      parent_relationship: "Father",
-      status: "Inactive",
-      blood_group: "O-",
-      religion: "Islam",
-      address: "33 Yaba Road, Lagos",
-      city: "Lagos",
-      state: "Lagos State",
-      enrolled_subjects: 10,
-      attendance_rate: "65%",
-      average_grade: "70%",
-    },
-    {
-      id: 6,
-      admission_number: "STD006",
-      full_name: "Emily Davis",
-      gender: "Female",
-      date_of_birth: "2010-09-30",
-      parent_name: "Mrs. Patricia Davis",
-      parent_phone: "+234 806 789 0123",
-      parent_email: "patricia.davis@email.com",
-      parent_relationship: "Mother",
-      status: "Active",
-      blood_group: "A-",
-      religion: "Christianity",
-      address: "19 Ikeja GRA, Lagos",
-      city: "Lagos",
-      state: "Lagos State",
-      enrolled_subjects: 13,
-      attendance_rate: "96%",
-      average_grade: "89%",
-    },
-    {
-      id: 7,
-      admission_number: "STD007",
-      full_name: "James Wilson",
-      gender: "Male",
-      date_of_birth: "2010-04-25",
-      parent_name: "Mr. Charles Wilson",
-      parent_phone: "+234 807 890 1234",
-      parent_email: "charles.wilson@email.com",
-      parent_relationship: "Father",
-      status: "Active",
-      blood_group: "B-",
-      religion: "Christianity",
-      address: "51 Ajah Estate, Lagos",
-      city: "Lagos",
-      state: "Lagos State",
-      enrolled_subjects: 12,
-      attendance_rate: "93%",
-      average_grade: "82%",
-    },
-    {
-      id: 8,
-      admission_number: "STD008",
-      full_name: "Olivia Martinez",
-      gender: "Female",
-      date_of_birth: "2010-12-12",
-      parent_name: "Mrs. Maria Martinez",
-      parent_phone: "+234 808 901 2345",
-      parent_email: "maria.martinez@email.com",
-      parent_relationship: "Mother",
-      status: "Active",
-      blood_group: "O+",
-      religion: "Christianity",
-      address: "8 Maryland Avenue, Lagos",
-      city: "Lagos",
-      state: "Lagos State",
-      enrolled_subjects: 14,
-      attendance_rate: "97%",
-      average_grade: "91%",
-    },
-  ];
+  // Add search parameter if provided
+  if (filters.value.search) {
+    params.search = filters.value.search;
+  }
 
-  loading.value = false;
+  // Add gender filter if provided
+  if (filters.value.gender) {
+    params.gender = filters.value.gender;
+  }
+
+  apiServices
+    .getStudentsByClassId(id, params)
+    .then((response) => {
+      // Ensure we always get an array
+      const data = response.data.data.students;
+      students.value = Array.isArray(data) ? data : [];
+
+      // Update pagination data
+      const paginate = response.data.data.pagination;
+      if (paginate) {
+        pagination.value = {
+          currentPage: paginate.currentPage,
+          totalPages: paginate.totalPages,
+          totalCount: paginate.totalCount,
+          limit: paginate.limit,
+          hasNextPage: paginate.hasNextPage,
+          hasPrevPage: paginate.hasPrevPage,
+        };
+      }
+
+      loading.value = false;
+    })
+    .catch((error) => {
+      console.error("Error fetching students:", error);
+      toast.error(
+        "Failed to Load Students",
+        error.response?.data?.message || "An error occurred while fetching students."
+      );
+      students.value = [];
+      loading.value = false;
+    });
 };
 
 const getClassSubjects = async (id) => {
@@ -907,6 +615,17 @@ const removeSubject = async () => {
   );
 
   showDeleteSubjectModal.value = false;
+};
+
+const getSerialNumber = (index) => {
+  const currentPage = Number(pagination.value.currentPage) || 1;
+  const limit = Number(pagination.value.limit) || 25;
+  return (currentPage - 1) * limit + index + 1;
+};
+
+const handlePageChange = (page) => {
+  getClassStudents(classId.value, page);
+  window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
 onMounted(() => {

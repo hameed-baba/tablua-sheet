@@ -50,8 +50,8 @@
           <thead>
             <tr>
               <th>SN</th>
-              <th>Teacher Name</th>
-              <th class="d-none d-md-table-cell">Class</th>
+              <th >Class</th>
+              <th class="d-none d-md-table-cell">Teacher Name</th>
               <th class="d-none d-lg-table-cell">Section</th>
               <th class="d-none d-xl-table-cell">Grading System</th>
               <th>Actions</th>
@@ -70,12 +70,12 @@
             >
               <td>{{ getSerialNumber(index) }}</td>
               <td>
-                <strong>{{ teacher.SchoolStaff?.full_name }}</strong>
+                <strong>{{ teacher.class_name }}</strong>
                 <div class="d-md-none">
-                  <small class="text-muted">{{ teacher.class_name }}</small>
+                  <small class="text-muted">{{ teacher.SchoolStaff?.full_name }}</small>
                 </div>
               </td>
-              <td class="d-none d-md-table-cell">{{ teacher.class_name }}</td>
+              <td class="d-none d-md-table-cell">{{ teacher.SchoolStaff?.full_name }}</td>
               <td class="d-none d-lg-table-cell">
                 <span
                   class="section-badge"

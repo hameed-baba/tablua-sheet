@@ -132,6 +132,9 @@ export default {
   deleteSubject(id) {
     return apiClient.delete("/school-subjects/" + id);
   },
+  getSubjectsByClassId(classId) {
+    return apiClient.get(`/school-subjects/class/${classId}`);
+  },
 
   // =================== PARENTS MANAGEMENT ===================
 
@@ -186,7 +189,7 @@ export default {
     return apiClient.get(`/school-classes/${classId}/students`);
   },
   getClassSubjects(classId) {
-    return apiClient.get(`/school-classes/${classId}/subjects`);
+    return apiClient.get(`/subjects/class/${classId}`);
   },
   assignSubjectToClass(classId, data) {
     return apiClient.post(`/school-classes/${classId}/subjects`, data);
@@ -231,4 +234,11 @@ export default {
   updateStudentSubjects(studentId, data) {
     return apiClient.put(`/students/${studentId}/subjects`, data);
   },
+  
+  getStudents(params = {}) {
+    return apiClient.get("/students/search/query", { params });
+  },
+  getStudentsByClassId(classId, params = {}) {
+    return apiClient.get(`/students/class/${classId}`, { params });
+  }
 };
