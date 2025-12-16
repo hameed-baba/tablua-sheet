@@ -58,14 +58,11 @@
 
       <div class="stat-card">
         <div class="stat-icon info">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+          <i class="fa fa-book" style="font-size: 19px"></i>
         </div>
         <div class="stat-content">
-          <h3>{{ activeCount }}</h3>
-          <p>Active Students</p>
+          <h3>{{ totalAssignedSubjects }}</h3>
+          <p>Total Class Subjects</p>
         </div>
       </div>
     </div>
@@ -178,16 +175,16 @@
                   {{ student.Parent?.phone_number || "N/A" }}
                 </td>
                 <td>
-                  <span class="status-badge" :class="student.student_status?.toLowerCase()">
+                  <span :class="[
+                    'status-badge',
+                    `status-${student.student_status}`,
+                  ]">
                     {{ student.student_status }}
                   </span>
                 </td>
                 <td>
                   <button class="action-btn info" @click="viewStudent(student)">
                     View
-                  </button>
-                  <button class="action-btn success" @click="manageStudentSubjects(student)">
-                    Subjects
                   </button>
                   <button class="action-btn edit" @click="editStudent(student)">
                     Edit
@@ -224,7 +221,6 @@
               <tr>
                 <th>SN</th>
                 <th>Subject Name</th>
-                <th class="d-none d-md-table-cell">Subject Code</th>
                 <th>Teacher</th>
                 <th class="d-none d-lg-table-cell">Assigned Date</th>
                 <th>Actions</th>
@@ -236,19 +232,12 @@
               <tr v-else v-for="(subject, index) in assignedSubjects" :key="subject.id">
                 <td>{{ index + 1 }}</td>
                 <td>
-                  <strong>{{ subject.subject_name }}</strong>
-                  <div class="d-md-none">
-                    <small class="text-muted">{{ subject.subject_code }}</small>
-                  </div>
+                  <strong>{{ subject.Subject?.subject_name }}</strong>
                 </td>
-                <td class="d-none d-md-table-cell">
-                  <span class="subject-code-badge">{{
-                    subject.subject_code
-                    }}</span>
-                </td>
-                <td>{{ subject.teacher_name || "Not Assigned" }}</td>
+
+                <td>{{ subject.Staff?.full_name || "Not Assigned" }}</td>
                 <td class="d-none d-lg-table-cell">
-                  {{ formatDate(subject.assigned_date) }}
+                  {{ formatDate(subject.createdAt) }}
                 </td>
                 <td>
                   <button class="action-btn edit" @click="editSubjectAssignment(subject)">
@@ -267,8 +256,9 @@
   </div>
 
   <!-- Assign Subject Modal -->
-  <AssignSubjectModal v-if="classId" ref="assignSubjectRef" :class-id="classId" :class-info="classInfo"
-    @subject-assigned="handleSubjectAssigned" />
+  <AssignSubjectModal ref="assignSubjectRef" @send-status="getStatus($event)" />
+  <UpdateAssignSubjectModal ref="updateAssignSubjectRef" :subject-info="selectedSubject"
+    @send-status="getStatus($event)" />
 
   <!-- Confirm Delete Modal -->
   <ConfirmDeleteModal :show="showDeleteSubjectModal" @confirm="removeSubject"
@@ -289,6 +279,7 @@ import AssignSubjectModal from "./AssignSubjectModal.vue";
 import ConfirmDeleteModal from "../../components/public/ConfirmDeleteModal.vue";
 import StudentQuickViewModal from "./StudentQuickViewModal.vue";
 import Pagination from "../../components/public/Pagination.vue";
+import UpdateAssignSubjectModal from "./UpdateAssignSubjectModal.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -314,6 +305,7 @@ const loadingSubjects = ref(false);
 const assignSubjectRef = ref(null);
 const selectedSubject = ref(null);
 const showDeleteSubjectModal = ref(false);
+const updateAssignSubjectRef = ref(null);
 
 // Student quick view
 const studentQuickViewRef = ref(null);
@@ -329,11 +321,13 @@ const maleCount = computed(
 );
 
 const femaleCount = computed(
-  () => students.value.filter((s) => s.gender?.toLowerCase() === "female").length
+  () =>
+    students.value.filter((s) => s.gender?.toLowerCase() === "female").length
 );
 
-const activeCount = computed(
-  () => students.value.filter((s) => s.student_status?.toLowerCase() === "active").length
+
+const totalAssignedSubjects = computed(
+  () => assignedSubjects.value.length || 0
 );
 
 // Filtered students - now done on backend, so just return all students
@@ -384,7 +378,13 @@ const handleManageSubjectsFromModal = (student) => {
 
 const editStudent = (student) => {
   // Navigate to edit student page
-  router.push({ path: `/students/update/${student.id}` });
+  router.push({
+    path: `/students/update/${student.id}`,
+    query: {
+      from: 'class',
+      classId: classId.value
+    }
+  });
 };
 
 const manageStudentSubjects = (student) => {
@@ -508,7 +508,8 @@ const getClassStudents = (id, page = 1) => {
       console.error("Error fetching students:", error);
       toast.error(
         "Failed to Load Students",
-        error.response?.data?.message || "An error occurred while fetching students."
+        error.response?.data?.message ||
+        "An error occurred while fetching students."
       );
       students.value = [];
       loading.value = false;
@@ -518,81 +519,34 @@ const getClassStudents = (id, page = 1) => {
 const getClassSubjects = async (id) => {
   loadingSubjects.value = true;
 
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  apiServices
+    .getClassAssignedSubjectByClassId(classId.value)
+    .then((response) => {
+      if (response.status === 200) {
+        assignedSubjects.value = response.data.data;
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      loadingSubjects.value = false;
+    });
+};
 
-  // Hardcoded subjects data
-  assignedSubjects.value = [
-    {
-      id: 1,
-      subject_id: 1,
-      subject_name: "Mathematics",
-      subject_code: "MATH101",
-      teacher_id: 1,
-      teacher_name: "Mrs. Emily Davis",
-      assigned_date: "2024-09-01",
-    },
-    {
-      id: 2,
-      subject_id: 2,
-      subject_name: "English Language",
-      subject_code: "ENG101",
-      teacher_id: 2,
-      teacher_name: "Mr. Michael Chen",
-      assigned_date: "2024-09-01",
-    },
-    {
-      id: 3,
-      subject_id: 3,
-      subject_name: "Physics",
-      subject_code: "PHY101",
-      teacher_id: 3,
-      teacher_name: "Mrs. Sarah Johnson",
-      assigned_date: "2024-09-01",
-    },
-    {
-      id: 4,
-      subject_id: 4,
-      subject_name: "Chemistry",
-      subject_code: "CHEM101",
-      teacher_id: 4,
-      teacher_name: "Mr. Ahmed Suleiman",
-      assigned_date: "2024-09-01",
-    },
-    {
-      id: 5,
-      subject_id: 5,
-      subject_name: "Biology",
-      subject_code: "BIO101",
-      teacher_id: 5,
-      teacher_name: "Mrs. Grace Okafor",
-      assigned_date: "2024-09-02",
-    },
-    {
-      id: 6,
-      subject_id: 6,
-      subject_name: "Computer Science",
-      subject_code: "CS101",
-      teacher_id: 6,
-      teacher_name: "Mr. David Thompson",
-      assigned_date: "2024-09-02",
-    },
-  ];
-
-  loadingSubjects.value = false;
+const getStatus = (status) => {
+  if (status === "success") {
+    getClassSubjects(classId.value);
+  }
 };
 
 const openAssignSubjectModal = () => {
   assignSubjectRef.value.toggleModal();
 };
 
-const handleSubjectAssigned = () => {
-  getClassSubjects(classId.value);
-};
-
 const editSubjectAssignment = (subject) => {
   selectedSubject.value = subject;
-  assignSubjectRef.value.toggleModal(subject);
+  updateAssignSubjectRef.value.toggleModal();
 };
 
 const removeSubjectConfirmation = (subject) => {
@@ -813,5 +767,41 @@ onMounted(() => {
     padding: 0.75rem 1rem;
     font-size: 0.875rem;
   }
+}
+
+/* Active - Green */
+.status-active {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+/* Graduated - Blue */
+.status-graduated {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+/* Transferred - Purple */
+.status-transferred {
+  background-color: #e9d5ff;
+  color: #6b21a8;
+}
+
+/* Suspended - Orange */
+.status-suspended {
+  background-color: #fed7aa;
+  color: #9a3412;
+}
+
+/* Withdrawn - Red */
+.status-withdrawn {
+  background-color: #fecaca;
+  color: #991b1b;
+}
+
+/* Leave - Yellow */
+.status-leave {
+  background-color: #fef3c7;
+  color: #92400e;
 }
 </style>

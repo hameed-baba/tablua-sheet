@@ -6,19 +6,8 @@
         <p>Search and filter students across all sessions</p>
       </div>
       <button class="add-btn" @click="$router.push('/students')">
-        <svg
-          width="20"
-          height="20"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-          />
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
         Back to Current Students
       </button>
@@ -27,19 +16,9 @@
     <!-- Advanced Search Filters -->
     <div class="search-filters-card">
       <h3 class="filter-title">
-        <svg
-          width="20"
-          height="20"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-          />
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
         </svg>
         Advanced Filters
       </h3>
@@ -49,45 +28,15 @@
         <div class="filter-group">
           <label class="filter-label">Search Student</label>
           <div class="search-input-wrapper">
-            <svg
-              class="search-icon"
-              width="18"
-              height="18"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
+            <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <input
-              type="text"
-              v-model="filters.search"
-              class="filter-input search-input"
-              placeholder="Search by name or admission number..."
-            />
-            <button
-              v-if="filters.search"
-              class="clear-btn"
-              @click="clearSearch"
-            >
-              <svg
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+            <input type="text" v-model="filters.search" class="filter-input search-input"
+              placeholder="Search by name or admission number..." />
+            <button v-if="filters.search" class="clear-btn" @click="clearSearch">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
@@ -96,17 +45,9 @@
         <!-- Session Filter -->
         <div class="filter-group">
           <label class="filter-label">Session</label>
-          <select
-            v-model="filters.session"
-            class="filter-select"
-            @change="applyFilters"
-          >
+          <select v-model="filters.session" class="filter-select" @change="applyFilters">
             <option value="">All Sessions</option>
-            <option
-              v-for="session in allRowSessions"
-              :key="session.id"
-              :value="session.id"
-            >
+            <option v-for="session in allRowSessions" :key="session.id" :value="session.id">
               {{ session.session_name }}
             </option>
           </select>
@@ -115,11 +56,7 @@
         <!-- Class Filter -->
         <div class="filter-group">
           <label class="filter-label">Class</label>
-          <select
-            v-model="filters.class"
-            class="filter-select"
-            @change="applyFilters"
-          >
+          <select v-model="filters.class" class="filter-select" @change="applyFilters">
             <option value="">All Classes</option>
             <option v-for="cls in allRowClasses" :key="cls.id" :value="cls.id">
               {{ cls.class_name }}
@@ -130,11 +67,7 @@
         <!-- Status Filter -->
         <div class="filter-group">
           <label class="filter-label">Status</label>
-          <select
-            v-model="filters.status"
-            class="filter-select"
-            @change="applyFilters"
-          >
+          <select v-model="filters.status" class="filter-select" @change="applyFilters">
             <option value="">All Status</option>
             <option value="active">Active</option>
             <option value="graduated">Graduated</option>
@@ -148,11 +81,7 @@
         <!-- Gender Filter -->
         <div class="filter-group">
           <label class="filter-label">Gender</label>
-          <select
-            v-model="filters.gender"
-            class="filter-select"
-            @change="applyFilters"
-          >
+          <select v-model="filters.gender" class="filter-select" @change="applyFilters">
             <option value="">All Genders</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
@@ -162,36 +91,16 @@
         <!-- Action Buttons -->
         <div class="filter-actions">
           <button class="btn-filter" @click="applyFilters">
-            <svg
-              width="18"
-              height="18"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             Apply Filters
           </button>
           <button class="btn-reset" @click="resetFilters">
-            <svg
-              width="18"
-              height="18"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             Reset
           </button>
@@ -203,56 +112,46 @@
         <span class="active-filter-label">Active Filters:</span>
         <span v-if="filters.search" class="filter-tag">
           Search: "{{ filters.search }}"
-          <button
-            @click="
-              filters.search = '';
-              applyFilters();
-            "
-          >
+          <button @click="
+            filters.search = '';
+          applyFilters();
+          ">
             ×
           </button>
         </span>
         <span v-if="filters.session" class="filter-tag">
           Session: {{ getSessionName(filters.session) }}
-          <button
-            @click="
-              filters.session = '';
-              applyFilters();
-            "
-          >
+          <button @click="
+            filters.session = '';
+          applyFilters();
+          ">
             ×
           </button>
         </span>
         <span v-if="filters.class" class="filter-tag">
           Class: {{ getClassName(filters.class) }}
-          <button
-            @click="
-              filters.class = '';
-              applyFilters();
-            "
-          >
+          <button @click="
+            filters.class = '';
+          applyFilters();
+          ">
             ×
           </button>
         </span>
         <span v-if="filters.status" class="filter-tag">
           Status: {{ filters.status }}
-          <button
-            @click="
-              filters.status = '';
-              applyFilters();
-            "
-          >
+          <button @click="
+            filters.status = '';
+          applyFilters();
+          ">
             ×
           </button>
         </span>
         <span v-if="filters.gender" class="filter-tag">
           Gender: {{ filters.gender }}
-          <button
-            @click="
-              filters.gender = '';
-              applyFilters();
-            "
-          >
+          <button @click="
+            filters.gender = '';
+          applyFilters();
+          ">
             ×
           </button>
         </span>
@@ -305,30 +204,16 @@
             <tr v-else-if="filteredStudents.length === 0">
               <td colspan="8" class="text-center">
                 <div class="no-results">
-                  <svg
-                    width="64"
-                    height="64"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
+                  <svg width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <h3>No students found</h3>
                   <p>Try adjusting your filters or search criteria</p>
                 </div>
               </td>
             </tr>
-            <tr
-              v-else
-              v-for="(student, index) in filteredStudents"
-              :key="student.id"
-            >
+            <tr v-else v-for="(student, index) in filteredStudents" :key="student.id">
               <td>{{ getSerialNumber(index) }}</td>
               <td>
                 <div class="student-info">
@@ -336,7 +221,7 @@
                   <div class="d-md-none">
                     <small class="text-muted">{{
                       student.admission_number
-                    }}</small>
+                      }}</small>
                   </div>
                 </div>
               </td>
@@ -353,9 +238,7 @@
                 <span class="capitalize">{{ student.gender }}</span>
               </td>
               <td>
-                <span
-                  :class="['status-badge', `status-${student.student_status}`]"
-                >
+                <span :class="['status-badge', `status-${student.student_status}`]">
                   {{ student.student_status }}
                 </span>
               </td>
@@ -373,24 +256,14 @@
       </div>
     </div>
     <div class="ps-5 pe-5">
-          <Pagination
-            v-if="pagination.totalPages > 0"
-            :currentPage="pagination.currentPage"
-            :totalPages="pagination.totalPages"
-            :totalCount="pagination.totalCount"
-            :limit="pagination.limit"
-            :hasNextPage="pagination.currentPage < pagination.totalPages"
-            :hasPrevPage="pagination.currentPage > 1"
-            @page-change="handlePageChange"
-          />
+      <Pagination v-if="pagination.totalPages > 0" :currentPage="pagination.currentPage"
+        :totalPages="pagination.totalPages" :totalCount="pagination.totalCount" :limit="pagination.limit"
+        :hasNextPage="pagination.currentPage < pagination.totalPages" :hasPrevPage="pagination.currentPage > 1"
+        @page-change="handlePageChange" />
     </div>
   </div>
   <!-- Student Quick View Modal -->
-  <StudentQuickViewModal
-    ref="quickView"
-    @edit-student="onEditStudent"
-    @manage-subjects="onManageSubjects"
-  />
+  <StudentQuickViewModal ref="quickView" @edit-student="onEditStudent" @manage-subjects="onManageSubjects" />
 </template>
 
 <script setup>
@@ -471,11 +344,17 @@ const viewStudent = (student) => {
     return;
   }
   // fallback: navigate to edit page if modal not available
-  router.push(`/students/update/${student.id}`);
+  router.push({
+    path: `/students/update/${student.id}`,
+    query: { from: 'search' }
+  });
 };
 
 const onEditStudent = (student) => {
-  router.push(`/students/update/${student.id}`);
+  router.push({
+    path: `/students/update/${student.id}`,
+    query: { from: 'search' }
+  });
 };
 
 const onManageSubjects = (student) => {
@@ -484,7 +363,10 @@ const onManageSubjects = (student) => {
 };
 
 const editStudent = (student) => {
-  router.push(`/students/update/${student.id}`);
+  router.push({
+    path: `/students/update/${student.id}`,
+    query: { from: 'search' }
+  });
 };
 
 const getAllRowClases = () => {
@@ -913,5 +795,3 @@ onMounted(() => {
   color: #92400e;
 }
 </style>
-
-

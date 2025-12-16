@@ -2,8 +2,12 @@
   <div class="page">
     <div class="form-container">
       <!-- Stepper Indicator -->
-      <StepperIndicator :steps="stepLabels" :current-step="currentStep" :allow-click-navigation="true"
-        @step-click="goToStep" />
+      <StepperIndicator
+        :steps="stepLabels"
+        :current-step="currentStep"
+        :allow-click-navigation="true"
+        @step-click="goToStep"
+      />
 
       <!-- Step 1: Search Parent -->
       <div v-if="currentStep === 1" class="step-content">
@@ -16,11 +20,20 @@
           <div class="search-input-group">
             <label class="form-label">Parent Phone Number *</label>
             <div class="search-wrapper">
-              <input type="text" v-model="parentSearchPhone" class="form-input"
-                placeholder="Enter parent phone number (e.g., 08031234567)" @input="clearParentSelection"
-                @keyup.enter="searchParents" />
-              <button type="button" class="search-btn" @click="searchParents"
-                :disabled="searchingParent || !parentSearchPhone">
+              <input
+                type="text"
+                v-model="parentSearchPhone"
+                class="form-input"
+                placeholder="Enter parent phone number (e.g., 08031234567)"
+                @input="clearParentSelection"
+                @keyup.enter="searchParents"
+              />
+              <button
+                type="button"
+                class="search-btn"
+                @click="searchParents"
+                :disabled="searchingParent || !parentSearchPhone"
+              >
                 <i v-if="!searchingParent" class="fa fa-search"></i>
                 <span v-if="searchingParent" class="spinner"></span>
                 {{ searchingParent ? "Searching..." : "Search" }}
@@ -32,10 +45,15 @@
           <div v-if="parentSearchResults.length > 0" class="search-results">
             <p class="results-label">Select a parent:</p>
             <div class="parent-cards">
-              <div v-for="parent in parentSearchResults" :key="parent.id" :class="[
-                'parent-card',
-                { selected: selectedParent?.id === parent.id },
-              ]" @click="selectParent(parent)">
+              <div
+                v-for="parent in parentSearchResults"
+                :key="parent.id"
+                :class="[
+                  'parent-card',
+                  { selected: selectedParent?.id === parent.id },
+                ]"
+                @click="selectParent(parent)"
+              >
                 <div class="parent-card-header">
                   <i class="fa fa-user-circle"></i>
                   <span class="parent-name">{{ parent.full_name }}</span>
@@ -50,7 +68,10 @@
                     <span>{{ parent.state }}, {{ parent.local_gov }}</span>
                   </div>
                 </div>
-                <div v-if="selectedParent?.id === parent.id" class="selected-badge">
+                <div
+                  v-if="selectedParent?.id === parent.id"
+                  class="selected-badge"
+                >
                   <i class="fa fa-check-circle"></i> Selected
                 </div>
               </div>
@@ -58,7 +79,10 @@
           </div>
 
           <!-- No Results -->
-          <div v-if="parentSearched && parentSearchResults.length === 0" class="no-results">
+          <div
+            v-if="parentSearched && parentSearchResults.length === 0"
+            class="no-results"
+          >
             <i class="fa fa-exclamation-circle"></i>
             <p>No parent found with this phone number.</p>
             <p class="hint">
@@ -75,21 +99,17 @@
             <div class="selected-parent-info">
               <div class="info-row">
                 <span class="info-label">Name:</span>
-                <span class="info-value">{{
-                  selectedParent.full_name
-                  }}</span>
+                <span class="info-value">{{ selectedParent.full_name }}</span>
               </div>
               <div class="info-row">
                 <span class="info-label">Phone:</span>
                 <span class="info-value">{{
                   selectedParent.phone_number
-                  }}</span>
+                }}</span>
               </div>
               <div class="info-row">
                 <span class="info-label">Address:</span>
-                <span class="info-value">{{
-                  selectedParent.address
-                  }}</span>
+                <span class="info-value">{{ selectedParent.address }}</span>
               </div>
             </div>
           </div>
@@ -99,7 +119,12 @@
           <button type="button" class="btn btn-cancel" @click="goBack">
             Cancel
           </button>
-          <button type="button" class="btn btn-primary" @click="nextStep" :disabled="!selectedParent">
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="nextStep"
+            :disabled="!selectedParent"
+          >
             Next <i class="fa fa-arrow-right"></i>
           </button>
         </div>
@@ -112,7 +137,11 @@
           Fill in the student's personal and academic details
         </p>
 
-        <vee-form :validation-schema="formValidation" @submit="nextStep" v-slot="{ errors }">
+        <vee-form
+          :validation-schema="formValidation"
+          @submit="nextStep"
+          v-slot="{ errors }"
+        >
           <!-- Personal Information -->
           <div class="form-section">
             <h3 class="section-title">Personal Information</h3>
@@ -120,14 +149,23 @@
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Full Name *</label>
-                <vee-form-field type="text" v-model="registrationData.student.full_name" name="full_name"
-                  :class="['form-input', errors.full_name ? 'is-invalid' : '']" placeholder="Enter full name" />
+                <vee-form-field
+                  type="text"
+                  v-model="registrationData.student.full_name"
+                  name="full_name"
+                  :class="['form-input', errors.full_name ? 'is-invalid' : '']"
+                  placeholder="Enter full name"
+                />
                 <vee-form-error name="full_name" class="error-message" />
               </div>
               <div class="form-group">
                 <label class="form-label">Date of Birth *</label>
-                <vee-form-field type="date" v-model="registrationData.student.dob" name="dob"
-                  :class="['form-input', errors.dob ? 'is-invalid' : '']" />
+                <vee-form-field
+                  type="date"
+                  v-model="registrationData.student.dob"
+                  name="dob"
+                  :class="['form-input', errors.dob ? 'is-invalid' : '']"
+                />
                 <vee-form-error name="dob" class="error-message" />
               </div>
             </div>
@@ -135,8 +173,12 @@
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Gender *</label>
-                <vee-form-field as="select" v-model="registrationData.student.gender" name="gender"
-                  :class="['form-input', errors.gender ? 'is-invalid' : '']">
+                <vee-form-field
+                  as="select"
+                  v-model="registrationData.student.gender"
+                  name="gender"
+                  :class="['form-input', errors.gender ? 'is-invalid' : '']"
+                >
                   <option value="">Select gender</option>
                   <option value="male">Male</option>
                   <option value="female">Female</option>
@@ -145,15 +187,20 @@
               </div>
               <div class="form-group">
                 <label class="form-label">Blood Group</label>
-                <vee-form-field as="select" v-model="registrationData.student.blood_group" name="blood_group" :class="[
-                  'form-input',
-                  errors.blood_group ? 'is-invalid' : '',
-                ]">
+                <vee-form-field
+                  as="select"
+                  v-model="registrationData.student.blood_group"
+                  name="blood_group"
+                  :class="[
+                    'form-input',
+                    errors.blood_group ? 'is-invalid' : '',
+                  ]"
+                >
                   <option value="">Select blood group</option>
                   <option value="A+">A+</option>
                   <option value="A-">A-</option>
                   <option value="B+">B+</option>
-                  <option value="B-">B-</option>
+                  <option value="B-">B</option>
                   <option value="AB+">AB+</option>
                   <option value="AB-">AB-</option>
                   <option value="O+">O+</option>
@@ -165,8 +212,12 @@
 
             <div class="form-group">
               <label class="form-label">Religion *</label>
-              <vee-form-field as="select" v-model="registrationData.student.religion" name="religion"
-                :class="['form-input', errors.religion ? 'is-invalid' : '']">
+              <vee-form-field
+                as="select"
+                v-model="registrationData.student.religion"
+                name="religion"
+                :class="['form-input', errors.religion ? 'is-invalid' : '']"
+              >
                 <option value="">Select religion</option>
                 <option value="islam">Islam</option>
                 <option value="christianity">Christianity</option>
@@ -182,18 +233,32 @@
 
             <div class="form-group mb-4">
               <label class="form-label">Address *</label>
-              <vee-form-field type="text" v-model="registrationData.student.address" name="address"
-                :class="['form-input', errors.address ? 'is-invalid' : '']" placeholder="Enter full address" />
+              <vee-form-field
+                type="text"
+                v-model="registrationData.student.address"
+                name="address"
+                :class="['form-input', errors.address ? 'is-invalid' : '']"
+                placeholder="Enter full address"
+              />
               <vee-form-error name="address" class="error-message" />
             </div>
 
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">State *</label>
-                <vee-form-field as="select" v-model="registrationData.student.state" name="state"
-                  :class="['form-input', errors.state ? 'is-invalid' : '']" @change="onStateChange">
+                <vee-form-field
+                  as="select"
+                  v-model="registrationData.student.state"
+                  name="state"
+                  :class="['form-input', errors.state ? 'is-invalid' : '']"
+                  @change="onStateChange"
+                >
                   <option value="">Select state</option>
-                  <option v-for="(state, index) in states" :key="index" :value="state.value">
+                  <option
+                    v-for="(state, index) in states"
+                    :key="index"
+                    :value="state.value"
+                  >
                     {{ state.label }}
                   </option>
                 </vee-form-field>
@@ -201,11 +266,19 @@
               </div>
               <div class="form-group">
                 <label class="form-label">Local Government *</label>
-                <vee-form-field as="select" v-model="registrationData.student.local_gov" name="local_gov"
+                <vee-form-field
+                  as="select"
+                  v-model="registrationData.student.local_gov"
+                  name="local_gov"
                   :class="['form-input', errors.local_gov ? 'is-invalid' : '']"
-                  :disabled="!registrationData.student.state">
+                  :disabled="!registrationData.student.state"
+                >
                   <option value="">Select LGA</option>
-                  <option v-for="lga in localGovs" :key="lga" :value="lga.value">
+                  <option
+                    v-for="lga in localGovs"
+                    :key="lga"
+                    :value="lga.value"
+                  >
                     {{ lga.label }}
                   </option>
                 </vee-form-field>
@@ -220,26 +293,39 @@
 
             <div class="form-group mb-4">
               <label class="form-label">Admission Number *</label>
-              <vee-form-field type="text" v-model="registrationData.student.admission_number" name="admission_number"
+              <vee-form-field
+                type="text"
+                v-model="registrationData.student.admission_number"
+                name="admission_number"
                 :class="[
                   'form-input',
                   errors.admission_number ? 'is-invalid' : '',
-                ]" placeholder="e.g., AGP/SS/2022/045" />
+                ]"
+                placeholder="e.g., AGP/SS/2022/045"
+              />
               <vee-form-error name="admission_number" class="error-message" />
             </div>
 
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Admitted Class *</label>
-                <vee-form-field as="select" v-model="registrationData.student.admitted_class" name="admitted_class"
+                <vee-form-field
+                  as="select"
+                  v-model="registrationData.student.admitted_class"
+                  name="admitted_class"
                   :class="[
                     'form-input',
                     errors.admitted_class ? 'is-invalid' : '',
-                  ]">
+                  ]"
+                >
                   <option value="" selected disabled>
                     Select admitted class
                   </option>
-                  <option v-for="(sClass, index) in allRowClasses" :key="index" :value="sClass.id">
+                  <option
+                    v-for="(sClass, index) in allRowClasses"
+                    :key="index"
+                    :value="sClass.id"
+                  >
                     {{ sClass.class_name }}
                   </option>
                 </vee-form-field>
@@ -247,13 +333,23 @@
               </div>
               <div class="form-group">
                 <label class="form-label">Current Class *</label>
-                <vee-form-field as="select" v-model="registrationData.student.current_class_id" name="current_class_id"
+                <vee-form-field
+                  as="select"
+                  v-model="registrationData.student.current_class_id"
+                  name="current_class_id"
                   :class="[
                     'form-input',
                     errors.current_class_id ? 'is-invalid' : '',
-                  ]">
-                  <option value="" selected disabled>Select current class</option>
-                  <option v-for="(sClass, index) in allRowClasses" :key="index" :value="sClass.id">
+                  ]"
+                >
+                  <option value="" selected disabled>
+                    Select current class
+                  </option>
+                  <option
+                    v-for="(sClass, index) in allRowClasses"
+                    :key="index"
+                    :value="sClass.id"
+                  >
                     {{ sClass.class_name }}
                   </option>
                 </vee-form-field>
@@ -264,13 +360,21 @@
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Admitted Session *</label>
-                <vee-form-field as="select" v-model="registrationData.student.admitted_session" name="admitted_session"
+                <vee-form-field
+                  as="select"
+                  v-model="registrationData.student.admitted_session"
+                  name="admitted_session"
                   :class="[
                     'form-input',
                     errors.admitted_session ? 'is-invalid' : '',
-                  ]">
+                  ]"
+                >
                   <option value="" selected disabled>Select session</option>
-                  <option v-for="(session, index) in allRowSessions" :key="index" :value="session.id">
+                  <option
+                    v-for="(session, index) in allRowSessions"
+                    :key="index"
+                    :value="session.id"
+                  >
                     {{ session.session_name }}
                   </option>
                 </vee-form-field>
@@ -279,23 +383,38 @@
 
               <div class="form-group">
                 <label class="form-label">Current Session *</label>
-                <vee-form-field as="select" v-model="registrationData.student.current_session_id"
-                  name="current_session_id" :class="[
+                <vee-form-field
+                  as="select"
+                  v-model="registrationData.student.current_session_id"
+                  name="current_session_id"
+                  :class="[
                     'form-input',
                     errors.current_session_id ? 'is-invalid' : '',
-                  ]">
+                  ]"
+                >
                   <option value="" selected disabled>Select session</option>
-                  <option v-for="(session, index) in allRowSessions" :key="index" :value="session.id">
+                  <option
+                    v-for="(session, index) in allRowSessions"
+                    :key="index"
+                    :value="session.id"
+                  >
                     {{ session.session_name }}
                   </option>
                 </vee-form-field>
-                <vee-form-error name="current_session_id" class="error-message" />
+                <vee-form-error
+                  name="current_session_id"
+                  class="error-message"
+                />
               </div>
             </div>
           </div>
 
           <div class="step-actions">
-            <button type="button" class="btn btn-secondary" @click="previousStep">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              @click="previousStep"
+            >
               <i class="fa fa-arrow-left"></i> Back
             </button>
             <button type="submit" class="btn btn-primary">
@@ -308,9 +427,7 @@
       <!-- Step 3: Assign Subjects -->
       <div v-if="currentStep === 3" class="step-content">
         <h2 class="step-title">Assign Subjects</h2>
-        <p class="step-description">
-          Select the subjects for this student
-        </p>
+        <p class="step-description">Select the subjects for this student</p>
 
         <div v-if="loadingSubjects" class="loading-state">
           <span class="spinner"></span>
@@ -326,47 +443,246 @@
           <!-- Check All Header -->
           <div class="subjects-header">
             <label class="check-all-subjects">
-              <input type="checkbox" :checked="areAllSubjectsSelected" @change="toggleAllSubjects" />
+              <input
+                type="checkbox"
+                :checked="areAllSubjectsSelected"
+                @change="toggleAllSubjects"
+              />
               <span class="checkmark"></span>
               <div class="check-label-container">
                 <span class="check-label">Select All Subjects</span>
-                <span class="check-count">{{ registrationData.subjects.length }} of {{ availableSubjects.length }}
-                  selected</span>
+                <span class="check-count"
+                  >{{ registrationData.subjects.length }} of
+                  {{ availableSubjects.length }} selected</span
+                >
               </div>
             </label>
           </div>
 
           <div class="subjects-grid">
-            <label v-for="subject in availableSubjects" :key="subject.id" class="subject-card"
-              :class="{ selected: isSubjectSelected(subject.id) }">
-              <input type="checkbox" :checked="isSubjectSelected(subject.id)" @change="toggleSubject(subject)" />
+            <label
+              v-for="subject in availableSubjects"
+              :key="subject.id"
+              class="subject-card"
+              :class="{ selected: isSubjectSelected(subject.id) }"
+            >
+              <input
+                type="checkbox"
+                :checked="isSubjectSelected(subject.id)"
+                @change="toggleSubject(subject)"
+              />
               <span class="subject-checkmark"></span>
               <div class="subject-info">
-                <h4>{{ subject.subject_name }}</h4>
-                <p class="subject-code">{{ subject.subject_code }}</p>
-                <p v-if="subject.teacher_name" class="subject-teacher">
-                  <i class="fa fa-user"></i> {{ subject.teacher_name }}
+                <h4>{{ subject.Subject.subject_name }}</h4>
+                <p v-if="subject.Staff.full_name" class="subject-teacher">
+                  <i class="fa fa-user"></i> {{ subject.Staff.full_name }}
                 </p>
               </div>
             </label>
           </div>
         </div>
-        <pre>{{ registrationData }}</pre>
 
         <div class="step-actions">
           <button type="button" class="btn btn-secondary" @click="previousStep">
             <i class="fa fa-arrow-left"></i> Back
           </button>
-          <button type="button" class="btn btn-success" @click="registerStudent"
-            :disabled="loading || registrationData.subjects.length === 0">
+          <button type="button" class="btn btn-primary" @click="nextStep">
+            Next <i class="fa fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 4: Review & Save -->
+      <div v-if="currentStep === 4" class="step-content">
+        <h2 class="step-title">Review & Save</h2>
+        <p class="step-description">
+          Review all information before registering the student
+        </p>
+
+        <div class="review-section">
+          <!-- Parent Information Review -->
+          <div class="review-card" v-if="selectedParent">
+            <h3 class="review-title">Parent/Guardian Information</h3>
+            <div class="review-grid">
+              <div class="review-item">
+                <span class="review-label">Full Name:</span>
+                <span class="review-value">{{ selectedParent.full_name }}</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Phone Number:</span>
+                <span class="review-value">{{
+                  selectedParent.phone_number
+                }}</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Address:</span>
+                <span class="review-value">{{ selectedParent.address }}</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Location:</span>
+                <span class="review-value"
+                  >{{ selectedParent.state }},
+                  {{ selectedParent.local_gov }}</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Student Personal Information Review -->
+          <div class="review-card">
+            <h3 class="review-title">Student Personal Information</h3>
+            <div class="review-grid">
+              <div class="review-item">
+                <span class="review-label">Full Name:</span>
+                <span class="review-value">{{
+                  registrationData.student.full_name
+                }}</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Date of Birth:</span>
+                <span class="review-value">{{
+                  formatDate(registrationData.student.dob)
+                }}</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Gender:</span>
+                <span class="review-value">{{
+                  registrationData.student.gender
+                }}</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Blood Group:</span>
+                <span class="review-value">{{
+                  registrationData.student.blood_group || "N/A"
+                }}</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Religion:</span>
+                <span class="review-value">{{
+                  registrationData.student.religion
+                }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Address Information Review -->
+          <div class="review-card">
+            <h3 class="review-title">Address Information</h3>
+            <div class="review-grid">
+              <div class="review-item">
+                <span class="review-label">Address:</span>
+                <span class="review-value">{{
+                  registrationData.student.address
+                }}</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">State:</span>
+                <span class="review-value">{{
+                  getStateName(registrationData.student.state)
+                }}</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Local Government:</span>
+                <span class="review-value">{{
+                  getLGAName(
+                    registrationData.student.state,
+                    registrationData.student.local_gov
+                  )
+                }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Academic Information Review -->
+          <div class="review-card">
+            <h3 class="review-title">Academic Information</h3>
+            <div class="review-grid">
+              <div class="review-item">
+                <span class="review-label">Admission Number:</span>
+                <span class="review-value">{{
+                  registrationData.student.admission_number
+                }}</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Status:</span>
+                <span class="review-value badge badge-success">Active</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Admitted Class:</span>
+                <span class="review-value">{{
+                  getClassName(registrationData.student.admitted_class)
+                }}</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Current Class:</span>
+                <span class="review-value">{{
+                  getClassName(registrationData.student.current_class_id)
+                }}</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Admitted Session:</span>
+                <span class="review-value">{{
+                  getSessionName(registrationData.student.admitted_session)
+                }}</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Current Session:</span>
+                <span class="review-value">{{
+                  getSessionName(registrationData.student.current_session_id)
+                }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subjects Review -->
+          <div class="review-card">
+            <h3 class="review-title">Assigned Subjects</h3>
+            <div
+              v-if="registrationData.subjects.length === 0"
+              class="no-subjects-review"
+            >
+              <i class="fa fa-exclamation-circle"></i>
+              <p>No subjects selected</p>
+            </div>
+            <div v-else class="subjects-review">
+              <div class="subjects-count">
+                <span class="count-label">Total Subjects:</span>
+                <span class="count-value">{{
+                  registrationData.subjects.length
+                }}</span>
+              </div>
+              <div class="subjects-list">
+                <span
+                  v-for="(subject, index) in getSelectedSubjectNames()"
+                  :key="index"
+                  class="subject-badge"
+                >
+                  {{ subject }}
+                </span>
+              
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <button type="button" class="btn btn-secondary" @click="previousStep">
+            <i class="fa fa-arrow-left"></i> Back
+          </button>
+          <button
+            type="button"
+            class="btn btn-success"
+            @click="registerStudent"
+            :disabled="loading"
+          >
             <span v-if="loading" class="spinner"></span>
             {{ loading ? "Registering..." : "Register Student" }}
           </button>
         </div>
       </div>
 
-      <!-- Step 4: Success -->
-      <div v-if="currentStep === 4" class="step-content success-step">
+      <!-- Step 5: Success -->
+      <div v-if="currentStep === 5" class="step-content success-step">
         <div class="success-icon">
           <i class="fa fa-check-circle"></i>
         </div>
@@ -380,27 +696,35 @@
             <span class="summary-label">Admission Number:</span>
             <span class="summary-value">{{
               registeredStudent?.admission_number
-              }}</span>
+            }}</span>
           </div>
           <div class="summary-item">
             <span class="summary-label">Class:</span>
             <span class="summary-value">{{
               getClassName(registeredStudent?.current_class_id)
-              }}</span>
+            }}</span>
           </div>
           <div class="summary-item">
             <span class="summary-label">Subjects Assigned:</span>
             <span class="summary-value">{{
               registrationData.subjects.length
-              }}</span>
+            }}</span>
           </div>
         </div>
 
         <div class="success-actions">
-          <button type="button" class="btn btn-secondary" @click="registerFreshStudent">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            @click="registerFreshStudent"
+          >
             <i class="fa fa-user-plus"></i> Register Fresh Student
           </button>
-          <button type="button" class="btn btn-primary" @click="registerWithSameParent">
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="registerWithSameParent"
+          >
             <i class="fa fa-users"></i> Register Another Child
           </button>
         </div>
@@ -424,7 +748,13 @@ const toast = useToast();
 
 // Stepper state
 const currentStep = ref(1);
-const stepLabels = ["Search Parent", "Student Info", "Assign Subjects", "Success"];
+const stepLabels = [
+  "Search Parent",
+  "Student Info",
+  "Assign Subjects",
+  "Review & Save",
+  "Success",
+];
 
 // Registration data
 const registrationData = ref({
@@ -443,7 +773,7 @@ const registrationData = ref({
     current_class_id: "",
     current_session_id: "",
     student_status: "active",
-    parent_id: ""
+    parent_id: "",
   },
   subjects: [], // Array of { current_class_id, school_subject_id, current_session_id }
 });
@@ -553,13 +883,16 @@ watch(
 const loadClassSubjects = (classId) => {
   loadingSubjects.value = true;
   apiServices
-    .getSubjectsByClassId(classId)
+    .getClassAssignedSubjectByClassId(classId)
     .then((response) => {
-      availableSubjects.value = response.data.data.subjects || [];
+      availableSubjects.value = response.data.data || [];
     })
     .catch((error) => {
       console.error("Error fetching subjects:", error);
-      toast.error("Failed to Load Subjects", "Could not load subjects for this class");
+      toast.error(
+        "Failed to Load Subjects",
+        "Could not load subjects for this class"
+      );
     })
     .finally(() => {
       loadingSubjects.value = false;
@@ -568,7 +901,9 @@ const loadClassSubjects = (classId) => {
 
 // Subject selection
 const isSubjectSelected = (subjectId) => {
-  return registrationData.value.subjects.some((s) => s.school_subject_id === subjectId);
+  return registrationData.value.subjects.some(
+    (s) => s.school_subject_id === subjectId
+  );
 };
 
 const toggleSubject = (subject) => {
@@ -601,17 +936,19 @@ const toggleAllSubjects = () => {
     registrationData.value.subjects = [];
   } else {
     // Select all - convert to StudentSubjectAssign format
-    registrationData.value.subjects = availableSubjects.value.map((subject) => ({
-      school_subject_id: subject.id,
-      current_class_id: registrationData.value.student.current_class_id,
-      current_session_id: registrationData.value.student.current_session_id,
-    }));
+    registrationData.value.subjects = availableSubjects.value.map(
+      (subject) => ({
+        school_subject_id: subject.id,
+        current_class_id: registrationData.value.student.current_class_id,
+        current_session_id: registrationData.value.student.current_session_id,
+      })
+    );
   }
 };
 
 // Navigation
 const nextStep = () => {
-  if (currentStep.value < 4) {
+  if (currentStep.value < 5) {
     currentStep.value++;
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -635,7 +972,58 @@ const goBack = () => {
   router.push("/students");
 };
 
+// Helper functions for review step
+const formatDate = (dateString) => {
+  if (!dateString) return "N/A";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
 
+const getStateName = (stateValue) => {
+  const state = states.value.find((s) => s.value === stateValue);
+  return state ? state.label : stateValue;
+};
+
+const getLGAName = (stateValue, lgaValue) => {
+  if (!stateValue || !lgaValue) return "N/A";
+  const lgas = nigerianLGs[stateValue] || [];
+  const lga = lgas.find((l) => l.value === lgaValue);
+  return lga ? lga.label : lgaValue;
+};
+
+const getClassName = (classId) => {
+  const classObj = allRowClasses.value.find((c) => c.id === classId);
+  return classObj?.class_name || "N/A";
+};
+
+const getSessionName = (sessionId) => {
+  const session = allRowSessions.value.find((s) => s.id === sessionId);
+  return session?.session_name || "N/A";
+};
+
+
+const getSelectedSubjectNames = () => {
+  return registrationData.value.subjects.map((subjectData) => {
+    const subject = availableSubjects.value.find(
+      (s) => s.id === subjectData.school_subject_id
+    );
+
+    // Handle different possible subject name locations
+    if (subject) {
+      if (subject.Subject && subject.Subject.subject_name) {
+        return subject.Subject.subject_name;
+      } else if (subject.subject_name) {
+        return subject.subject_name;
+      }
+    }
+
+    return `Subject ID: ${subjectData.school_subject_id}`;
+  });
+};
 
 // Registration
 const registerStudent = async () => {
@@ -660,49 +1048,18 @@ const registerStudent = async () => {
         "Student Registered Successfully",
         `${payload.student.full_name} has been registered successfully.`
       );
-      currentStep.value = 4;
+      currentStep.value = 5;
     }
   } catch (error) {
     console.error("Failed to Create Student:", error);
     toast.error(
       "Failed to Register Student",
       error.response?.data?.message ||
-      "An error occurred while registering the student. Please try again."
+        "An error occurred while registering the student. Please try again."
     );
   } finally {
     loading.value = false;
   }
-};
-
-const registerAnother = () => {
-  // Reset all data
-  registrationData.value = {
-    student: {
-      full_name: "",
-      dob: "",
-      gender: "",
-      blood_group: "",
-      religion: "",
-      address: "",
-      state: "",
-      local_gov: "",
-      admission_number: "",
-      admitted_class: "",
-      admitted_session: "",
-      current_class_id: "",
-      current_session_id: "",
-      student_status: "active",
-      parent_id: "",
-    },
-    subjects: [],
-  };
-  selectedParent.value = null;
-  registeredStudent.value = null;
-  parentSearchPhone.value = "";
-  parentSearchResults.value = [];
-  parentSearched.value = false;
-  currentStep.value = 1;
-  window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
 const registerFreshStudent = () => {
@@ -759,11 +1116,6 @@ const registerWithSameParent = () => {
   registeredStudent.value = null;
   currentStep.value = 2;
   window.scrollTo({ top: 0, behavior: "smooth" });
-};
-
-const getClassName = (classId) => {
-  const classObj = allRowClasses.value.find((c) => c.id === classId);
-  return classObj?.class_name || "N/A";
 };
 
 // Load initial data
@@ -1125,12 +1477,12 @@ onMounted(() => {
     background: white;
   }
 
-  input[type="checkbox"]:checked+.checkmark {
+  input[type="checkbox"]:checked + .checkmark {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-color: #667eea;
   }
 
-  input[type="checkbox"]:checked+.checkmark::after {
+  input[type="checkbox"]:checked + .checkmark::after {
     content: "";
     position: absolute;
     left: 6px;
@@ -1217,12 +1569,12 @@ onMounted(() => {
     border-color: #667eea;
   }
 
-  input[type="checkbox"]:checked+.subject-checkmark {
+  input[type="checkbox"]:checked + .subject-checkmark {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-color: #667eea;
   }
 
-  input[type="checkbox"]:checked+.subject-checkmark::after {
+  input[type="checkbox"]:checked + .subject-checkmark::after {
     content: "";
     position: absolute;
     left: 5px;
@@ -1261,6 +1613,120 @@ onMounted(() => {
     i {
       margin-right: 0.25rem;
     }
+  }
+}
+
+// Review Section Styles
+.review-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.review-card {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.review-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.review-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.review-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.review-value {
+  font-size: 0.938rem;
+  font-weight: 500;
+  color: #111827;
+  word-break: break-word;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &.badge-success {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
+}
+
+.no-subjects-review {
+  text-align: center;
+  padding: 1.5rem;
+  color: #6b7280;
+
+  i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #9ca3af;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.subjects-review {
+  .subjects-count {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+
+    .count-label {
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .count-value {
+      font-weight: 600;
+      color: #667eea;
+    }
+  }
+
+  .subjects-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .subject-badge {
+    background-color: #e0e7ff;
+    color: #3730a3;
+    padding: 0.375rem 0.75rem;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 500;
   }
 }
 
@@ -1354,6 +1820,10 @@ onMounted(() => {
   }
 
   .subjects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .review-grid {
     grid-template-columns: 1fr;
   }
 

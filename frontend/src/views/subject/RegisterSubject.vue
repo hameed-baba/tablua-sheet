@@ -41,7 +41,6 @@
         </button>
       </div>
     </vee-form>
-    <pre>{{ formData }}</pre>
   </BaseModal>
 </template>
 

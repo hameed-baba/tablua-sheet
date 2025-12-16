@@ -70,16 +70,6 @@ module.exports = {
         allowNull: true,
         defaultValue: null,
       },
-      ca_3_score: {
-        type: Sequelize.STRING,
-        allowNull: true,
-        defaultValue: null,
-      },
-      ca_4_score: {
-        type: Sequelize.STRING,
-        allowNull: true,
-        defaultValue: null,
-      },
       exam_score: {
         type: Sequelize.STRING,
         allowNull: true,

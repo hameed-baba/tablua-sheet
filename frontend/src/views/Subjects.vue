@@ -36,7 +36,9 @@
             <tr v-for="(subject, index) in allSubjects" :key="subject.id">
               <td>{{ index + 1 }}</td>
               <td>
-                {{ subject.subject_name }}
+                <strong>
+                  {{ subject.subject_name }}
+                </strong>
                 <div class="d-lg-none">
                   <small class="text-muted">
                     {{ subject.section_ids.length }} section{{

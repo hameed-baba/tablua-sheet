@@ -18,10 +18,10 @@ router.get(
 );
 
 router.get(
-  "/class/:classId",
+  "/class-assign-subject/:classId",
   authenticate,
   authorize("subject.read"),
-  schoolSubjectController.getSubjectsByClassId
+  schoolSubjectController.getClassAssignedSubjects
 );
 
 router.get(
@@ -35,9 +35,8 @@ router.get(
   "/class/:classId",
   authenticate,
   authorize("subject.read"),
-  schoolSubjectController.getSubjectsByClassId
+  schoolSubjectController.getStaffWithSubjectsByClassId
 );
-
 
 router.post(
   "/",

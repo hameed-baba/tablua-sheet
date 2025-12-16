@@ -11,25 +11,10 @@
       <!-- Sidebar Navigation -->
       <div class="config-sidebar">
         <nav class="config-nav">
-          <button
-            v-for="tab in configTabs"
-            :key="tab.id"
-            @click="activeTab = tab.id"
-            class="config-nav-item"
-            :class="{ active: activeTab === tab.id }"
-          >
-            <svg
-              class="config-nav-icon"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                :d="tab.icon"
-              />
+          <button v-for="tab in configTabs" :key="tab.id" @click="activeTab = tab.id" class="config-nav-item"
+            :class="{ active: activeTab === tab.id }">
+            <svg class="config-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="tab.icon" />
             </svg>
             <span>{{ tab.label }}</span>
           </button>
@@ -64,6 +49,13 @@
 
           <AllGrade />
         </div>
+
+        <!-- Notifications Settings -->
+        <div v-if="activeTab === 'caConfig'" class="config-section">
+          <h2 class="section-title">CA Config</h2>
+
+          <CaConfig />
+        </div>
       </div>
     </div>
   </div>
@@ -75,6 +67,7 @@ import AllSection from "./configuartion/sections/AllSection.vue";
 import AllSession from "./configuartion/sessions/AllSession.vue";
 import AllTerms from "./configuartion/terms/AllTerms.vue";
 import AllGrade from "./configuartion/grades/AllGrade.vue";
+import CaConfig from "./caConfig/CaConfig.vue";
 
 const activeTab = ref("sections");
 const isSaving = ref(false);
@@ -98,6 +91,11 @@ const configTabs = [
   {
     id: "notifications",
     label: "Grade Systems",
+    icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4",
+  },
+  {
+    id: "caConfig",
+    label: "CA Config",
     icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4",
   },
 ];
@@ -535,7 +533,8 @@ const clearAllData = async () => {
   /* Tabs layout on mobile */
   .config-nav {
     display: flex;
-    flex-wrap: wrap; /* allow wrapping to multiple rows */
+    flex-wrap: wrap;
+    /* allow wrapping to multiple rows */
     justify-content: flex-start;
     gap: 0.5rem;
     background: #f8fafc;
@@ -545,7 +544,8 @@ const clearAllData = async () => {
   }
 
   .config-nav-item {
-    flex: 1 1 48%; /* make two per row */
+    flex: 1 1 48%;
+    /* make two per row */
     text-align: center;
     justify-content: center;
     padding: 0.75rem;

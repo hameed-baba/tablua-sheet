@@ -132,8 +132,41 @@ export default {
   deleteSubject(id) {
     return apiClient.delete("/school-subjects/" + id);
   },
-  getSubjectsByClassId(classId) {
+  getClassAssignedSubjects(classId) {
+    return apiClient.get(`/school-subjects/class-assign-subject/${classId}`);
+  },
+  getStaffWithSubjectsByClassId(classId) {
     return apiClient.get(`/school-subjects/class/${classId}`);
+  },
+
+  // =================== CLASS SUBJECTS ASSIGN MANAGEMENT ===================
+  getAllClassSubjectsAssignments(page) {
+    return apiClient.get(`/class-subject-assigns/?page=${page}`);
+  },
+  createClassSubjectAssignment(data) {
+    return apiClient.post("/class-subject-assigns", data);
+  },
+  createBulkClassSubjectAssignment(data) {
+    // Uses the same endpoint but with bulk data structure
+    return apiClient.post("/class-subject-assigns", data);
+  },
+  getClassSubjectAssignmentById(id) {
+    return apiClient.get(`/class-subject-assigns/${id}`);
+  },
+  updateClassSubjectAssignment(id, data) {
+    return apiClient.put(`/class-subject-assigns/${id}`, data);
+  },
+  getClassAssignedSubject(classId) {
+    return apiClient.get(`/class-subject-assigns/class/${classId}`);
+  },
+  updateClassSubjectAssignment(id, data) {
+    return apiClient.put(`/class-subject-assigns/${id}`, data);
+  },
+  deleteClassSubjectAssignment(id) {
+    return apiClient.delete("/class-subject-assigns/" + id);
+  },
+  getClassAssignedSubjectByClassId(classId) {
+    return apiClient.get(`/class-subject-assigns/class/${classId}`);
   },
 
   // =================== PARENTS MANAGEMENT ===================
@@ -225,8 +258,25 @@ export default {
   deleteStudent(id) {
     return apiClient.delete("/students/" + id);
   },
+
+  // Student Management Methods
+  updateStudentStatus(studentId, data) {
+    return apiClient.put(`/students/${studentId}/status`, data);
+  },
+
+  promoteStudent(studentId, data) {
+    return apiClient.put(`/students/${studentId}/promote`, data);
+  },
+
+  bulkPromoteStudents(data) {
+    return apiClient.put('/students/bulk-promote', data);
+  },
+
+  getStudentsByStatus(status, params = {}) {
+    return apiClient.get(`/students/status/${status}`, { params });
+  },
   searchStudentsByQuery(params) {
-    return apiClient.get("/students/search/query", { params });
+    return apiClient.get("/students/search", { params });
   },
   getStudentSubjects(studentId) {
     return apiClient.get(`/students/${studentId}/subjects`);
@@ -234,11 +284,128 @@ export default {
   updateStudentSubjects(studentId, data) {
     return apiClient.put(`/students/${studentId}/subjects`, data);
   },
-  
+
   getStudents(params = {}) {
     return apiClient.get("/students/search/query", { params });
   },
   getStudentsByClassId(classId, params = {}) {
     return apiClient.get(`/students/class/${classId}`, { params });
+  },
+  getStudentAssignedSubjects(studentId, params = {}) {
+    return apiClient.get(`/students/${studentId}/subjects`, { params });
+  },
+
+  // ===================CA CONFIG MANAGEMENT ===================
+  getLatestCaConfig() {
+    return apiClient.get("/ca-configs/latest");
+  },
+  createCaConfig(data) {
+    return apiClient.post("/ca-configs", data);
+  },
+  updateCaConfig(id, data) {
+    return apiClient.put("/ca-configs/" + id, data);
+  },
+
+  // =================== STUDENT SUBJECT ASSIGN MARKS MANAGEMENT ===================
+
+  // Update CA1 score for a student's subject assignment
+  updateCA1Score(data) {
+    return apiClient.put("/student-subject-assigns/update-ca1-score", data);
+  },
+
+  // Update exam score for a student's subject assignment
+  updateExamScore(data) {
+    return apiClient.put("/student-subject-assigns/update-exam-score", data);
+  },
+
+  // Update both CA1 and exam scores in a single request
+  updateScores(data) {
+    return apiClient.put("/student-subject-assigns/update-scores", data);
+  },
+
+  // Get student subject assignment by identifiers
+  getByIdentifiers(params) {
+    return apiClient.get("/student-subject-assigns/by-identifiers", { params });
+  },
+
+  // Get CA and exam marks for a student's subject assignment
+  getMarks(params) {
+    return apiClient.get("/student-subject-assigns/marks", { params });
+  },
+
+  // Note: getClassCAScores and getClassExamScores removed - use getAssignedSubjectsByFilters instead
+
+  // Get all marks for a single student
+  getStudentMarks(studentId, params = {}) {
+    return apiClient.get(`/student-subject-assigns/student/${studentId}/marks`, { params });
+  },
+
+  // Get student assigned subjects by class, subject, session, and term
+  getAssignedSubjectsByFilters(params) {
+    return apiClient.get("/student-subject-assigns/assigned-subjects", { params });
+  },
+
+  // Get all student subjects with scores by session, term, and class
+  getAllStudentSubjectsWithScores(params) {
+    return apiClient.get("/student-subject-assigns/all-subjects-with-scores", { params });
+  },
+
+  // Get all student subject assignments
+  getAllStudentSubjectAssigns(params = {}) {
+    return apiClient.get("/student-subject-assigns", { params });
+  },
+
+  // Get student subject assignment by ID
+  getStudentSubjectAssignById(id) {
+    return apiClient.get(`/student-subject-assigns/${id}`);
+  },
+
+  // Create new student subject assignment
+  createStudentSubjectAssign(data) {
+    return apiClient.post("/student-subject-assigns", data);
+  },
+
+  // Update student subject assignment by ID
+  updateStudentSubjectAssign(id, data) {
+    return apiClient.put(`/student-subject-assigns/${id}`, data);
+  },
+
+  // Delete student subject assignment
+  deleteStudentSubjectAssign(id) {
+    return apiClient.delete(`/student-subject-assigns/${id}`);
+  },
+
+  // =================== STUDENT MANAGEMENT ===================
+  // Update student status
+  updateStudentStatus(studentId, status) {
+    return apiClient.put(`/students/${studentId}/status`, { student_status: status });
+  },
+
+  // Promote single student
+  promoteStudent(studentId, data) {
+    return apiClient.put(`/students/${studentId}/promote`, data);
+  },
+
+  // Bulk promote students
+  bulkPromoteStudents(data) {
+    return apiClient.put("/students/bulk-promote", data);
+  },
+
+  // Get students by status
+  getStudentsByStatus(status, params = {}) {
+    return apiClient.get(`/students/status/${status}`, { params });
+  },
+
+  // =================== PDF GENERATION ===================
+  generatePdfMakeReport(data) {
+    return apiClient.post("/pdf/generate-pdfmake", data, {
+      responseType: 'blob'
+    });
+  },
+  generateModernPdfMakeReport(data) {
+    return apiClient.post("/pdf/generate-modern-pdfmake", data, {
+      responseType: 'blob'
+    });
   }
+
 };

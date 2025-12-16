@@ -7,36 +7,15 @@
       </div>
       <div class="header-actions">
         <button class="btn-secondary" @click="$router.push('/students/search')">
-          <svg
-            width="18"
-            height="18"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           Advanced Search
         </button>
         <button class="add-btn" @click="openModal">
-          <svg
-            width="20"
-            height="20"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            />
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
           Add New Student
         </button>
@@ -49,11 +28,7 @@
         <label>Class:</label>
         <select v-model="quickFilters.class" @change="loadStudents(1)" class="quick-filter-select">
           <option value="">All Classes</option>
-          <option
-            v-for="(sClass, index) in allRowClasses"
-            :key="index"
-            :value="sClass.id"
-          >
+          <option v-for="(sClass, index) in allRowClasses" :key="index" :value="sClass.id">
             {{ sClass.class_name }}
           </option>
         </select>
@@ -66,24 +41,9 @@
           <option value="female">Female</option>
         </select>
       </div>
-      <button
-        v-if="hasQuickFilters"
-        class="btn-clear-filters"
-        @click="clearQuickFilters"
-      >
-        <svg
-          width="16"
-          height="16"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
+      <button v-if="hasQuickFilters" class="btn-clear-filters" @click="clearQuickFilters">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
         Clear Filters
       </button>
@@ -93,47 +53,17 @@
       <div class="table-header">
         <h2 class="table-title">All Students</h2>
         <div class="search-container">
-          <input
-            type="text"
-            class="search-box"
-            placeholder="Search students..."
-            v-model="searchTerm"
-            @keyup.enter="searchStudents(searchTerm)"
-          />
+          <input type="text" class="search-box" placeholder="Search students..." v-model="searchTerm"
+            @keyup.enter="searchStudents(searchTerm)" />
           <button class="search-btn" @click="searchStudents(searchTerm)">
-            <svg
-              width="18"
-              height="18"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </button>
-          <button
-            v-if="hasSearched"
-            class="btn-clear-filters"
-            @click="clearSearch"
-          >
-            <svg
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
+          <button v-if="hasSearched" class="btn-clear-filters" @click="clearSearch">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
             Clear Filters
           </button>
@@ -161,10 +91,8 @@
               <td>
                 <strong>{{ student.full_name }}</strong>
                 <div class="d-md-none">
-                  <small class="text-muted"
-                    >{{ student.admission_number }} •
-                    {{ student.Class?.class_name }}</small
-                  >
+                  <small class="text-muted">{{ student.admission_number }} •
+                    {{ student.Class?.class_name }}</small>
                 </div>
               </td>
               <td class="d-none d-md-table-cell">
@@ -180,9 +108,7 @@
                 {{ student.Parent?.full_name }}
               </td>
               <td>
-                <span
-                  :class="['status-badge', `status-${student.student_status}`]"
-                >
+                <span :class="['status-badge', `status-${student.student_status}`]">
                   {{ student.student_status }}
                 </span>
               </td>
@@ -190,10 +116,7 @@
                 <button class="action-btn edit" @click="editStudent(student)">
                   Edit
                 </button>
-                <button
-                  class="action-btn delete"
-                  @click="deleteStudentConfirm(student)"
-                >
+                <button class="action-btn delete" @click="deleteStudentConfirm(student)">
                   Delete
                 </button>
               </td>
@@ -202,24 +125,13 @@
         </table>
       </div>
       <div class="ps-5 pe-5">
-        <Pagination
-          v-if="pagination.totalPages > 0"
-          :currentPage="pagination.currentPage"
-          :totalPages="pagination.totalPages"
-          :totalCount="pagination.totalCount"
-          :limit="pagination.limit"
-          :hasNextPage="pagination.hasNextPage"
-          :hasPrevPage="pagination.hasPrevPage"
-          @page-change="handlePageChange"
-        />
+        <Pagination v-if="pagination.totalPages > 0" :currentPage="pagination.currentPage"
+          :totalPages="pagination.totalPages" :totalCount="pagination.totalCount" :limit="pagination.limit"
+          :hasNextPage="pagination.hasNextPage" :hasPrevPage="pagination.hasPrevPage" @page-change="handlePageChange" />
       </div>
     </div>
   </div>
-  <ConfirmDeleteModal
-    :show="showDeleteModal"
-    @confirm="deleteStudent"
-    @cancel="showDeleteModal = false"
-  />
+  <ConfirmDeleteModal :show="showDeleteModal" @confirm="deleteStudent" @cancel="showDeleteModal = false" />
 </template>
 
 <script setup>
@@ -284,7 +196,10 @@ const openModal = () => {
 };
 
 const editStudent = (student) => {
-  router.push(`/students/update/${student.id}`);
+  router.push({
+    path: `/students/update/${student.id}`,
+    query: { from: 'students' }
+  });
 };
 
 const deleteStudentConfirm = (student) => {
@@ -310,7 +225,7 @@ const deleteStudent = () => {
       toast.error(
         "Failed to Delete Student",
         err.response?.data?.message ||
-          `An error occurred while deleting the student`
+        `An error occurred while deleting the student`
       );
     })
     .finally(() => {
@@ -439,16 +354,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.status-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: capitalize;
-  display: inline-block;
-  white-space: nowrap;
-}
-
 /* Active - Green */
 .status-active {
   background-color: #d1fae5;

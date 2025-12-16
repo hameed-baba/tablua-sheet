@@ -47,8 +47,6 @@ module.exports = (sequelize, DataTypes) => {
       current_term_id: DataTypes.INTEGER,
       ca_1_score: DataTypes.STRING,
       ca_2_score: DataTypes.STRING,
-      ca_3_score: DataTypes.STRING,
-      ca_4_score: DataTypes.STRING,
       exam_score: DataTypes.STRING,
     },
     {

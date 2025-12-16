@@ -35,6 +35,7 @@ router.get(
   schoolClassController.getById
 );
 
+
 router.post(
   "/",
   authenticate,

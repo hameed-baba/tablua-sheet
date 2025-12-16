@@ -316,23 +316,61 @@ const schemas = {
   },
 
   classSubjectAssignCreation: {
-    schoolClassId: {
+    school_class_id: {
       type: "number",
       integer: true,
       positive: true,
       required: true,
     },
-    schoolSubjectId: {
+    school_subject_id: {
       type: "number",
       integer: true,
       positive: true,
       required: true,
     },
-    schoolStaffId: {
+    school_staff_id: {
       type: "number",
       integer: true,
       positive: true,
       required: true,
+    },
+  },
+
+  // New schema for bulk assignments
+  classSubjectAssignBulkCreation: {
+    assignments: {
+      type: "array",
+      required: true,
+      min: 1,
+      items: {
+        type: "object",
+        properties: {
+          school_class_id: {
+            type: "number",
+            integer: true,
+            positive: true,
+            required: true,
+          },
+          school_subject_id: {
+            type: "number",
+            integer: true,
+            positive: true,
+            required: true,
+          },
+          school_staff_id: {
+            type: "number",
+            integer: true,
+            positive: true,
+            required: true,
+          },
+        },
+      },
+    },
+    school_class_id: {
+      type: "number",
+      integer: true,
+      positive: true,
+      required: false, // Optional for bulk operations
     },
   },
 

@@ -12,6 +12,8 @@ const schoolSubjectController = require("./schoolSubjectController");
 const gradeListController = require("./gradeListController");
 const parentController = require("./parentController");
 const schoolClassController = require("./schoolClasesController");
+const classSubjectAssignController = require("./classSubjectAssignController");
+const studentSubjectAssignController = require("./studentSubjectAssignController");
 // Import base controller for other simple CRUD operations
 const BaseController = require("./baseController");
 
@@ -31,15 +33,15 @@ const {
 } = require("../models");
 
 // Create simple controllers using BaseController
-const classSubjectAssignController = new BaseController(
-  ClassSubjectAssign,
-  "ClassSubjectAssign",
-  [
-    { model: require("../models").SchoolClass, as: "Class" },
-    { model: require("../models").SchoolSubject, as: "Subject" },
-    { model: require("../models").SchoolStaff, as: "Staff" },
-  ]
-);
+// const classSubjectAssignController = new BaseController(
+//   ClassSubjectAssign,
+//   "ClassSubjectAssign",
+//   [
+//     { model: require("../models").SchoolClass, as: "Class" },
+//     { model: require("../models").SchoolSubject, as: "Subject" },
+//     { model: require("../models").SchoolStaff, as: "Staff" },
+//   ]
+// );
 
 // const parentController = new BaseController(Parent, "Parent", [
 //   { model: require("../models").SchoolStudent, as: "Students" },
@@ -65,6 +67,7 @@ module.exports = {
   schoolStudentController,
   classMasterController,
   classSubjectAssignController,
+  studentSubjectAssignController,
   gradeListController,
   parentController,
   permissionController,

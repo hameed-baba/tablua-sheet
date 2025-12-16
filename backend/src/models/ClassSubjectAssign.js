@@ -12,15 +12,15 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       ClassSubjectAssign.belongsTo(models.SchoolClass, {
-        foreignKey: 'schoolClassId',
+        foreignKey: 'school_class_id',
         as: 'Class'
       });
       ClassSubjectAssign.belongsTo(models.SchoolSubject, {
-        foreignKey: 'schoolSubjectId',
+        foreignKey: 'school_subject_id',
         as: 'Subject'
       });
       ClassSubjectAssign.belongsTo(models.SchoolStaff, {
-        foreignKey: 'schoolStaffId',
+        foreignKey: 'school_staff_id',
         as: 'Staff'
       });
     }
@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    schoolClassId: {
+    school_class_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id'
       }
     },
-    schoolSubjectId: {
+    school_subject_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -48,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id'
       }
     },
-    schoolStaffId: {
+    school_staff_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {

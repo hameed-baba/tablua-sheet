@@ -79,6 +79,16 @@ const router = createRouter({
           },
         },
         {
+          path: '/students/management',
+          name: 'student-management',
+          component: () => import('../views/StudentManagement.vue'),
+          meta: {
+            requiresAuth: true,
+            title: "Student Management",
+            description: "Manage student status and class promotions.",
+          },
+        },
+        {
           path: "/staff",
           name: "staff",
           component: () => import("../views/Staff.vue"),
@@ -182,7 +192,7 @@ const router = createRouter({
         {
           path: "/add-marks",
           name: "add-marks",
-          component: () => import("../views/AddMarks.vue"),
+          component: () => import("../views/eaxm/AddMarks.vue"),
           meta: {
             requiresAuth: true,
             title: "Add Marks",
@@ -192,7 +202,7 @@ const router = createRouter({
         {
           path: "/broadsheet",
           name: "broadsheet",
-          component: () => import("../views/Broadsheet.vue"),
+          component: () => import("../views/eaxm/Broadsheet.vue"),
           meta: {
             requiresAuth: true,
             title: "Broadsheet",
@@ -212,7 +222,7 @@ const router = createRouter({
         {
           path: "/report-card",
           name: "report-card",
-          component: () => import("../views/ReportCard.vue"),
+          component: () => import("../views/eaxm/ReportCard.vue"),
           meta: {
             requiresAuth: true,
             title: "Report Card",

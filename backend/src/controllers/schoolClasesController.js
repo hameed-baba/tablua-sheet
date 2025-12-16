@@ -18,10 +18,12 @@ class SchoolTermController extends BaseController {
   }
 
   getAllRowClases = asyncHandler(async (req, res) => {
-    const classes = await SchoolClass.findAll();
+    const classes = await SchoolClass.findAll({
+      order: [['class_name', 'ASC']]
+    });
 
-    if (!classes) {
-      res.json({
+    if (!classes || classes.length === 0) {
+      return res.status(404).json({  // Use return to prevent double response
         status: "failed",
         message: "No class found",
       });
@@ -35,3 +37,5 @@ class SchoolTermController extends BaseController {
 }
 
 module.exports = new SchoolTermController();
+
+
