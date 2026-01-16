@@ -240,8 +240,8 @@ export default {
   },
 
   // =================== STUDENT SUBJECTS MANAGEMENT ===================
-  getActivSessionStudents(page = 1) {
-    return apiClient.get(`/students/session?page=${page}`);
+  getActivSessionStudents(params = {}) {
+    return apiClient.get("/students/session", { params });
   },
   searchActiveSessionStudents(search) {
     return apiClient.get(`/students/session?search=${search}`);
@@ -269,7 +269,7 @@ export default {
   },
 
   bulkPromoteStudents(data) {
-    return apiClient.put('/students/bulk-promote', data);
+    return apiClient.put("/students/bulk-promote", data);
   },
 
   getStudentsByStatus(status, params = {}) {
@@ -286,7 +286,7 @@ export default {
   },
 
   getStudents(params = {}) {
-    return apiClient.get("/students/search/query", { params });
+    return apiClient.get("/students/search", { params });
   },
   getStudentsByClassId(classId, params = {}) {
     return apiClient.get(`/students/class/${classId}`, { params });
@@ -337,17 +337,30 @@ export default {
 
   // Get all marks for a single student
   getStudentMarks(studentId, params = {}) {
-    return apiClient.get(`/student-subject-assigns/student/${studentId}/marks`, { params });
+    return apiClient.get(
+      `/student-subject-assigns/student/${studentId}/marks`,
+      { params }
+    );
   },
 
   // Get student assigned subjects by class, subject, session, and term
   getAssignedSubjectsByFilters(params) {
-    return apiClient.get("/student-subject-assigns/assigned-subjects", { params });
+    return apiClient.get("/student-subject-assigns/assigned-subjects", {
+      params,
+    });
+  },
+
+  getAssignedSubjects(current_class_id, current_session_id, current_term_id) {
+    return apiClient.get(
+      `/student-subject-assigns/assigned-subjects-2?current_class_id=${current_class_id}&current_session_id=${current_session_id}&current_term_id=${current_term_id}`
+    );
   },
 
   // Get all student subjects with scores by session, term, and class
   getAllStudentSubjectsWithScores(params) {
-    return apiClient.get("/student-subject-assigns/all-subjects-with-scores", { params });
+    return apiClient.get("/student-subject-assigns/all-subjects-with-scores", {
+      params,
+    });
   },
 
   // Get all student subject assignments
@@ -378,7 +391,9 @@ export default {
   // =================== STUDENT MANAGEMENT ===================
   // Update student status
   updateStudentStatus(studentId, status) {
-    return apiClient.put(`/students/${studentId}/status`, { student_status: status });
+    return apiClient.put(`/students/${studentId}/status`, {
+      student_status: status,
+    });
   },
 
   // Promote single student
@@ -399,13 +414,73 @@ export default {
   // =================== PDF GENERATION ===================
   generatePdfMakeReport(data) {
     return apiClient.post("/pdf/generate-pdfmake", data, {
-      responseType: 'blob'
+      responseType: "blob",
     });
   },
-  generateModernPdfMakeReport(data) {
-    return apiClient.post("/pdf/generate-modern-pdfmake", data, {
-      responseType: 'blob'
-    });
-  }
 
+  // Chart APIs
+  getDashboardStats() {
+    return apiClient.get("/charts/dashboard-stats");
+  },
+  getEnrollmentTrends(params = {}) {
+    return apiClient.get("/charts/enrollment-trends", { params });
+  },
+  getClassDistribution() {
+    return apiClient.get("/charts/class-distribution");
+  },
+  getStudentStatusDistribution() {
+    return apiClient.get("/charts/student-status");
+  },
+  getSubjectPerformance(params = {}) {
+    return apiClient.get("/charts/subject-performance", { params });
+  },
+  getAgeDistribution() {
+    return apiClient.get("/charts/age-distribution");
+  },
+
+  // =================== STAFF ACTIVITY ===================
+  getStaffActivityStatus() {
+    return apiClient.get("/staff-activity/status");
+  },
+  getStaffSessions(staffId = null, params = {}) {
+    const url = staffId
+      ? `/staff-activity/sessions/${staffId}`
+      : "/staff-activity/sessions";
+    return apiClient.get(url, { params });
+  },
+  recordLogin(data) {
+    return apiClient.post("/staff-activity/login", data);
+  },
+  recordLogout(data) {
+    return apiClient.post("/staff-activity/logout", data);
+  },
+  cleanupStaleSessions() {
+    return apiClient.post("/staff-activity/cleanup");
+  },
+
+  // =================== DASHBOARD ===================
+  getDashboardStats() {
+    return apiClient.get("/dashboard/stats");
+  },
+  getDashboardOverview() {
+    return apiClient.get("/dashboard/overview");
+  },
+  getSessionInfo() {
+    return apiClient.get("/dashboard/session-info");
+  },
+
+  // =================== PDF ===================
+  // generatePdfMakeReport2() {
+  //   return apiClient.get("/pdf/generate-pdfmake-2", {
+  //     responseType: "blob",
+  //   });
+  // },
+
+  generatePdfMakeReport2(studentsData) {
+    return apiClient.post(
+      "/pdf/generate-pdfmake-2",
+      studentsData,
+      { responseType: "blob" } // important to get PDF
+    );
+  },
 };

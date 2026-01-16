@@ -3,11 +3,13 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { useLoginStore } from "./store/loginStore";
+import sessionManager from "./utils/sessionManager";
 
 const loginStore = useLoginStore();
 const res = ref(null);
+
 onMounted(() => {
   const authUser = localStorage.getItem("tebulasheet_active_user");
 
@@ -26,6 +28,11 @@ onMounted(() => {
       });
     }
   }
+});
+
+onUnmounted(() => {
+  // Clean up session manager when app is destroyed
+  sessionManager.destroy();
 });
 </script>
 

@@ -28,7 +28,8 @@ const { GradeList, GradeSystem } = require("../models");
 // });
 
 const createGradeList = asyncHandler(async (req, res) => {
-  const { grade_name, grade_type, gradeSystems } = req.body;
+  const { grade_name, grade_type, allow_grade, allow_remark, gradeSystems } =
+    req.body;
 
   const existing = await GradeList.findOne({ where: { grade_name } });
   if (existing) {
@@ -43,6 +44,8 @@ const createGradeList = asyncHandler(async (req, res) => {
     {
       grade_name,
       grade_type,
+      allow_grade,
+      allow_remark,
       gradeSystems: gradeSystems || [], // Include grade systems from payload
     },
     {

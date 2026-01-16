@@ -39,6 +39,18 @@
                 {{ searchingParent ? "Searching..." : "Search" }}
               </button>
             </div>
+            
+            <!-- Alternative: Register New Parent -->
+            <div class="alternative-action">
+              <span class="alternative-text">Don't have the parent's phone number?</span>
+              <button
+                type="button"
+                class="btn-link register-new-parent"
+                @click="openParentRegistrationModal"
+              >
+                <i class="fa fa-user-plus"></i> Register New Parent
+              </button>
+            </div>
           </div>
 
           <!-- Search Results -->
@@ -88,6 +100,13 @@
             <p class="hint">
               Please register the parent first or try a different phone number.
             </p>
+            <button
+              type="button"
+              class="btn btn-primary register-parent-btn"
+              @click="openParentRegistrationModal"
+            >
+              <i class="fa fa-user-plus"></i> Register New Parent
+            </button>
           </div>
 
           <!-- Selected Parent Display -->
@@ -129,6 +148,12 @@
           </button>
         </div>
       </div>
+
+      <!-- Parent Registration Modal -->
+      <RegisterParentModal
+        ref="parentRegistrationModal"
+        @parent-registered="onParentRegistered"
+      />
 
       <!-- Step 2: Student Registration Form -->
       <div v-if="currentStep === 2" class="step-content">
@@ -464,11 +489,11 @@
               v-for="subject in availableSubjects"
               :key="subject.id"
               class="subject-card"
-              :class="{ selected: isSubjectSelected(subject.id) }"
+              :class="{ selected: isSubjectSelected(subject.school_subject_id) }"
             >
               <input
                 type="checkbox"
-                :checked="isSubjectSelected(subject.id)"
+                :checked="isSubjectSelected(subject.school_subject_id)"
                 @change="toggleSubject(subject)"
               />
               <span class="subject-checkmark"></span>
@@ -742,6 +767,7 @@ import nigerianStates from "../../data/nigerianStates";
 import nigerianLGs from "../../data/nigerianLGs";
 import apiServices from "../../services/apiServices";
 import StepperIndicator from "../../components/public/StepperIndicator.vue";
+import RegisterParentModal from "./RegisterParentModal.vue";
 
 const router = useRouter();
 const toast = useToast();
@@ -796,6 +822,9 @@ const allRowSessions = ref([]);
 const allRowClasses = ref([]);
 const availableSubjects = ref([]);
 const loadingSubjects = ref(false);
+
+// Parent registration modal
+const parentRegistrationModal = ref(null);
 
 // Form validation
 const formValidation = yup.object({
@@ -856,6 +885,28 @@ const clearParentSelection = () => {
   }
 };
 
+// Parent registration functions
+const openParentRegistrationModal = () => {
+  if (parentRegistrationModal.value) {
+    parentRegistrationModal.value.openModal(parentSearchPhone.value);
+  }
+};
+
+const onParentRegistered = (newParent) => {
+  // Select the newly registered parent
+  selectedParent.value = newParent;
+  registrationData.value.student.parent_id = newParent.id;
+  
+  // Clear search results and show success
+  parentSearchResults.value = [];
+  parentSearched.value = false;
+  
+  toast.success(
+    "Parent Registered Successfully",
+    `${newParent.full_name} has been registered and selected.`
+  );
+};
+
 // Form functions
 const onStateChange = () => {
   registrationData.value.student.local_gov = "";
@@ -908,14 +959,14 @@ const isSubjectSelected = (subjectId) => {
 
 const toggleSubject = (subject) => {
   const index = registrationData.value.subjects.findIndex(
-    (s) => s.school_subject_id === subject.id
+    (s) => s.school_subject_id === subject.school_subject_id
   );
   if (index > -1) {
     registrationData.value.subjects.splice(index, 1);
   } else {
     // Add subject in StudentSubjectAssign format
     registrationData.value.subjects.push({
-      school_subject_id: subject.id,
+      school_subject_id: subject.school_subject_id,
       current_class_id: registrationData.value.student.current_class_id,
       current_session_id: registrationData.value.student.current_session_id,
     });
@@ -926,7 +977,7 @@ const toggleSubject = (subject) => {
 const areAllSubjectsSelected = computed(() => {
   if (availableSubjects.value.length === 0) return false;
   return availableSubjects.value.every((subject) =>
-    isSubjectSelected(subject.id)
+    isSubjectSelected(subject.school_subject_id)
   );
 });
 
@@ -938,7 +989,7 @@ const toggleAllSubjects = () => {
     // Select all - convert to StudentSubjectAssign format
     registrationData.value.subjects = availableSubjects.value.map(
       (subject) => ({
-        school_subject_id: subject.id,
+        school_subject_id: subject.school_subject_id,
         current_class_id: registrationData.value.student.current_class_id,
         current_session_id: registrationData.value.student.current_session_id,
       })
@@ -1009,7 +1060,7 @@ const getSessionName = (sessionId) => {
 const getSelectedSubjectNames = () => {
   return registrationData.value.subjects.map((subjectData) => {
     const subject = availableSubjects.value.find(
-      (s) => s.id === subjectData.school_subject_id
+      (s) => s.school_subject_id === subjectData.school_subject_id
     );
 
     // Handle different possible subject name locations
@@ -1220,6 +1271,44 @@ onMounted(() => {
   margin-bottom: 1.5rem;
 }
 
+.alternative-action {
+  margin-top: 1rem;
+  text-align: center;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+
+  .alternative-text {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-right: 0.5rem;
+  }
+
+  .register-new-parent {
+    background: none;
+    border: none;
+    color: #10b981;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+
+    &:hover {
+      color: #059669;
+      text-decoration: underline;
+    }
+
+    i {
+      font-size: 0.75rem;
+    }
+  }
+}
+
 .search-wrapper {
   display: flex;
   gap: 0.75rem;
@@ -1367,6 +1456,33 @@ onMounted(() => {
   .hint {
     font-size: 0.875rem;
     color: #b45309;
+    margin-bottom: 1.5rem;
+  }
+
+  .register-parent-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    &:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    i {
+      font-size: 14px;
+      margin: 0;
+    }
   }
 }
 

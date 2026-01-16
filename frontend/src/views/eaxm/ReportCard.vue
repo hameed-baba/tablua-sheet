@@ -6,11 +6,8 @@
         <p>Generate report cards for all students in a class</p>
       </div>
       <div class="header-actions">
-        <button
-          class="add-btn puppeteer-btn"
-          @click="exportClassicPDF"
-          :disabled="!reportGenerated || isGeneratingPDF"
-        >
+        <button class="add-btn puppeteer-btn" @click="generatePdf">
+          <!-- :disabled="!reportGenerated || isGeneratingPDF" -->
           <svg
             width="18"
             height="18"
@@ -25,45 +22,8 @@
               d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 712-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          {{ isGeneratingPDF ? 'Generating...' : 'Classic PDF' }}
+          {{ isGeneratingPDF ? "Generating..." : "Classic PDF" }}
         </button>
-        <button
-          class="add-btn html2canvas-btn"
-          @click="exportModernPDF"
-          :disabled="!reportGenerated || isGeneratingPDF"
-        >
-          <svg
-            width="18"
-            height="18"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"
-            />
-          </svg>
-          {{ isGeneratingPDF ? 'Generating...' : 'Modern PDF' }}
-        </button>
-
-          <svg
-            width="18"
-            height="18"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-
         <button
           class="add-btn secondary"
           @click="printReport"
@@ -128,7 +88,7 @@
         </select>
       </div>
 
-      <button class="search-btn" @click="generateReport">
+      <button class="search-btn" @click="getAssignedSubjects">
         <svg
           width="16"
           height="16"
@@ -152,27 +112,23 @@
       <div class="style-selector-container">
         <label class="style-label">Report Card Style:</label>
         <div class="style-options">
-          <button 
+          <button
             @click="selectedStyle = 'classic'"
             :class="['style-btn', { active: selectedStyle === 'classic' }]"
           >
             <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+              <path
+                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"
+              />
             </svg>
-            Classic Style
-          </button>
-          <button 
-            @click="selectedStyle = 'modern'"
-            :class="['style-btn', { active: selectedStyle === 'modern' }]"
-          >
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-            Modern Style
+            Report Card Style
           </button>
         </div>
       </div>
     </div>
+
+      <pre>{{ freshData }}</pre>
+
 
     <!-- Search Section -->
     <div v-if="reportGenerated" class="search-section">
@@ -228,6 +184,7 @@
           <span v-else> Showing all {{ allReportData.length }} students </span>
         </div>
       </div>
+      <pre>{{ freshData }}</pre>
     </div>
 
     <!-- No Search Results -->
@@ -264,196 +221,140 @@
       <div
         v-for="(reportData, index) in filteredReportData"
         :key="index"
-        :class="['report-card', `report-card-${selectedStyle}`]"
+        :class="'report-card'"
         :id="`report-card-${index}`"
       >
-        <!-- School Header -->
-        <div class="school-header">
-          <div class="school-logo">
-            <div class="logo-badge">
-              <svg
-                width="50"
-                height="50"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"
-                />
-              </svg>
-            </div>
-          </div>
-          <div class="school-info">
-            <h1>{{ configStore.schoolName }}</h1>
-            <p>
-              {{ configStore.schoolAddress || "School Address, City, State" }}
-            </p>
-            <p>Tel: +234 XXX XXX XXXX | Email: info@school.com</p>
-          </div>
+        <!-- Individual Student Download Button -->
+        <div class="student-download-section">
+          <button
+            class="student-download-btn"
+            @click="downloadIndividualReport(reportData, index)"
+            :disabled="isGeneratingPDF"
+          >
+            <svg
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 712-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            {{ isGeneratingPDF ? "Generating..." : "Download Report" }}
+          </button>
         </div>
 
-        <div class="report-title">
-          <h2>STUDENT REPORT CARD</h2>
-          <div class="session-term">
-            {{ selectedTermName }} • {{ selectedSessionName }}
-          </div>
+        <!-- Print Button -->
+        <div class="print-button-section">
+          <button class="print-btn" @click="printReport">Print</button>
         </div>
 
-        <!-- Student Details -->
-        <div class="student-details">
-          <div class="detail-row">
-            <div class="detail-item">
-              <span class="label">Name:</span>
-              <span class="value">{{ reportData.student.name }}</span>
+        <!-- Main Report Content -->
+        <div class="report-content">
+          <!-- Header Section with Student Data and Academic Data -->
+          <div class="report-header-section">
+            <!-- Student Data Section -->
+            <div class="student-data-section">
+              <div class="section-header">STUDENT DATA</div>
+              <table class="data-table">
+                <tr>
+                  <td class="label-cell">STUDENT NAME</td>
+                  <td class="value-cell">{{ reportData.student.name }}</td>
+                </tr>
+                <tr>
+                  <td class="label-cell">DATE OF BIRTH</td>
+                  <td class="value-cell">07/11/1997</td>
+                </tr>
+                <tr>
+                  <td class="label-cell">GENDER</td>
+                  <td class="value-cell">
+                    {{ reportData.student.gender || "Female" }}
+                  </td>
+                </tr>
+              </table>
             </div>
-            <div class="detail-item">
-              <span class="label">Admission No:</span>
-              <span class="value">{{ reportData.student.admissionNo }}</span>
+
+            <!-- Academic Data Section -->
+            <div class="academic-data-section">
+              <div class="section-header">ACADEMIC DATA</div>
+              <table class="data-table">
+                <tr>
+                  <td class="label-cell">ADMISSION NUMBER</td>
+                  <td class="value-cell">
+                    {{ reportData.student.admissionNo }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="label-cell">CURRENT CLASS</td>
+                  <td class="value-cell">{{ reportData.student.class }}</td>
+                </tr>
+                <tr>
+                  <td class="label-cell">CURRENT TERM</td>
+                  <td class="value-cell">{{ selectedTermName }}</td>
+                </tr>
+                <tr>
+                  <td class="label-cell">CURRENT SESSION</td>
+                  <td class="value-cell">{{ selectedSessionName }}</td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- Position Section -->
+            <div class="position-section">
+              <div class="section-header">POSITION</div>
+              <div class="position-number">{{ reportData.position }}</div>
             </div>
           </div>
-          <div class="detail-row">
-            <div class="detail-item">
-              <span class="label">Class:</span>
-              <span class="value">{{ reportData.student.class }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="label">Position:</span>
-              <span class="value position-highlight"
-                >{{ reportData.position }} of
-                {{ reportData.totalStudents }}</span
-              >
-            </div>
+
+          <!-- Academic Results Table -->
+          <div class="academic-results-section">
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th class="sn-col">SN</th>
+                  <th class="subject-col">SUBJECT NAME</th>
+                  <th class="score-col">CA</th>
+                  <th class="score-col">EXAM</th>
+                  <th class="score-col">TOTAL MARKS</th>
+                  <th class="remark-col">REMARK</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(subject, subjectIndex) in reportData.subjects"
+                  :key="subject.name"
+                >
+                  <td class="sn-cell">{{ subjectIndex + 1 }}</td>
+                  <td class="subject-name">{{ subject.name }}</td>
+                  <td class="score-cell">{{ subject.ca }}</td>
+                  <td class="score-cell">{{ subject.exam }}</td>
+                  <td class="total-cell" :class="getScoreClass(subject.total)">
+                    {{ subject.total }}
+                  </td>
+                  <td class="remark-cell">{{ subject.remark }}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-        </div>
 
-        <!-- Academic Results -->
-        <div class="academic-section">
-          <h3>Academic Performance</h3>
-          <table class="results-table">
-            <thead>
-              <tr>
-                <th class="subject-col">Subject</th>
-                <th class="score-col">CA<br /><small>(30)</small></th>
-                <th class="score-col">Exam<br /><small>(70)</small></th>
-                <th class="score-col">Total<br /><small>(100)</small></th>
-                <th class="grade-col">Grade</th>
-                <th class="remark-col">Remark</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="subject in reportData.subjects" :key="subject.name">
-                <td class="subject-name">{{ subject.name }}</td>
-                <td class="score">{{ subject.ca }}</td>
-                <td class="score">{{ subject.exam }}</td>
-                <td class="total-score">{{ subject.total }}</td>
-                <td class="grade" :class="`grade-${subject.grade}`">
-                  {{ subject.grade }}
-                </td>
-                <td class="remark">{{ subject.remark }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Summary -->
-        <div class="summary-section">
-          <div class="summary-grid">
+          <!-- Summary Section -->
+          <div class="summary-footer">
             <div class="summary-item">
-              <span class="summary-label">Total Marks:</span>
-              <span class="summary-value"
-                >{{ reportData.totalMarks }}/{{ reportData.maxMarks }}</span
-              >
+              <div class="summary-header">TOTAL MARKS</div>
+              <div class="summary-value">{{ reportData.totalMarks }}</div>
             </div>
             <div class="summary-item">
-              <span class="summary-label">Average:</span>
-              <span class="summary-value"
-                >{{ reportData.average.toFixed(1) }}%</span
-              >
-            </div>
-            <div class="summary-item">
-              <span class="summary-label">Class Position:</span>
-              <span class="summary-value"
-                >{{ reportData.position }}/{{ reportData.totalStudents }}</span
-              >
-            </div>
-          </div>
-        </div>
-
-        <!-- Attendance & Grading -->
-        <div class="info-section">
-          <div class="attendance-box">
-            <h4>Attendance Record</h4>
-            <div class="attendance-grid">
-              <div class="attendance-item">
-                <span>School Days:</span>
-                <strong>{{ reportData.attendance.totalDays }}</strong>
-              </div>
-              <div class="attendance-item">
-                <span>Present:</span>
-                <strong>{{ reportData.attendance.present }}</strong>
-              </div>
-              <div class="attendance-item">
-                <span>Absent:</span>
-                <strong>{{ reportData.attendance.absent }}</strong>
-              </div>
-              <div class="attendance-item">
-                <span>Rate:</span>
-                <strong>{{ reportData.attendance.rate }}%</strong>
+              <div class="summary-header">AVERAGE</div>
+              <div class="summary-value">
+                {{ reportData.average.toFixed(2) }}
               </div>
             </div>
           </div>
-
-          <div class="grading-box">
-            <h4>Grading Scale</h4>
-            <div class="grade-scale">
-              <div class="grade-item">
-                <span class="grade-letter grade-A">A</span> 80-100% Excellent
-              </div>
-              <div class="grade-item">
-                <span class="grade-letter grade-B">B</span> 70-79% Very Good
-              </div>
-              <div class="grade-item">
-                <span class="grade-letter grade-C">C</span> 60-69% Good
-              </div>
-              <div class="grade-item">
-                <span class="grade-letter grade-D">D</span> 50-59% Fair
-              </div>
-              <div class="grade-item">
-                <span class="grade-letter grade-E">E</span> 40-49% Pass
-              </div>
-              <div class="grade-item">
-                <span class="grade-letter grade-F">F</span> 0-39% Fail
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Comments -->
-        <div class="comments-section">
-          <div class="comment-box">
-            <h4>Class Teacher's Comment</h4>
-            <p>{{ reportData.teacherComment }}</p>
-            <div class="signature">
-              <span>Signature: ________________________</span>
-              <span>Date: {{ new Date().toLocaleDateString() }}</span>
-            </div>
-          </div>
-
-          <div class="comment-box">
-            <h4>Principal's Comment</h4>
-            <p>{{ reportData.principalComment }}</p>
-            <div class="signature">
-              <span>Signature: ________________________</span>
-              <span>Date: {{ new Date().toLocaleDateString() }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="report-footer">
-          <p>
-            <strong>Next Term Begins:</strong> {{ reportData.nextTermDate }}
-          </p>
         </div>
       </div>
     </div>
@@ -489,6 +390,7 @@ import { useConfigStore } from "../../store/configStore";
 import apiServices from "../../services/apiServices";
 import { useToast } from "../../composables/useToast";
 import { getRemark } from "../../utils/gradeUtils";
+import { generateReportCardPdf } from "../../PDF/reportCardPDF";
 
 // Helper function to handle CA/Exam scores (can be number or "ABS")
 const processScore = (score) => {
@@ -548,6 +450,7 @@ const getDefaultGrade = (score) => {
   if (numScore >= 40) return { grade: "E", remark: "Pass" };
   return { grade: "F", remark: "Fail" };
 };
+const freshData = ref([]);
 
 const configStore = useConfigStore();
 const toast = useToast();
@@ -563,7 +466,6 @@ const reportGenerated = ref(false);
 const allReportData = ref([]);
 const searchQuery = ref("");
 const isGeneratingPDF = ref(false);
-const selectedStyle = ref("classic");
 const classes = ref([]);
 const sessions = ref([]);
 const subjects = ref([]);
@@ -680,8 +582,9 @@ const generateReport = async () => {
       current_class_id: filters.value.current_class_id,
     };
 
-    const response = await apiServices.getAllStudentSubjectsWithScores(params);
+    const response = await apiServices.getStudentAssignedSubjects(params);
     const responseData = response.data.data;
+    freshData.value = responseData;
 
     console.log("API Response:", responseData); // Debug log
 
@@ -857,25 +760,25 @@ const printReport = () => {
 // 1. Classic pdfmake PDF Export (Server-side)
 const exportClassicPDF = async () => {
   if (!reportGenerated.value) return;
-  
+
   isGeneratingPDF.value = true;
   try {
-    toast.info('PDF Generation', 'Generating PDF with pdfmake...');
-    
+    toast.info("PDF Generation", "Generating PDF with pdfmake...");
+
     const response = await apiServices.generatePdfMakeReport({
       reportData: filteredReportData.value,
       schoolInfo: {
         schoolName: configStore.schoolName,
-        schoolAddress: configStore.schoolAddress
+        schoolAddress: configStore.schoolAddress,
       },
       termName: selectedTermName.value,
-      sessionName: selectedSessionName.value
+      sessionName: selectedSessionName.value,
     });
 
     // Create download link
-    const blob = new Blob([response.data], { type: 'application/pdf' });
+    const blob = new Blob([response.data], { type: "application/pdf" });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `report-cards-pdfmake-${Date.now()}.pdf`;
     document.body.appendChild(a);
@@ -883,58 +786,163 @@ const exportClassicPDF = async () => {
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
 
-    toast.success('PDF Generated', 'pdfmake PDF downloaded successfully');
+    toast.success("PDF Generated", "pdfmake PDF downloaded successfully");
   } catch (error) {
-    console.error('pdfmake PDF generation error:', error);
-    toast.error('PDF Export Failed', 'Could not generate PDF with pdfmake: ' + (error.response?.data?.message || error.message));
+    console.error("pdfmake PDF generation error:", error);
+    toast.error(
+      "PDF Export Failed",
+      "Could not generate PDF with pdfmake: " +
+        (error.response?.data?.message || error.message)
+    );
   } finally {
     isGeneratingPDF.value = false;
   }
 };
 
-// 2. Modern Style pdfmake PDF Export (Server-side)
-const exportModernPDF = async () => {
-  if (!reportGenerated.value) return;
-  
+// 2. Individual Student Report Download
+const downloadIndividualReport = async (studentReportData, index) => {
   isGeneratingPDF.value = true;
   try {
-    toast.info('PDF Generation', 'Generating Modern Style PDF with pdfmake...');
-    
-    const response = await apiServices.generateModernPdfMakeReport({
-      reportData: filteredReportData.value,
+    toast.info(
+      "PDF Generation",
+      `Generating report for ${studentReportData.student.name}...`
+    );
+
+    const response = await apiServices.generatePdfMakeReport({
+      reportData: [studentReportData], // Single student data in array
       schoolInfo: {
         schoolName: configStore.schoolName,
-        schoolAddress: configStore.schoolAddress
+        schoolAddress: configStore.schoolAddress,
       },
       termName: selectedTermName.value,
-      sessionName: selectedSessionName.value
+      sessionName: selectedSessionName.value,
     });
 
     // Create download link
-    const blob = new Blob([response.data], { type: 'application/pdf' });
+    const blob = new Blob([response.data], { type: "application/pdf" });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `report-cards-modern-${Date.now()}.pdf`;
+
+    // Generate filename with student name and admission number
+    const studentName = studentReportData.student.name.replace(
+      /[^a-zA-Z0-9]/g,
+      "_"
+    );
+    const admissionNo = studentReportData.student.admissionNo.replace(
+      /[^a-zA-Z0-9]/g,
+      "_"
+    );
+    const stylePrefix = selectedStyle.value === "modern" ? "modern" : "classic";
+
+    a.download = `report-card-${stylePrefix}-${studentName}-${admissionNo}-${Date.now()}.pdf`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
 
-    toast.success('PDF Generated', 'Modern Style PDF downloaded successfully');
+    toast.success(
+      "PDF Generated",
+      `Report for ${studentReportData.student.name} downloaded successfully`
+    );
   } catch (error) {
-    console.error('Modern PDF generation error:', error);
-    toast.error('PDF Export Failed', 'Could not generate Modern Style PDF: ' + (error.response?.data?.message || error.message));
+    console.error("Individual PDF generation error:", error);
+    toast.error(
+      "PDF Export Failed",
+      `Could not generate report for ${studentReportData.student.name}: ` +
+        (error.response?.data?.message || error.message)
+    );
   } finally {
     isGeneratingPDF.value = false;
   }
 };
 
-
-
 // Clear search function
 const clearSearch = () => {
   searchQuery.value = "";
+};
+
+// Get score class for styling based on score value
+const getScoreClass = (score) => {
+  if (typeof score === "number") {
+    if (score >= 80) return "score-excellent";
+    if (score >= 70) return "score-very-good";
+    if (score >= 60) return "score-good";
+    if (score >= 50) return "score-fair";
+    if (score >= 40) return "score-pass";
+    return "score-fail";
+  }
+  return "score-default";
+};
+
+const getAssignedSubjects = () => {
+  const data = {
+    ...filters.value,
+  };
+  apiServices
+    .getAssignedSubjects(
+      filters.value.current_class_id,
+      filters.value.current_session_id,
+      filters.value.current_term_id
+    )
+    .then((response) => {
+      freshData.value = response.data.data;
+    })
+    .catch((error) => console.log(error));
+};
+
+// const generatePdf = () => {
+//   apiServices
+//     .generatePdfMakeReport2()
+//     .then((response) => {
+//       const pdfBlob = new Blob([response.data], {
+//         type: "application/pdf",
+//       });
+
+//       const pdfUrl = URL.createObjectURL(pdfBlob);
+
+//       window.open(pdfUrl, "_blank");
+//     })
+//     .catch((error) => {
+//       console.error(error);
+//     });
+// };
+
+const generatePdf = () => {
+
+
+  apiServices
+    .generatePdfMakeReport2(freshData.value)
+    .then((response) => {
+      const pdfBlob = new Blob([response.data], {
+        type: "application/pdf",
+      });
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl, "_blank");
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  const downloadPdf = () => {
+  apiServices
+    .generatePdfMakeReport2(freshData.value)
+    .then((response) => {
+      const pdfBlob = new Blob([response.data], {
+        type: "application/pdf",
+      });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "report-cards.pdf";
+      link.click();
+
+      URL.revokeObjectURL(link.href);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  }
 };
 
 // Lifecycle
@@ -1026,14 +1034,6 @@ watch(
   background: #d1d5db;
   cursor: not-allowed;
   opacity: 0.6;
-}
-
-.modern-btn {
-  background: #7c3aed;
-}
-
-.modern-btn:hover:not(:disabled) {
-  background: #6d28d9;
 }
 
 /* Filters */
@@ -1237,648 +1237,356 @@ watch(
   gap: 40px;
 }
 
+/* CSS Reset for consistent report card sizing */
+.all-reports-container > .report-card {
+  max-width: 900px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  box-sizing: border-box !important;
+}
+
 .report-card {
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   page-break-after: always;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-/* Modern Report Card Style */
-.report-card-modern {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  max-width: 850px;
+  max-width: 900px;
+  width: 100%;
   margin: 0 auto;
   position: relative;
+  border: 2px solid #e5e7eb;
+  font-size: 12px; /* Ensure consistent base font size */
 }
 
-.report-card-modern::before {
-  content: '';
+/* Ensure all report cards have the same size regardless of position */
+.all-reports-container .report-card {
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  font-size: 12px;
+}
+
+/* Individual Student Download Button */
+.student-download-section {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 6px;
-  background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+  top: 15px;
+  right: 15px;
+  z-index: 10;
 }
 
-/* School Header */
-.school-header {
+.student-download-btn {
   display: flex;
   align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.student-download-btn:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.student-download-btn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+.student-download-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Print Button */
+.print-button-section {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 10;
+}
+
+.print-btn {
+  padding: 8px 16px;
+  background: #1f2937;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.print-btn:hover {
+  background: #374151;
+}
+
+/* Report Content */
+.report-content {
+  padding: 20px;
+  margin-top: 40px;
+  font-size: 12px; /* Consistent font size */
+  line-height: 1.4; /* Consistent line height */
+}
+
+/* Ensure consistent sizing for all report cards */
+.report-card .report-content {
+  padding: 20px;
+  margin-top: 40px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Header Section */
+.report-header-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
   gap: 20px;
-  padding: 30px 40px 20px 40px;
-  border-bottom: 3px solid #e5e7eb;
+  margin-bottom: 20px;
 }
 
-.report-card-modern .school-header {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+.student-data-section,
+.academic-data-section {
+  border: 1px solid #374151;
+}
+
+.section-header {
+  background: #374151;
+  color: white;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table tr {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.data-table tr:last-child {
   border-bottom: none;
-  padding: 40px;
-  position: relative;
 }
 
-.school-logo .logo-badge {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  border-radius: 50%;
+.label-cell {
+  background: #f9fafb;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  border-right: 1px solid #e5e7eb;
+  width: 40%;
+}
+
+.value-cell {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+/* Position Section */
+.position-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #374151;
+  min-width: 100px;
+}
+
+.position-number {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.report-card-modern .school-logo .logo-badge {
-  width: 100px;
-  height: 100px;
-  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-  border-radius: 25px;
-  box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
-  transform: rotate(-5deg);
-}
-
-.school-info {
-  flex: 1;
-  text-align: center;
-}
-
-.school-info h1 {
-  margin: 0 0 8px 0;
-  font-size: 28px;
+  font-size: 48px;
+  font-weight: 900;
   color: #1f2937;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  background: #f9fafb;
+  width: 100%;
 }
 
-.school-info p {
-  margin: 4px 0;
-  color: #6b7280;
-  font-size: 14px;
-}
-
-.report-card-modern .school-info h1 {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 32px;
-  font-weight: 800;
-}
-
-.report-card-modern .school-info p {
-  color: #4a5568;
-  font-weight: 500;
-}
-
-.report-title {
-  text-align: center;
-  padding: 20px 40px;
-  background: #f8fafc;
-  border-bottom: 2px solid #e5e7eb;
-}
-
-.report-title h2 {
-  margin: 0 0 8px 0;
-  font-size: 22px;
-  color: #1f2937;
-  font-weight: 700;
-  letter-spacing: 2px;
-}
-
-.session-term {
-  color: #6b7280;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.report-card-modern .report-title {
-  background: linear-gradient(135deg, #4ecdc4, #44a08d);
-  color: white;
-  padding: 30px 40px;
-  position: relative;
-  overflow: hidden;
-}
-
-.report-card-modern .report-title::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-  animation: shimmer 3s ease-in-out infinite;
-}
-
-@keyframes shimmer {
-  0%, 100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-  50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-}
-
-.report-card-modern .report-title h2 {
-  color: white;
-  font-size: 26px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.report-card-modern .session-term {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 16px;
-  font-weight: 600;
-}
-
-/* Student Details */
-.student-details {
-  padding: 25px 40px;
-  background: white;
-}
-
-.report-card-modern .student-details {
-  background: linear-gradient(135deg, #ffeaa7, #fab1a0);
-  padding: 30px 40px;
-}
-
-.detail-row {
-  display: flex;
-  gap: 40px;
-  margin-bottom: 15px;
-}
-
-.detail-row:last-child {
-  margin-bottom: 0;
-}
-
-.detail-item {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.detail-item .label {
-  font-weight: 600;
-  color: #374151;
-  min-width: 120px;
-  font-size: 14px;
-}
-
-.detail-item .value {
-  color: #1f2937;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.report-card-modern .detail-item {
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 15px;
-  padding: 15px 20px;
-  margin-bottom: 10px;
-  border: none;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-}
-
-.report-card-modern .detail-item .label {
-  color: #2d3436;
-  font-weight: 700;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.report-card-modern .detail-item .value {
-  color: #2d3436;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.position-highlight {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  color: #78350f;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-weight: 700;
-  font-size: 13px;
-}
-
-/* Academic Section */
-.academic-section {
-  padding: 25px 40px;
-  background: white;
-}
-
-.academic-section h3 {
-  margin: 0 0 20px 0;
-  font-size: 18px;
-  color: #1f2937;
-  font-weight: 700;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #3b82f6;
-}
-
-.report-card-modern .academic-section {
-  background: linear-gradient(135deg, #a8edea, #fed6e3);
-  padding: 30px 40px;
-}
-
-.report-card-modern .academic-section h3 {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 22px;
-  border-bottom: 3px solid #667eea;
-  text-align: center;
-  padding-bottom: 15px;
+/* Academic Results Section */
+.academic-results-section {
+  margin-bottom: 20px;
 }
 
 .results-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  overflow: hidden;
+  border: 1px solid #374151;
+  font-size: 12px;
 }
 
 .results-table thead th {
-  background: linear-gradient(135deg, #1f2937, #374151);
+  background: #374151;
   color: white;
-  padding: 12px 8px;
+  padding: 10px 8px;
   text-align: center;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  border-right: 1px solid #4b5563;
 }
 
-.report-card-modern .results-table {
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  border: none;
+.results-table thead th:last-child {
+  border-right: none;
 }
 
-.report-card-modern .results-table thead th {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  padding: 15px 10px;
-  font-size: 13px;
-  font-weight: 700;
+.sn-col {
+  width: 40px;
+}
+
+.subject-col {
+  width: 25%;
+  text-align: left !important;
+}
+
+.score-col {
+  width: 12%;
+}
+
+.remark-col {
+  width: 20%;
 }
 
 .results-table tbody td {
-  padding: 12px 8px;
-  border-bottom: 1px solid #f3f4f6;
+  padding: 10px 8px;
+  border-bottom: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
   text-align: center;
-  font-size: 13px;
+  font-size: 12px;
+}
+
+.results-table tbody td:last-child {
+  border-right: none;
 }
 
 .results-table tbody tr:nth-child(even) {
   background: #f9fafb;
 }
 
-.results-table tbody tr:hover {
-  background: #f3f4f6;
-}
-
-.report-card-modern .results-table tbody td {
-  padding: 15px 10px;
-  font-size: 14px;
-  font-weight: 500;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.report-card-modern .results-table tbody tr:nth-child(even) {
-  background: rgba(255, 255, 255, 0.7);
-}
-
-.report-card-modern .results-table tbody tr:nth-child(odd) {
-  background: rgba(255, 255, 255, 0.5);
-}
-
-.report-card-modern .results-table tbody tr:hover {
-  background: rgba(102, 126, 234, 0.1);
-  transform: scale(1.02);
-  transition: all 0.3s ease;
+.sn-cell {
+  font-weight: 600;
+  color: #374151;
 }
 
 .subject-name {
   text-align: left !important;
   font-weight: 600;
   color: #1f2937;
-  padding-left: 16px !important;
+  padding-left: 12px !important;
 }
 
-.total-score {
+.score-cell {
+  font-weight: 500;
+}
+
+.total-cell {
   font-weight: 700;
+  font-size: 13px;
+}
+
+.remark-cell {
+  font-style: italic;
+  color: #6b7280;
+  font-size: 11px;
+}
+
+/* Score Color Classes */
+.score-excellent {
+  background: #dcfce7 !important;
+  color: #166534;
+}
+
+.score-very-good {
   background: #dbeafe !important;
   color: #1e40af;
 }
 
-.grade {
-  font-weight: 700;
-  font-size: 12px;
+.score-good {
+  background: #fef3c7 !important;
+  color: #92400e;
 }
 
-.grade-A {
-  color: #059669;
-}
-.grade-B {
-  color: #0284c7;
-}
-.grade-C {
-  color: #ca8a04;
-}
-.grade-D {
-  color: #dc2626;
-}
-.grade-E,
-.grade-F {
-  color: #dc2626;
-}
-.grade-ABS {
-  color: #f59e0b;
-  font-weight: 800;
+.score-fair {
+  background: #fed7aa !important;
+  color: #9a3412;
 }
 
-.remark {
-  font-style: italic;
+.score-pass {
+  background: #fecaca !important;
+  color: #991b1b;
+}
+
+.score-fail {
+  background: #fecaca !important;
+  color: #991b1b;
+}
+
+.score-default {
+  background: #f3f4f6 !important;
   color: #6b7280;
-  font-size: 12px;
 }
 
-/* Summary Section */
-.summary-section {
-  padding: 20px 40px;
-  background: #f8fafc;
-  border-top: 1px solid #e5e7eb;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.summary-grid {
+/* Summary Footer */
+.summary-footer {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
 
 .summary-item {
-  text-align: center;
-  padding: 15px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #374151;
 }
 
-.summary-label {
-  display: block;
+.summary-header {
+  background: #374151;
+  color: white;
+  padding: 8px 12px;
   font-size: 12px;
-  color: #6b7280;
-  font-weight: 500;
-  margin-bottom: 4px;
-  text-transform: uppercase;
+  font-weight: 700;
+  text-align: center;
   letter-spacing: 0.5px;
 }
 
 .summary-value {
-  display: block;
-  font-size: 18px;
+  padding: 15px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 900;
   color: #1f2937;
-  font-weight: 700;
-}
-
-/* Info Section */
-.info-section {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 25px;
-  padding: 25px 40px;
-  background: white;
-}
-
-.attendance-box,
-.grading-box {
   background: #f9fafb;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-}
-
-.attendance-box h4,
-.grading-box h4 {
-  margin: 0 0 15px 0;
-  font-size: 14px;
-  color: #1f2937;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.attendance-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.attendance-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  font-size: 13px;
-  color: #374151;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.attendance-item strong {
-  color: #1f2937;
-  font-weight: 600;
-}
-
-.grade-scale {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.grade-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: #374151;
-}
-
-.grade-letter {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  text-align: center;
-  line-height: 20px;
-  font-weight: 700;
-  font-size: 11px;
-  color: white;
-}
-
-.grade-letter.grade-A {
-  background: #059669;
-}
-.grade-letter.grade-B {
-  background: #0284c7;
-}
-.grade-letter.grade-C {
-  background: #ca8a04;
-}
-.grade-letter.grade-D {
-  background: #dc2626;
-}
-.grade-letter.grade-E,
-.grade-letter.grade-F {
-  background: #dc2626;
-}
-.grade-letter.grade-ABS {
-  background: #f59e0b;
-}
-
-/* Comments Section */
-.comments-section {
-  padding: 25px 40px;
-  background: white;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 25px;
-}
-
-.comment-box {
-  background: #f9fafb;
-  padding: 20px;
-  border-radius: 8px;
-  border-left: 4px solid #3b82f6;
-}
-
-.comment-box h4 {
-  margin: 0 0 12px 0;
-  font-size: 14px;
-  color: #1f2937;
-  font-weight: 700;
-}
-
-.comment-box p {
-  margin: 0 0 15px 0;
-  font-size: 13px;
-  color: #374151;
-  line-height: 1.6;
-  font-style: italic;
-  min-height: 40px;
-}
-
-.signature {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: #6b7280;
-  padding-top: 10px;
-  border-top: 1px solid #e5e7eb;
-}
-
-/* Footer */
-.report-footer {
-  text-align: center;
-  padding: 20px 40px;
-  background: #1f2937;
-  color: white;
-}
-
-.report-footer p {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.empty-state svg {
-  color: #9ca3af;
-  margin-bottom: 16px;
-}
-
-.empty-state h3 {
-  margin: 0 0 8px 0;
-  color: #1f2937;
-  font-size: 18px;
-}
-
-.empty-state p {
-  margin: 0;
-  color: #6b7280;
-  font-size: 14px;
-}
-
-/* No Results State */
-.no-results-state {
-  text-align: center;
-  padding: 60px 20px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.no-results-state svg {
-  color: #f59e0b;
-  margin-bottom: 16px;
-}
-
-.no-results-state h3 {
-  margin: 0 0 8px 0;
-  color: #1f2937;
-  font-size: 18px;
-}
-
-.no-results-state p {
-  margin: 0 0 16px 0;
-  color: #6b7280;
-  font-size: 14px;
-}
-
-.clear-search-action-btn {
-  padding: 10px 20px;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.clear-search-action-btn:hover {
-  background: #2563eb;
 }
 
 /* Print Styles */
 @media print {
   .page-header,
-  .filters-section {
+  .filters-section,
+  .student-download-section,
+  .print-button-section {
     display: none;
   }
 
@@ -1887,79 +1595,16 @@ watch(
     margin: 0;
     max-width: none;
     page-break-after: always;
+    border: 2px solid #000;
   }
 
   .all-reports-container {
     gap: 0;
   }
-}
 
-/* Modern Style Additional Sections */
-.report-card-modern .summary-section {
-  background: linear-gradient(135deg, #ff9a9e, #fecfef);
-  padding: 30px 40px;
-}
-
-.report-card-modern .summary-item {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.report-card-modern .info-section {
-  background: linear-gradient(135deg, #fad0c4, #ffd1ff);
-  padding: 30px 40px;
-}
-
-.report-card-modern .attendance-box,
-.report-card-modern .grading-box {
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 20px;
-  padding: 25px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.report-card-modern .comments-section {
-  background: linear-gradient(135deg, #a8edea, #fed6e3);
-  padding: 30px 40px;
-}
-
-.report-card-modern .comment-box {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 20px;
-  padding: 25px;
-  border-left: 6px solid #667eea;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-}
-
-.report-card-modern .report-footer {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  padding: 25px 40px;
-  text-align: center;
-}
-
-.report-card-modern .report-footer p {
-  color: white;
-  font-size: 16px;
-  font-weight: 600;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-/* Position highlight modern style */
-.report-card-modern .position-highlight {
-  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 25px;
-  font-weight: 800;
-  font-size: 14px;
-  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+  .report-content {
+    margin-top: 0;
+  }
 }
 
 /* Responsive */
@@ -1970,23 +1615,6 @@ watch(
 
   .filter-group {
     min-width: auto;
-  }
-
-  .detail-row {
-    flex-direction: column;
-    gap: 0;
-  }
-
-  .summary-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .info-section {
-    grid-template-columns: 1fr;
-  }
-
-  .comments-section {
-    grid-template-columns: 1fr;
   }
 
   .style-selector-container {
@@ -2002,6 +1630,52 @@ watch(
   .style-btn {
     flex: 1;
     justify-content: center;
+  }
+
+  /* Mobile report card adjustments */
+  .report-header-section {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .position-section {
+    order: -1;
+    min-width: auto;
+  }
+
+  .position-number {
+    font-size: 36px;
+    padding: 20px;
+  }
+
+  .summary-footer {
+    grid-template-columns: 1fr;
+  }
+
+  /* Mobile download button adjustments */
+  .student-download-section {
+    top: 10px;
+    right: 10px;
+  }
+
+  .student-download-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .student-download-btn svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .print-button-section {
+    top: 10px;
+    left: 10px;
+  }
+
+  .print-btn {
+    padding: 6px 12px;
+    font-size: 11px;
   }
 }
 </style>

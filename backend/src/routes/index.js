@@ -19,6 +19,9 @@ const schoolSessionRoutes = require('./schoolSessions');
 const schoolStudentRoutes = require('./schoolStudents');
 const caConfigRoutes = require('./caConfigs');
 const pdfRoutes = require('./pdf');
+const chartRoutes = require('./charts');
+const staffActivityRoutes = require('./staffActivity');
+const dashboardRoutes = require('./dashboard');
 
 const router = express.Router();
 // Health check route
@@ -53,6 +56,9 @@ router.use('/school-sessions', schoolSessionRoutes);
 router.use('/students', schoolStudentRoutes);
 router.use('/ca-configs', caConfigRoutes);
 router.use('/pdf', pdfRoutes);
+router.use('/charts', chartRoutes);
+router.use('/staff-activity', staffActivityRoutes);
+router.use('/dashboard', dashboardRoutes);
 
 module.exports = router;
 

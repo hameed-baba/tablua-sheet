@@ -8,6 +8,9 @@ const router = express.Router();
 // Staff login
 router.post('/login', validate(schemas.login), authController.login);
 
+// Staff logout
+router.post('/logout', authenticate, authController.logout);
+
 // Change password
 router.put('/change-password', authenticate, validate(schemas.changePassword), authController.changePassword);
 

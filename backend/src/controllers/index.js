@@ -14,6 +14,8 @@ const parentController = require("./parentController");
 const schoolClassController = require("./schoolClasesController");
 const classSubjectAssignController = require("./classSubjectAssignController");
 const studentSubjectAssignController = require("./studentSubjectAssignController");
+const chartController = require("./chartController");
+const dashboardController = require("./dashboardController");
 // Import base controller for other simple CRUD operations
 const BaseController = require("./baseController");
 
@@ -78,4 +80,6 @@ module.exports = {
   schoolSubjectController,
   schoolTermController,
   schoolSessionController,
+  chartController,
+  dashboardController,
 };

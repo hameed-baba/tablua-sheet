@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { SchoolStaff, Role, Permission } = require("../models");
+const { SchoolStaff, Role, Permission, StaffSession } = require("../models");
 const { asyncHandler } = require("../middleware/errorHandler");
 
 /**
@@ -65,6 +65,36 @@ const login = asyncHandler(async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
+
+    // Record login session
+    try {
+      // End any existing active sessions for this staff
+      await StaffSession.update(
+        { 
+          is_active: false,
+          logout_time: new Date()
+        },
+        {
+          where: {
+            staff_id: staff.id,
+            is_active: true
+          }
+        }
+      );
+
+      // Create new session
+      await StaffSession.create({
+        staff_id: staff.id,
+        login_time: new Date(),
+        ip_address: req.ip || req.connection.remoteAddress,
+        user_agent: req.get('User-Agent'),
+        session_token: token,
+        is_active: true
+      });
+    } catch (sessionError) {
+      console.error('Error recording login session:', sessionError);
+      // Don't fail login if session recording fails
+    }
 
     // Extract permissions from the staff's role
     const permissions = staff.Role?.permissions?.map((p) => p.permission_name) || [];
@@ -136,6 +166,42 @@ const changePassword = asyncHandler(async (req, res) => {
 });
 
 /**
+ * @desc Logout user
+ * @route POST /api/auth/logout
+ */
+const logout = asyncHandler(async (req, res) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    
+    // Update session to mark as logged out
+    await StaffSession.update(
+      {
+        logout_time: new Date(),
+        is_active: false
+      },
+      {
+        where: {
+          staff_id: req.user.id,
+          session_token: token,
+          is_active: true
+        }
+      }
+    );
+
+    res.json({
+      status: "success",
+      message: "Logged out successfully"
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({
+      status: "error",
+      message: "Logout failed"
+    });
+  }
+});
+
+/**
  * @desc Get user profile
  * @route GET /api/auth/profile
  */
@@ -196,6 +262,7 @@ const getProfile = asyncHandler(async (req, res) => {
 
 module.exports = {
   login,
+  logout,
   changePassword,
   getProfile,
 };

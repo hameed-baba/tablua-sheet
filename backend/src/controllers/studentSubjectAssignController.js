@@ -1,5 +1,14 @@
 const { asyncHandler } = require("../middleware/errorHandler");
-const { StudentSubjectAssign } = require("../models");
+const {
+  StudentSubjectAssign,
+  SchoolStudent,
+  SchoolClass,
+  SchoolSubject,
+  SchoolSession,
+  SchoolTerm,
+  GradeList,
+  GradeSystem,
+} = require("../models");
 const BaseController = require("./baseController");
 
 class StudentSubjectAssignController extends BaseController {
@@ -16,7 +25,10 @@ class StudentSubjectAssignController extends BaseController {
   // Update CA1 score for a student's subject assignment (supports both single object and array)
   updateCA1Score = asyncHandler(async (req, res) => {
     const requestData = req.body;
-    console.log("Received CA1 request data:", JSON.stringify(requestData, null, 2));
+    console.log(
+      "Received CA1 request data:",
+      JSON.stringify(requestData, null, 2)
+    );
 
     // Check if it's an array or single object
     const isArray = Array.isArray(requestData);
@@ -54,7 +66,8 @@ class StudentSubjectAssignController extends BaseController {
         !current_term_id ||
         ca_1_score === undefined
       ) {
-        const error = "All fields are required: student_id, current_class_id, school_subject_id, current_session_id, current_term_id, ca_1_score";
+        const error =
+          "All fields are required: student_id, current_class_id, school_subject_id, current_session_id, current_term_id, ca_1_score";
         console.log(`Validation failed for student ${student_id}:`, error);
         errors.push({
           student_id,
@@ -84,7 +97,10 @@ class StudentSubjectAssignController extends BaseController {
           include: this.includes,
         });
 
-        console.log(`CA1 Assignment found for student ${student_id}:`, assignment ? 'YES' : 'NO');
+        console.log(
+          `CA1 Assignment found for student ${student_id}:`,
+          assignment ? "YES" : "NO"
+        );
 
         if (!assignment) {
           const error = "Student subject assignment not found";
@@ -97,13 +113,19 @@ class StudentSubjectAssignController extends BaseController {
         }
 
         // Update the CA1 score
-        console.log(`Updating CA1 score for student ${student_id} to:`, ca_1_score);
+        console.log(
+          `Updating CA1 score for student ${student_id} to:`,
+          ca_1_score
+        );
         await assignment.update({ ca_1_score });
 
         // Fetch the updated record with includes
-        const updatedAssignment = await StudentSubjectAssign.findByPk(assignment.id, {
-          include: this.includes,
-        });
+        const updatedAssignment = await StudentSubjectAssign.findByPk(
+          assignment.id,
+          {
+            include: this.includes,
+          }
+        );
 
         results.push(updatedAssignment);
       } catch (error) {
@@ -118,7 +140,9 @@ class StudentSubjectAssignController extends BaseController {
     if (errors.length === 0) {
       res.json({
         status: "success",
-        message: `CA1 score${isArray && dataArray.length > 1 ? 's' : ''} updated successfully`,
+        message: `CA1 score${
+          isArray && dataArray.length > 1 ? "s" : ""
+        } updated successfully`,
         data: isArray ? results : results[0],
         count: results.length,
       });
@@ -173,7 +197,8 @@ class StudentSubjectAssignController extends BaseController {
       ) {
         errors.push({
           student_id,
-          error: "All fields are required: student_id, current_class_id, school_subject_id, current_session_id, current_term_id, exam_score",
+          error:
+            "All fields are required: student_id, current_class_id, school_subject_id, current_session_id, current_term_id, exam_score",
         });
         continue;
       }
@@ -203,9 +228,12 @@ class StudentSubjectAssignController extends BaseController {
         await assignment.update({ exam_score });
 
         // Fetch the updated record with includes
-        const updatedAssignment = await StudentSubjectAssign.findByPk(assignment.id, {
-          include: this.includes,
-        });
+        const updatedAssignment = await StudentSubjectAssign.findByPk(
+          assignment.id,
+          {
+            include: this.includes,
+          }
+        );
 
         results.push(updatedAssignment);
       } catch (error) {
@@ -220,7 +248,9 @@ class StudentSubjectAssignController extends BaseController {
     if (errors.length === 0) {
       res.json({
         status: "success",
-        message: `Exam score${isArray && dataArray.length > 1 ? 's' : ''} updated successfully`,
+        message: `Exam score${
+          isArray && dataArray.length > 1 ? "s" : ""
+        } updated successfully`,
         data: isArray ? results : results[0],
         count: results.length,
       });
@@ -264,7 +294,8 @@ class StudentSubjectAssignController extends BaseController {
     ) {
       return res.status(400).json({
         status: "error",
-        message: "Required fields: student_id, current_class_id, school_subject_id, current_session_id, current_term_id",
+        message:
+          "Required fields: student_id, current_class_id, school_subject_id, current_session_id, current_term_id",
       });
     }
 
@@ -272,7 +303,8 @@ class StudentSubjectAssignController extends BaseController {
     if (ca_1_score === undefined && exam_score === undefined) {
       return res.status(400).json({
         status: "error",
-        message: "At least one score (ca_1_score or exam_score) must be provided",
+        message:
+          "At least one score (ca_1_score or exam_score) must be provided",
       });
     }
 
@@ -304,9 +336,12 @@ class StudentSubjectAssignController extends BaseController {
     await assignment.update(updateData);
 
     // Fetch the updated record with includes
-    const updatedAssignment = await StudentSubjectAssign.findByPk(assignment.id, {
-      include: this.includes,
-    });
+    const updatedAssignment = await StudentSubjectAssign.findByPk(
+      assignment.id,
+      {
+        include: this.includes,
+      }
+    );
 
     res.json({
       status: "success",
@@ -335,7 +370,8 @@ class StudentSubjectAssignController extends BaseController {
     ) {
       return res.status(400).json({
         status: "error",
-        message: "All query parameters are required: student_id, current_class_id, school_subject_id, current_session_id, current_term_id",
+        message:
+          "All query parameters are required: student_id, current_class_id, school_subject_id, current_session_id, current_term_id",
       });
     }
 
@@ -384,7 +420,8 @@ class StudentSubjectAssignController extends BaseController {
     ) {
       return res.status(400).json({
         status: "error",
-        message: "All query parameters are required: student_id, current_class_id, school_subject_id, current_session_id, current_term_id",
+        message:
+          "All query parameters are required: student_id, current_class_id, school_subject_id, current_session_id, current_term_id",
       });
     }
 
@@ -398,21 +435,41 @@ class StudentSubjectAssignController extends BaseController {
         current_term_id,
       },
       attributes: [
-        'id',
-        'student_id',
-        'current_class_id',
-        'school_subject_id',
-        'current_session_id',
-        'current_term_id',
-        'ca_1_score',
-        'exam_score'
+        "id",
+        "student_id",
+        "current_class_id",
+        "school_subject_id",
+        "current_session_id",
+        "current_term_id",
+        "ca_1_score",
+        "exam_score",
       ],
       include: [
-        { model: require("../models").SchoolStudent, as: "Student", attributes: ['id', 'full_name', 'admission_number'] },
-        { model: require("../models").SchoolClass, as: "Class", attributes: ['id', 'class_name'] },
-        { model: require("../models").SchoolSubject, as: "Subject", attributes: ['id', 'subject_name'] },
-        { model: require("../models").SchoolSession, as: "Session", attributes: ['id', 'session_name'] },
-        { model: require("../models").SchoolTerm, as: "Term", attributes: ['id', 'term_name'] },
+        {
+          model: require("../models").SchoolStudent,
+          as: "Student",
+          attributes: ["id", "full_name", "admission_number"],
+        },
+        {
+          model: require("../models").SchoolClass,
+          as: "Class",
+          attributes: ["id", "class_name"],
+        },
+        {
+          model: require("../models").SchoolSubject,
+          as: "Subject",
+          attributes: ["id", "subject_name"],
+        },
+        {
+          model: require("../models").SchoolSession,
+          as: "Session",
+          attributes: ["id", "session_name"],
+        },
+        {
+          model: require("../models").SchoolTerm,
+          as: "Term",
+          attributes: ["id", "term_name"],
+        },
       ],
     });
 
@@ -450,7 +507,10 @@ class StudentSubjectAssignController extends BaseController {
       marks: {
         ca_1_score: assignment.ca_1_score || null,
         exam_score: assignment.exam_score || null,
-        total_score: this.calculateTotal(assignment.ca_1_score, assignment.exam_score),
+        total_score: this.calculateTotal(
+          assignment.ca_1_score,
+          assignment.exam_score
+        ),
       },
     };
 
@@ -479,7 +539,8 @@ class StudentSubjectAssignController extends BaseController {
     ) {
       return res.status(400).json({
         status: "error",
-        message: "All query parameters are required: current_class_id, school_subject_id, current_session_id, current_term_id",
+        message:
+          "All query parameters are required: current_class_id, school_subject_id, current_session_id, current_term_id",
       });
     }
 
@@ -492,26 +553,46 @@ class StudentSubjectAssignController extends BaseController {
         current_term_id,
       },
       attributes: [
-        'id',
-        'student_id',
-        'current_class_id',
-        'school_subject_id',
-        'current_session_id',
-        'current_term_id',
-        'ca_1_score'
+        "id",
+        "student_id",
+        "current_class_id",
+        "school_subject_id",
+        "current_session_id",
+        "current_term_id",
+        "ca_1_score",
       ],
       include: [
-        { model: require("../models").SchoolStudent, as: "Student", attributes: ['id', 'full_name', 'admission_number'] },
-        { model: require("../models").SchoolClass, as: "Class", attributes: ['id', 'class_name'] },
-        { model: require("../models").SchoolSubject, as: "Subject", attributes: ['id', 'subject_name'] },
-        { model: require("../models").SchoolSession, as: "Session", attributes: ['id', 'session_name'] },
-        { model: require("../models").SchoolTerm, as: "Term", attributes: ['id', 'term_name'] },
+        {
+          model: require("../models").SchoolStudent,
+          as: "Student",
+          attributes: ["id", "full_name", "admission_number"],
+        },
+        {
+          model: require("../models").SchoolClass,
+          as: "Class",
+          attributes: ["id", "class_name"],
+        },
+        {
+          model: require("../models").SchoolSubject,
+          as: "Subject",
+          attributes: ["id", "subject_name"],
+        },
+        {
+          model: require("../models").SchoolSession,
+          as: "Session",
+          attributes: ["id", "session_name"],
+        },
+        {
+          model: require("../models").SchoolTerm,
+          as: "Term",
+          attributes: ["id", "term_name"],
+        },
       ],
-      order: [['student_id', 'ASC']],
+      order: [["student_id", "ASC"]],
     });
 
     // Format the response
-    const caScores = assignments.map(assignment => ({
+    const caScores = assignments.map((assignment) => ({
       assignment_id: assignment.id,
       student_id: assignment.student_id,
       student_name: `${assignment.Student.full_name}`,
@@ -542,8 +623,8 @@ class StudentSubjectAssignController extends BaseController {
         scores: caScores,
         summary: {
           total_students: assignments.length,
-          students_with_ca: assignments.filter(a => a.ca_1_score).length,
-        }
+          students_with_ca: assignments.filter((a) => a.ca_1_score).length,
+        },
       },
     });
   });
@@ -566,7 +647,8 @@ class StudentSubjectAssignController extends BaseController {
     ) {
       return res.status(400).json({
         status: "error",
-        message: "All query parameters are required: current_class_id, school_subject_id, current_session_id, current_term_id",
+        message:
+          "All query parameters are required: current_class_id, school_subject_id, current_session_id, current_term_id",
       });
     }
 
@@ -579,34 +661,57 @@ class StudentSubjectAssignController extends BaseController {
         current_term_id,
       },
       attributes: [
-        'id',
-        'student_id',
-        'current_class_id',
-        'school_subject_id',
-        'current_session_id',
-        'current_term_id',
-        'ca_1_score',
-        'exam_score'
+        "id",
+        "student_id",
+        "current_class_id",
+        "school_subject_id",
+        "current_session_id",
+        "current_term_id",
+        "ca_1_score",
+        "exam_score",
       ],
       include: [
-        { model: require("../models").SchoolStudent, as: "Student", attributes: ['id', 'full_name', 'admission_number'] },
-        { model: require("../models").SchoolClass, as: "Class", attributes: ['id', 'class_name'] },
-        { model: require("../models").SchoolSubject, as: "Subject", attributes: ['id', 'subject_name'] },
-        { model: require("../models").SchoolSession, as: "Session", attributes: ['id', 'session_name'] },
-        { model: require("../models").SchoolTerm, as: "Term", attributes: ['id', 'term_name'] },
+        {
+          model: require("../models").SchoolStudent,
+          as: "Student",
+          attributes: ["id", "full_name", "admission_number"],
+        },
+        {
+          model: require("../models").SchoolClass,
+          as: "Class",
+          attributes: ["id", "class_name"],
+        },
+        {
+          model: require("../models").SchoolSubject,
+          as: "Subject",
+          attributes: ["id", "subject_name"],
+        },
+        {
+          model: require("../models").SchoolSession,
+          as: "Session",
+          attributes: ["id", "session_name"],
+        },
+        {
+          model: require("../models").SchoolTerm,
+          as: "Term",
+          attributes: ["id", "term_name"],
+        },
       ],
-      order: [['student_id', 'ASC']],
+      order: [["student_id", "ASC"]],
     });
 
     // Format the response
-    const examScores = assignments.map(assignment => ({
+    const examScores = assignments.map((assignment) => ({
       assignment_id: assignment.id,
       student_id: assignment.student_id,
       student_name: `${assignment.Student.full_name} ${assignment.Student.last_name}`,
       admission_number: assignment.Student.admission_number,
       ca_1_score: assignment.ca_1_score || null,
       exam_score: assignment.exam_score || null,
-      total_score: this.calculateTotal(assignment.ca_1_score, assignment.exam_score),
+      total_score: this.calculateTotal(
+        assignment.ca_1_score,
+        assignment.exam_score
+      ),
     }));
 
     res.json({
@@ -632,10 +737,12 @@ class StudentSubjectAssignController extends BaseController {
         scores: examScores,
         summary: {
           total_students: assignments.length,
-          students_with_ca: assignments.filter(a => a.ca_1_score).length,
-          students_with_exam: assignments.filter(a => a.exam_score).length,
-          students_completed: assignments.filter(a => a.ca_1_score && a.exam_score).length,
-        }
+          students_with_ca: assignments.filter((a) => a.ca_1_score).length,
+          students_with_exam: assignments.filter((a) => a.exam_score).length,
+          students_completed: assignments.filter(
+            (a) => a.ca_1_score && a.exam_score
+          ).length,
+        },
       },
     });
   });
@@ -643,11 +750,7 @@ class StudentSubjectAssignController extends BaseController {
   // Get all marks for a single student
   getStudentMarks = asyncHandler(async (req, res) => {
     const { student_id } = req.params;
-    const {
-      current_class_id,
-      current_session_id,
-      current_term_id,
-    } = req.query;
+    const { current_class_id, current_session_id, current_term_id } = req.query;
 
     // Validate required fields
     if (!student_id) {
@@ -667,23 +770,43 @@ class StudentSubjectAssignController extends BaseController {
     const assignments = await StudentSubjectAssign.findAll({
       where: whereClause,
       attributes: [
-        'id',
-        'student_id',
-        'current_class_id',
-        'school_subject_id',
-        'current_session_id',
-        'current_term_id',
-        'ca_1_score',
-        'exam_score'
+        "id",
+        "student_id",
+        "current_class_id",
+        "school_subject_id",
+        "current_session_id",
+        "current_term_id",
+        "ca_1_score",
+        "exam_score",
       ],
       include: [
-        { model: require("../models").SchoolStudent, as: "Student", attributes: ['id', 'full_name', 'admission_number'] },
-        { model: require("../models").SchoolClass, as: "Class", attributes: ['id', 'class_name'] },
-        { model: require("../models").SchoolSubject, as: "Subject", attributes: ['id', 'subject_name'] },
-        { model: require("../models").SchoolSession, as: "Session", attributes: ['id', 'session_name'] },
-        { model: require("../models").SchoolTerm, as: "Term", attributes: ['id', 'term_name'] },
+        {
+          model: require("../models").SchoolStudent,
+          as: "Student",
+          attributes: ["id", "full_name", "admission_number"],
+        },
+        {
+          model: require("../models").SchoolClass,
+          as: "Class",
+          attributes: ["id", "class_name"],
+        },
+        {
+          model: require("../models").SchoolSubject,
+          as: "Subject",
+          attributes: ["id", "subject_name"],
+        },
+        {
+          model: require("../models").SchoolSession,
+          as: "Session",
+          attributes: ["id", "session_name"],
+        },
+        {
+          model: require("../models").SchoolTerm,
+          as: "Term",
+          attributes: ["id", "term_name"],
+        },
       ],
-      order: [['school_subject_id', 'ASC']],
+      order: [["school_subject_id", "ASC"]],
     });
 
     if (!assignments || assignments.length === 0) {
@@ -703,7 +826,7 @@ class StudentSubjectAssignController extends BaseController {
         name: `${studentInfo.full_name}`,
         admission_number: studentInfo.admission_number,
       },
-      subjects: assignments.map(assignment => ({
+      subjects: assignments.map((assignment) => ({
         assignment_id: assignment.id,
         subject: {
           id: assignment.Subject.id,
@@ -724,15 +847,20 @@ class StudentSubjectAssignController extends BaseController {
         marks: {
           ca_1_score: assignment.ca_1_score || null,
           exam_score: assignment.exam_score || null,
-          total_score: this.calculateTotal(assignment.ca_1_score, assignment.exam_score),
+          total_score: this.calculateTotal(
+            assignment.ca_1_score,
+            assignment.exam_score
+          ),
         },
       })),
       summary: {
         total_subjects: assignments.length,
-        subjects_with_ca1: assignments.filter(a => a.ca_1_score).length,
-        subjects_with_exam: assignments.filter(a => a.exam_score).length,
-        subjects_completed: assignments.filter(a => a.ca_1_score && a.exam_score).length,
-      }
+        subjects_with_ca1: assignments.filter((a) => a.ca_1_score).length,
+        subjects_with_exam: assignments.filter((a) => a.exam_score).length,
+        subjects_completed: assignments.filter(
+          (a) => a.ca_1_score && a.exam_score
+        ).length,
+      },
     };
 
     res.json({
@@ -760,7 +888,8 @@ class StudentSubjectAssignController extends BaseController {
     ) {
       return res.status(400).json({
         status: "error",
-        message: "All query parameters are required: current_class_id, school_subject_id, current_session_id, current_term_id",
+        message:
+          "All query parameters are required: current_class_id, school_subject_id, current_session_id, current_term_id",
       });
     }
 
@@ -780,45 +909,45 @@ class StudentSubjectAssignController extends BaseController {
         current_term_id,
       },
       attributes: [
-        'id',
-        'student_id',
-        'current_class_id',
-        'school_subject_id',
-        'current_session_id',
-        'current_term_id',
-        'ca_1_score',
-        'exam_score',
-        'createdAt',
-        'updatedAt'
+        "id",
+        "student_id",
+        "current_class_id",
+        "school_subject_id",
+        "current_session_id",
+        "current_term_id",
+        "ca_1_score",
+        "exam_score",
+        "createdAt",
+        "updatedAt",
       ],
       include: [
         {
           model: require("../models").SchoolStudent,
           as: "Student",
-          attributes: ['id', 'full_name', 'admission_number',]
+          attributes: ["id", "full_name", "admission_number"],
         },
         {
           model: require("../models").SchoolClass,
           as: "Class",
-          attributes: ['id', 'class_name']
+          attributes: ["id", "class_name"],
         },
         {
           model: require("../models").SchoolSubject,
           as: "Subject",
-          attributes: ['id', 'subject_name',]
+          attributes: ["id", "subject_name"],
         },
         {
           model: require("../models").SchoolSession,
           as: "Session",
-          attributes: ['id', 'session_name']
+          attributes: ["id", "session_name"],
         },
         {
           model: require("../models").SchoolTerm,
           as: "Term",
-          attributes: ['id', 'term_name']
+          attributes: ["id", "term_name"],
         },
       ],
-      order: [['student_id', 'ASC']],
+      order: [["student_id", "ASC"]],
     });
 
     console.log(`Found ${assignments.length} student assignments`);
@@ -826,18 +955,18 @@ class StudentSubjectAssignController extends BaseController {
     if (!assignments || assignments.length === 0) {
       return res.status(404).json({
         status: "error",
-        message: "No student subject assignments found for the specified parameters",
+        message:
+          "No student subject assignments found for the specified parameters",
       });
     }
 
     // Format the response
-    const studentAssignments = assignments.map(assignment => ({
+    const studentAssignments = assignments.map((assignment) => ({
       assignment_id: assignment.id,
       student: {
         id: assignment.Student.id,
         full_name: assignment.Student.full_name,
         admission_number: assignment.Student.admission_number,
-
       },
       class: {
         id: assignment.Class.id,
@@ -858,12 +987,15 @@ class StudentSubjectAssignController extends BaseController {
       marks: {
         ca_1_score: assignment.ca_1_score || null,
         exam_score: assignment.exam_score || null,
-        total_score: this.calculateTotal(assignment.ca_1_score, assignment.exam_score),
+        total_score: this.calculateTotal(
+          assignment.ca_1_score,
+          assignment.exam_score
+        ),
       },
       timestamps: {
         created_at: assignment.createdAt,
         updated_at: assignment.updatedAt,
-      }
+      },
     }));
 
     res.json({
@@ -889,32 +1021,31 @@ class StudentSubjectAssignController extends BaseController {
         assignments: studentAssignments,
         summary: {
           total_students: assignments.length,
-          students_with_ca: assignments.filter(a => a.ca_1_score !== null).length,
-          students_with_exam: assignments.filter(a => a.exam_score !== null).length,
-          students_completed: assignments.filter(a => a.ca_1_score !== null && a.exam_score !== null).length,
-          students_pending: assignments.filter(a => a.ca_1_score === null && a.exam_score === null).length,
-        }
+          students_with_ca: assignments.filter((a) => a.ca_1_score !== null)
+            .length,
+          students_with_exam: assignments.filter((a) => a.exam_score !== null)
+            .length,
+          students_completed: assignments.filter(
+            (a) => a.ca_1_score !== null && a.exam_score !== null
+          ).length,
+          students_pending: assignments.filter(
+            (a) => a.ca_1_score === null && a.exam_score === null
+          ).length,
+        },
       },
     });
   });
 
   // Get all student assigned subjects with scores by session, term, and class
   getAllStudentSubjectsWithScores = asyncHandler(async (req, res) => {
-    const {
-      current_session_id,
-      current_term_id,
-      current_class_id,
-    } = req.query;
+    const { current_session_id, current_term_id, current_class_id } = req.query;
 
     // Validate required fields
-    if (
-      !current_session_id ||
-      !current_term_id ||
-      !current_class_id
-    ) {
+    if (!current_session_id || !current_term_id || !current_class_id) {
       return res.status(400).json({
         status: "error",
-        message: "All query parameters are required: current_session_id, current_term_id, current_class_id",
+        message:
+          "All query parameters are required: current_session_id, current_term_id, current_class_id",
       });
     }
 
@@ -933,61 +1064,67 @@ class StudentSubjectAssignController extends BaseController {
           current_class_id,
         },
         attributes: [
-          'id',
-          'student_id',
-          'current_class_id',
-          'school_subject_id',
-          'current_session_id',
-          'current_term_id',
-          'ca_1_score',
-          'exam_score',
-          'createdAt',
-          'updatedAt'
+          "id",
+          "student_id",
+          "current_class_id",
+          "school_subject_id",
+          "current_session_id",
+          "current_term_id",
+          "ca_1_score",
+          "exam_score",
+          "createdAt",
+          "updatedAt",
         ],
         include: [
           {
             model: require("../models").SchoolStudent,
             as: "Student",
-            attributes: ['id', 'full_name', 'admission_number']
+            attributes: ["id", "full_name", "admission_number"],
           },
           {
             model: require("../models").SchoolClass,
             as: "Class",
-            attributes: ['id', 'class_name'],
+            attributes: ["id", "class_name"],
             include: [
               {
                 model: require("../models").GradeList,
                 as: "GradeList",
-                attributes: ['id', 'grade_name', 'grade_type'],
+                attributes: ["id", "grade_name", "grade_type"],
                 include: [
                   {
                     model: require("../models").GradeSystem,
                     as: "gradeSystems",
-                    attributes: ['id', 'from_mark', 'to_mark', 'grade', 'remark']
-                  }
-                ]
-              }
-            ]
+                    attributes: [
+                      "id",
+                      "from_mark",
+                      "to_mark",
+                      "grade",
+                      "remark",
+                    ],
+                  },
+                ],
+              },
+            ],
           },
           {
             model: require("../models").SchoolSubject,
             as: "Subject",
-            attributes: ['id', 'subject_name']
+            attributes: ["id", "subject_name"],
           },
           {
             model: require("../models").SchoolSession,
             as: "Session",
-            attributes: ['id', 'session_name']
+            attributes: ["id", "session_name"],
           },
           {
             model: require("../models").SchoolTerm,
             as: "Term",
-            attributes: ['id', 'term_name']
+            attributes: ["id", "term_name"],
           },
         ],
         order: [
-          ['student_id', 'ASC'],
-          ['school_subject_id', 'ASC']
+          ["student_id", "ASC"],
+          ["school_subject_id", "ASC"],
         ],
       });
 
@@ -996,14 +1133,15 @@ class StudentSubjectAssignController extends BaseController {
       if (!assignments || assignments.length === 0) {
         return res.status(404).json({
           status: "error",
-          message: "No student subject assignments found for the specified parameters",
+          message:
+            "No student subject assignments found for the specified parameters",
         });
       }
 
       // Group assignments by student
       const studentsMap = new Map();
 
-      assignments.forEach(assignment => {
+      assignments.forEach((assignment) => {
         const studentId = assignment.student_id;
 
         if (!studentsMap.has(studentId)) {
@@ -1012,23 +1150,28 @@ class StudentSubjectAssignController extends BaseController {
               id: assignment.Student.id,
               full_name: assignment.Student.full_name,
               admission_number: assignment.Student.admission_number,
-
             },
             class: {
               id: assignment.Class.id,
               name: assignment.Class.class_name,
-              gradeList: assignment.Class.GradeList ? {
-                id: assignment.Class.GradeList.id,
-                grade_name: assignment.Class.GradeList.grade_name,
-                grade_type: assignment.Class.GradeList.grade_type,
-                gradeSystems: assignment.Class.GradeList.gradeSystems ? assignment.Class.GradeList.gradeSystems.map(gradeSystem => ({
-                  id: gradeSystem.id,
-                  from_mark: gradeSystem.from_mark,
-                  to_mark: gradeSystem.to_mark,
-                  grade: gradeSystem.grade,
-                  remark: gradeSystem.remark,
-                })) : [],
-              } : null,
+              gradeList: assignment.Class.GradeList
+                ? {
+                    id: assignment.Class.GradeList.id,
+                    grade_name: assignment.Class.GradeList.grade_name,
+                    grade_type: assignment.Class.GradeList.grade_type,
+                    gradeSystems: assignment.Class.GradeList.gradeSystems
+                      ? assignment.Class.GradeList.gradeSystems.map(
+                          (gradeSystem) => ({
+                            id: gradeSystem.id,
+                            from_mark: gradeSystem.from_mark,
+                            to_mark: gradeSystem.to_mark,
+                            grade: gradeSystem.grade,
+                            remark: gradeSystem.remark,
+                          })
+                        )
+                      : [],
+                  }
+                : null,
             },
             session: {
               id: assignment.Session.id,
@@ -1038,7 +1181,7 @@ class StudentSubjectAssignController extends BaseController {
               id: assignment.Term.id,
               name: assignment.Term.term_name,
             },
-            subjects: []
+            subjects: [],
           });
         }
 
@@ -1052,12 +1195,15 @@ class StudentSubjectAssignController extends BaseController {
           marks: {
             ca_1_score: assignment.ca_1_score || null,
             exam_score: assignment.exam_score || null,
-            total_score: this.calculateTotal(assignment.ca_1_score, assignment.exam_score),
+            total_score: this.calculateTotal(
+              assignment.ca_1_score,
+              assignment.exam_score
+            ),
           },
           timestamps: {
             created_at: assignment.createdAt,
             updated_at: assignment.updatedAt,
-          }
+          },
         });
       });
 
@@ -1066,14 +1212,24 @@ class StudentSubjectAssignController extends BaseController {
 
       // Calculate summary statistics
       const totalAssignments = assignments.length;
-      const assignmentsWithCA = assignments.filter(a => a.ca_1_score !== null).length;
-      const assignmentsWithExam = assignments.filter(a => a.exam_score !== null).length;
-      const assignmentsCompleted = assignments.filter(a => a.ca_1_score !== null && a.exam_score !== null).length;
+      const assignmentsWithCA = assignments.filter(
+        (a) => a.ca_1_score !== null
+      ).length;
+      const assignmentsWithExam = assignments.filter(
+        (a) => a.exam_score !== null
+      ).length;
+      const assignmentsCompleted = assignments.filter(
+        (a) => a.ca_1_score !== null && a.exam_score !== null
+      ).length;
 
       // Get unique subjects for summary
-      const uniqueSubjects = [...new Set(assignments.map(a => a.school_subject_id))];
-      const subjectsInfo = uniqueSubjects.map(subjectId => {
-        const assignment = assignments.find(a => a.school_subject_id === subjectId);
+      const uniqueSubjects = [
+        ...new Set(assignments.map((a) => a.school_subject_id)),
+      ];
+      const subjectsInfo = uniqueSubjects.map((subjectId) => {
+        const assignment = assignments.find(
+          (a) => a.school_subject_id === subjectId
+        );
         return {
           id: assignment.Subject.id,
           name: assignment.Subject.subject_name,
@@ -1088,18 +1244,24 @@ class StudentSubjectAssignController extends BaseController {
           class: {
             id: assignments[0]?.Class.id,
             name: assignments[0]?.Class.class_name,
-            gradeList: assignments[0]?.Class.GradeList ? {
-              id: assignments[0].Class.GradeList.id,
-              grade_name: assignments[0].Class.GradeList.grade_name,
-              grade_type: assignments[0].Class.GradeList.grade_type,
-              gradeSystems: assignments[0].Class.GradeList.gradeSystems ? assignments[0].Class.GradeList.gradeSystems.map(gradeSystem => ({
-                id: gradeSystem.id,
-                from_mark: gradeSystem.from_mark,
-                to_mark: gradeSystem.to_mark,
-                grade: gradeSystem.grade,
-                remark: gradeSystem.remark,
-              })) : [],
-            } : null,
+            gradeList: assignments[0]?.Class.GradeList
+              ? {
+                  id: assignments[0].Class.GradeList.id,
+                  grade_name: assignments[0].Class.GradeList.grade_name,
+                  grade_type: assignments[0].Class.GradeList.grade_type,
+                  gradeSystems: assignments[0].Class.GradeList.gradeSystems
+                    ? assignments[0].Class.GradeList.gradeSystems.map(
+                        (gradeSystem) => ({
+                          id: gradeSystem.id,
+                          from_mark: gradeSystem.from_mark,
+                          to_mark: gradeSystem.to_mark,
+                          grade: gradeSystem.grade,
+                          remark: gradeSystem.remark,
+                        })
+                      )
+                    : [],
+                }
+              : null,
           },
           session: {
             id: assignments[0]?.Session.id,
@@ -1119,22 +1281,633 @@ class StudentSubjectAssignController extends BaseController {
             assignments_with_exam: assignmentsWithExam,
             assignments_completed: assignmentsCompleted,
             assignments_pending: totalAssignments - assignmentsCompleted,
-            completion_percentage: totalAssignments > 0 ? Math.round((assignmentsCompleted / totalAssignments) * 100) : 0,
-          }
+            completion_percentage:
+              totalAssignments > 0
+                ? Math.round((assignmentsCompleted / totalAssignments) * 100)
+                : 0,
+          },
         },
       });
-
     } catch (error) {
       console.error("Error fetching student subjects with scores:", error);
       res.status(500).json({
         status: "error",
-        message: "Internal server error while fetching student subjects with scores",
+        message:
+          "Internal server error while fetching student subjects with scores",
         error: error.message,
       });
     }
   });
 
-  // Helper method to calculate total score
+  //   getStudentAssignedSubjects2 = asyncHandler(async (req, res) => {
+  //   const { current_class_id, current_session_id, current_term_id } = req.query;
+
+  //   if (!current_class_id || !current_session_id || !current_term_id) {
+  //     return res.status(400).json({
+  //       status: "error",
+  //       message:
+  //         "All query parameters are required: current_class_id, current_session_id, current_term_id",
+  //     });
+  //   }
+
+  //   const termId = Number(current_term_id);
+  //   let termIds = [];
+  //   if (termId === 1) termIds = [1];
+  //   if (termId === 2) termIds = [1, 2];
+  //   if (termId === 3) termIds = [1, 2, 3];
+
+  //   // Term mapping
+  //   const termMapping = {
+  //     1: "First Term",
+  //     2: "Second Term",
+  //     3: "Third Term",
+  //   };
+
+  //   // Fetch assignments for the relevant terms
+  //   const assignments = await StudentSubjectAssign.findAll({
+  //     where: {
+  //       current_class_id,
+  //       current_session_id,
+  //       current_term_id: termIds,
+  //     },
+  //     include: [
+  //       {
+  //         model: SchoolStudent,
+  //         as: "Student",
+  //         attributes: ["id", "full_name", "admission_number", "gender", "dob"],
+  //       },
+  //       {
+  //         model: SchoolClass,
+  //         as: "Class",
+  //         attributes: ["id", "class_name"],
+  //         include: [
+  //           {
+  //             model: GradeList,
+  //             as: "GradeList",
+  //             attributes: [
+  //               "id",
+  //               "grade_name",
+  //               "grade_type",
+  //               "allow_grade",
+  //               "allow_remark",
+  //             ],
+  //             include: [
+  //               {
+  //                 model: GradeSystem,
+  //                 as: "gradeSystems",
+  //                 attributes: ["id", "from_mark", "to_mark", "grade", "remark"],
+  //               },
+  //             ],
+  //           },
+  //         ],
+  //       },
+  //       {
+  //         model: SchoolSubject,
+  //         as: "Subject",
+  //         attributes: ["id", "subject_name"],
+  //       },
+  //       {
+  //         model: SchoolSession,
+  //         as: "Session",
+  //         attributes: [
+  //           "id",
+  //           "session_name",
+  //           "first_term_start",
+  //           "first_term_end",
+  //           "second_term_start",
+  //           "second_term_end",
+  //           "third_term_start",
+  //           "third_term_end",
+  //         ],
+  //       },
+  //       {
+  //         model: SchoolTerm,
+  //         as: "Term",
+  //         attributes: ["id", "term_name"],
+  //       },
+  //     ],
+  //   });
+
+  //   if (!assignments || assignments.length === 0) {
+  //     return res.status(404).json({
+  //       status: "error",
+  //       message: "No student subject assignments found",
+  //     });
+  //   }
+
+  //   // ===============================
+  //   // GROUP STUDENTS
+  //   // ===============================
+  //   const groupedStudents = {};
+
+  //   assignments.forEach((assignment) => {
+  //     const studentId = assignment.Student.id;
+  //     const tId = assignment.Term.id;
+  //     const termName = termMapping[tId];
+
+  //     if (!groupedStudents[studentId]) {
+  //       // Initialize the student object
+  //       groupedStudents[studentId] = {
+  //         student: {
+  //           id: assignment.Student.id,
+  //           full_name: assignment.Student.full_name,
+  //           admission_number: assignment.Student.admission_number,
+  //           gender: assignment.Student.gender,
+  //           dob: assignment.Student.dob,
+  //         },
+  //         class: {
+  //           id: assignment.Class.id,
+  //           name: assignment.Class.class_name,
+  //           grading_name: assignment.Class.GradeList,
+  //         },
+  //         session: {
+  //           id: assignment.Session.id,
+  //           name: assignment.Session.session_name,
+  //           first_term_start: assignment.Session.first_term_start,
+  //           first_term_end: assignment.Session.first_term_end,
+  //           second_term_start: assignment.Session.second_term_start,
+  //           second_term_end: assignment.Session.second_term_end,
+  //           third_term_start: assignment.Session.third_term_start,
+  //           third_term_end: assignment.Session.third_term_end,
+  //         },
+  //         // Current term info (based on query parameter)
+  //         current_term: {
+  //           id: termId,
+  //           name: termMapping[termId],
+  //         },
+  //         // Group subjects by term
+  //         subjects_by_term: {
+  //           "First Term": [],
+  //           "Second Term": [],
+  //           "Third Term": [],
+  //         },
+  //         // All subjects in a flat array (optional, remove if not needed)
+  //         subjects: [],
+  //         performance: {
+  //           mark_obtained: 0,
+  //           mark_obtainable: 0,
+  //           total_subjects: 0,
+  //           average: 0,
+  //           position: null,
+  //         },
+  //         term_performance_summary: {},
+  //         term_positions_scored: {},
+  //       };
+
+  //       // Initialize term_performance_summary & term_positions_scored with term names
+  //       Object.keys(termMapping).forEach((id) => {
+  //         const name = termMapping[id];
+  //         groupedStudents[studentId].term_performance_summary[name] = {
+  //           mark_obtained: 0,
+  //           total_subjects: 0,
+  //         };
+  //         groupedStudents[studentId].term_positions_scored[name] = null;
+  //       });
+  //     }
+
+  //     // Scores
+  //     const caRaw = assignment.ca_1_score;
+  //     const examRaw = assignment.exam_score;
+  //     let total = "ABS";
+
+  //     if (!this.isAbsent(caRaw) && !this.isAbsent(examRaw)) {
+  //       const ca = this.toNumber(caRaw);
+  //       const exam = this.toNumber(examRaw);
+  //       total = Math.abs(ca + exam);
+
+  //       // PERFORMANCE
+  //       groupedStudents[studentId].performance.mark_obtained += total;
+  //       groupedStudents[studentId].performance.mark_obtainable += 100;
+  //       groupedStudents[studentId].performance.total_subjects += 1;
+
+  //       // TERM PERFORMANCE
+  //       groupedStudents[studentId].term_performance_summary[
+  //         termName
+  //       ].mark_obtained += total;
+  //       groupedStudents[studentId].term_performance_summary[
+  //         termName
+  //       ].total_subjects += 1;
+  //     }
+
+  //     // Add subject to the appropriate term array
+  //     const subjectEntry = {
+  //       id: assignment.Subject.id,
+  //       name: assignment.Subject.subject_name,
+  //       ca_1_score: caRaw,
+  //       exam_score: examRaw,
+  //       total,
+  //     };
+
+  //     // Add to subjects_by_term
+  //     if (
+  //       !groupedStudents[studentId].subjects_by_term[termName].some(
+  //         (s) => s.id === assignment.Subject.id
+  //       )
+  //     ) {
+  //       groupedStudents[studentId].subjects_by_term[termName].push(subjectEntry);
+  //     }
+
+  //     // Add to flat subjects array (only for the current term if you want to avoid duplicates)
+  //     // If you want ALL subjects from all terms, keep as is
+  //     // If you want only current term subjects in the flat array, use:
+  //     if (tId === termId) {
+  //       if (
+  //         !groupedStudents[studentId].subjects.some(
+  //           (s) => s.id === assignment.Subject.id
+  //         )
+  //       ) {
+  //         groupedStudents[studentId].subjects.push({
+  //           ...subjectEntry,
+  //           term: termName,
+  //         });
+  //       }
+  //     }
+  //   });
+
+  //   // ===============================
+  //   // CALCULATE AVERAGE
+  //   // ===============================
+  //   const studentsArray = Object.values(groupedStudents);
+  //   studentsArray.forEach((student) => {
+  //     const { mark_obtained, total_subjects } = student.performance;
+  //     student.performance.average =
+  //       total_subjects > 0
+  //         ? Number((mark_obtained / total_subjects).toFixed(2))
+  //         : 0;
+  //   });
+
+  //   // ===============================
+  //   // CALCULATE OVERALL POSITION
+  //   // ===============================
+  //   const sortedByAverage = [...studentsArray].sort(
+  //     (a, b) => b.performance.average - a.performance.average
+  //   );
+
+  //   let currentPosition = 1;
+  //   let previousAverage = null;
+
+  //   sortedByAverage.forEach((student, index) => {
+  //     const avg = student.performance.average;
+  //     if (previousAverage === null) {
+  //       student.performance.position = currentPosition;
+  //     } else if (avg === previousAverage) {
+  //       student.performance.position = currentPosition;
+  //     } else {
+  //       currentPosition = index + 1;
+  //       student.performance.position = currentPosition;
+  //     }
+  //     previousAverage = avg;
+  //   });
+
+  //   studentsArray.sort(
+  //     (a, b) => a.performance.position - b.performance.position
+  //   );
+
+  //   // ===============================
+  //   // CALCULATE TERM POSITIONS
+  //   // ===============================
+  //   termIds.forEach((tId) => {
+  //     const termName = termMapping[tId];
+  //     this.calculateTermPositions(studentsArray, termName);
+  //   });
+
+  //   // ===============================
+  //   // RESPONSE
+  //   // ===============================
+  //   res.json({
+  //     status: "success",
+  //     message: "Student assigned subjects retrieved successfully",
+  //     data: studentsArray,
+  //   });
+  // });
+
+  getStudentAssignedSubjects2 = asyncHandler(async (req, res) => {
+    const { current_class_id, current_session_id, current_term_id } = req.query;
+
+    if (!current_class_id || !current_session_id || !current_term_id) {
+      return res.status(400).json({
+        status: "error",
+        message:
+          "All query parameters are required: current_class_id, current_session_id, current_term_id",
+      });
+    }
+
+    const termId = Number(current_term_id);
+    let termIds = [];
+    if (termId === 1) termIds = [1];
+    if (termId === 2) termIds = [1, 2];
+    if (termId === 3) termIds = [1, 2, 3];
+
+    // Term mapping
+    const termMapping = {
+      1: "First Term",
+      2: "Second Term",
+      3: "Third Term",
+    };
+
+    // Fetch assignments for the relevant terms
+    const assignments = await StudentSubjectAssign.findAll({
+      where: {
+        current_class_id,
+        current_session_id,
+        current_term_id: termIds,
+      },
+      include: [
+        {
+          model: SchoolStudent,
+          as: "Student",
+          attributes: ["id", "full_name", "admission_number", "gender", "dob"],
+        },
+        {
+          model: SchoolClass,
+          as: "Class",
+          attributes: ["id", "class_name"],
+          include: [
+            {
+              model: GradeList,
+              as: "GradeList",
+              attributes: [
+                "id",
+                "grade_name",
+                "grade_type",
+                "allow_grade",
+                "allow_remark",
+              ],
+              include: [
+                {
+                  model: GradeSystem,
+                  as: "gradeSystems",
+                  attributes: ["id", "from_mark", "to_mark", "grade", "remark"],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: SchoolSubject,
+          as: "Subject",
+          attributes: ["id", "subject_name"],
+        },
+        {
+          model: SchoolSession,
+          as: "Session",
+          attributes: [
+            "id",
+            "session_name",
+            "first_term_start",
+            "first_term_end",
+            "second_term_start",
+            "second_term_end",
+            "third_term_start",
+            "third_term_end",
+          ],
+        },
+        {
+          model: SchoolTerm,
+          as: "Term",
+          attributes: ["id", "term_name"],
+        },
+      ],
+    });
+
+    if (!assignments || assignments.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "No student subject assignments found",
+      });
+    }
+
+    // ===============================
+    // GROUP STUDENTS
+    // ===============================
+    const groupedStudents = {};
+
+    assignments.forEach((assignment) => {
+      const studentId = assignment.Student.id;
+      const tId = assignment.Term.id;
+      const termName = termMapping[tId];
+
+      if (!groupedStudents[studentId]) {
+        // Initialize the student object
+        groupedStudents[studentId] = {
+          student: {
+            id: assignment.Student.id,
+            full_name: assignment.Student.full_name,
+            admission_number: assignment.Student.admission_number,
+            gender: assignment.Student.gender,
+            dob: assignment.Student.dob,
+          },
+          class: {
+            id: assignment.Class.id,
+            name: assignment.Class.class_name,
+            grading_name: assignment.Class.GradeList,
+          },
+          session: {
+            id: assignment.Session.id,
+            name: assignment.Session.session_name,
+            first_term_start: assignment.Session.first_term_start,
+            first_term_end: assignment.Session.first_term_end,
+            second_term_start: assignment.Session.second_term_start,
+            second_term_end: assignment.Session.second_term_end,
+            third_term_start: assignment.Session.third_term_start,
+            third_term_end: assignment.Session.third_term_end,
+          },
+          // Current term from query
+          current_term: {
+            id: termId,
+            name: termMapping[termId],
+          },
+          // Subjects array for CURRENT TERM only
+          subjects: [],
+          performance: {
+            mark_obtained: 0,
+            mark_obtainable: 0,
+            total_subjects: 0,
+            average: 0,
+            position: null,
+          },
+          term_performance_summary: {},
+          term_positions_scored: {},
+        };
+
+        // Initialize term_performance_summary & term_positions_scored for ALL terms
+        Object.keys(termMapping).forEach((id) => {
+          const name = termMapping[id];
+          groupedStudents[studentId].term_performance_summary[name] = {
+            mark_obtained: 0,
+            total_subjects: 0,
+          };
+          groupedStudents[studentId].term_positions_scored[name] = null;
+        });
+      }
+
+      // Scores
+      const caRaw = assignment.ca_1_score;
+      const examRaw = assignment.exam_score;
+      let total = "ABS";
+
+      if (!this.isAbsent(caRaw) && !this.isAbsent(examRaw)) {
+        const ca = this.toNumber(caRaw);
+        const exam = this.toNumber(examRaw);
+        total = Math.abs(ca + exam);
+      } else if (!this.isAbsent(caRaw)) {
+        // Only CA score available
+        total = Math.abs(this.toNumber(caRaw));
+      } else if (!this.isAbsent(examRaw)) {
+        // Only exam score available
+        total = Math.abs(this.toNumber(examRaw));
+      }
+
+      // Update term performance for each term individually
+      if (typeof total === "number") {
+        groupedStudents[studentId].term_performance_summary[
+          termName
+        ].mark_obtained += total;
+        groupedStudents[studentId].term_performance_summary[
+          termName
+        ].total_subjects += 1;
+      }
+
+      // Only add subjects for the CURRENT TERM (the one being queried)
+      if (tId === termId) {
+        if (
+          !groupedStudents[studentId].subjects.some(
+            (s) => s.id === assignment.Subject.id
+          )
+        ) {
+          groupedStudents[studentId].subjects.push({
+            id: assignment.Subject.id,
+            name: assignment.Subject.subject_name,
+            ca_1_score: caRaw,
+            exam_score: examRaw,
+            total,
+          });
+        }
+      }
+    });
+
+    // ===============================
+    // CALCULATE PERFORMANCE FOR CURRENT TERM
+    // ===============================
+    Object.values(groupedStudents).forEach((student) => {
+      const currentTermName = termMapping[termId];
+      const termSummary = student.term_performance_summary[currentTermName];
+
+      // For current term performance
+      if (termSummary) {
+        student.performance.mark_obtained = termSummary.mark_obtained;
+        student.performance.total_subjects = termSummary.total_subjects;
+        student.performance.mark_obtainable = termSummary.total_subjects * 100;
+        student.performance.average =
+          termSummary.total_subjects > 0
+            ? Number(
+                (
+                  termSummary.mark_obtained / termSummary.total_subjects
+                ).toFixed(2)
+              )
+            : 0;
+      }
+    });
+
+    // ===============================
+    // CALCULATE POSITION FOR CURRENT TERM
+    // ===============================
+    const studentsArray = Object.values(groupedStudents);
+
+    // Sort by current term average
+    const sortedByAverage = [...studentsArray].sort(
+      (a, b) => b.performance.average - a.performance.average
+    );
+
+    let currentPosition = 1;
+    let previousAverage = null;
+
+    sortedByAverage.forEach((student, index) => {
+      const avg = student.performance.average;
+      if (previousAverage === null) {
+        student.performance.position = currentPosition;
+      } else if (avg === previousAverage) {
+        student.performance.position = currentPosition;
+      } else {
+        currentPosition = index + 1;
+        student.performance.position = currentPosition;
+      }
+      previousAverage = avg;
+    });
+
+    studentsArray.sort(
+      (a, b) => a.performance.position - b.performance.position
+    );
+
+    // ===============================
+    // CALCULATE TERM POSITIONS FOR ALL TERMS
+    // ===============================
+    // Calculate positions for each term individually
+    Object.keys(termMapping).forEach((id) => {
+      const termName = termMapping[id];
+      const termIdNum = parseInt(id);
+
+      // Only calculate positions for terms that are within the query range
+      if (termIdNum <= termId) {
+        // Create a copy of students for this term's ranking
+        const studentsForTerm = studentsArray.map((student) => ({
+          ...student,
+          termAverage:
+            student.term_performance_summary[termName].total_subjects > 0
+              ? Number(
+                  (
+                    student.term_performance_summary[termName].mark_obtained /
+                    student.term_performance_summary[termName].total_subjects
+                  ).toFixed(2)
+                )
+              : 0,
+        }));
+
+        // Sort by term average
+        const sortedForTerm = [...studentsForTerm].sort(
+          (a, b) => b.termAverage - a.termAverage
+        );
+
+        let position = 1;
+        let prevAvg = null;
+
+        // Assign positions
+        sortedForTerm.forEach((student, index) => {
+          const avg = student.termAverage;
+          if (prevAvg === null) {
+            student.term_positions_scored[termName] = position;
+          } else if (avg === prevAvg) {
+            student.term_positions_scored[termName] = position;
+          } else {
+            position = index + 1;
+            student.term_positions_scored[termName] = position;
+          }
+          prevAvg = avg;
+        });
+
+        // Update the original studentsArray with positions
+        sortedForTerm.forEach((sortedStudent) => {
+          const originalStudent = studentsArray.find(
+            (s) => s.student.id === sortedStudent.student.id
+          );
+          if (originalStudent) {
+            originalStudent.term_positions_scored[termName] =
+              sortedStudent.term_positions_scored[termName];
+          }
+        });
+      }
+    });
+
+    // ===============================
+    // RESPONSE
+    // ===============================
+    res.json({
+      status: "success",
+      message: "Student assigned subjects retrieved successfully",
+      data: studentsArray,
+    });
+  });
+
   calculateTotal(ca1Score, examScore) {
     const ca1 = parseFloat(ca1Score) || 0;
     const exam = parseFloat(examScore) || 0;
@@ -1146,6 +1919,44 @@ class StudentSubjectAssignController extends BaseController {
 
     return null;
   }
+
+  isAbsent = (value) => value === "ABS";
+
+  toNumber = (value) => Number(value) || 0;
+
+  calculateTermPositions = (students, termId) => {
+    const ranked = [...students].sort((a, b) => {
+      const aSum = a.term_performance_summary[termId];
+      const bSum = b.term_performance_summary[termId];
+
+      const aAvg = aSum.total_subjects
+        ? aSum.mark_obtained / aSum.total_subjects
+        : 0;
+
+      const bAvg = bSum.total_subjects
+        ? bSum.mark_obtained / bSum.total_subjects
+        : 0;
+
+      return bAvg - aAvg;
+    });
+
+    let position = 1;
+    let prevAvg = null;
+
+    ranked.forEach((student, index) => {
+      const sum = student.term_performance_summary[termId];
+      const avg = sum.total_subjects
+        ? sum.mark_obtained / sum.total_subjects
+        : 0;
+
+      if (prevAvg !== null && avg !== prevAvg) {
+        position = index + 1;
+      }
+
+      student.term_positions_scored[termId] = position;
+      prevAvg = avg;
+    });
+  };
 }
 
 module.exports = new StudentSubjectAssignController();

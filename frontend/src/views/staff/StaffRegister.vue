@@ -170,9 +170,9 @@
             <div class="form-group">
               <label class="form-label">Role *</label>
               <vee-form-field
-                v-model="form.roleId"
-                name="roleId"
-                :class="['form-select', errors.roleId]"
+                v-model="form.role_id"
+                name="role_id"
+                :class="['form-select', errors.role_id]"
                 as="select"
               >
                 <option value="">Select Role</option>
@@ -184,7 +184,7 @@
                   {{ role.role_name }}
                 </option>
               </vee-form-field>
-              <vee-form-error name="roleId" class="text-danger error-message" />
+              <vee-form-error name="role_id" class="text-danger error-message" />
             </div>
           </div>
 
@@ -492,7 +492,7 @@ const form = ref({
   state: "",
   local_gov: "",
   date_of_employment: "",
-  roleId: "",
+  role_id:"",
   password: "pwd123",
   status: true,
   has_school_access: true,
@@ -541,7 +541,7 @@ const formValidation = yup.object({
   state: yup.string().required("State is required"),
   local_gov: yup.string().required("Local government is required"),
   date_of_employment: yup.string().required("Employment date is required"),
-  roleId: yup.string().required("Role ID is required"),
+  role_id: yup.string().required("Role ID is required"),
   gender: yup.string().required("Gender is required"),
   employee_id: yup.string().required("Employee ID is required"),
   date_of_birth: yup

@@ -177,6 +177,8 @@ const getAllStudentByActiveSession = asyncHandler(async (req, res) => {
     page = 1,
     limit = 25,
     search = "",
+    current_class_id,
+    gender,
     sortBy = "createdAt",
     sortOrder = "DESC",
   } = req.query;
@@ -192,6 +194,16 @@ const getAllStudentByActiveSession = asyncHandler(async (req, res) => {
       { full_name: { [Op.like]: `%${search}%` } },
       { admission_number: { [Op.like]: `%${search}%` } },
     ];
+  }
+
+  // Add class filter
+  if (current_class_id) {
+    whereClause.current_class_id = parseInt(current_class_id);
+  }
+
+  // Add gender filter
+  if (gender) {
+    whereClause.gender = gender;
   }
 
   const activeSession = await SchoolSession.findOne({
@@ -223,17 +235,19 @@ const getAllStudentByActiveSession = asyncHandler(async (req, res) => {
     order: [[sortBy, sortOrder]],
   });
 
+  const totalPages = Math.ceil(count / limitNumber);
+
   res.json({
     status: "success",
     data: {
       students: rows,
       pagination: {
         currentPage: pageNumber,
-        totalPages: Math.ceil(count / limitNumber),
-        totalItems: count,
-        itemsPerPage: limitNumber,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1,
+        totalPages: totalPages,
+        totalCount: count,
+        limit: limitNumber,
+        hasNextPage: pageNumber < totalPages,
+        hasPrevPage: pageNumber > 1,
       },
     },
   });

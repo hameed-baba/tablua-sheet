@@ -130,6 +130,16 @@ const router = createRouter({
           },
         },
         {
+          path: "/staff/activity",
+          name: "staff-activity",
+          component: () => import("../views/staff/StaffActivity.vue"),
+          meta: {
+            requiresAuth: true,
+            title: "Staff Activity",
+            description: "Monitor staff login sessions and activity.",
+          },
+        },
+        {
           path: "/parents",
           name: "parents",
           component: () => import("../views/Parents.vue"),
@@ -303,6 +313,26 @@ const router = createRouter({
           },
         },
       ],
+    },
+    {
+      path: "/teacher-demo",
+      name: "teacher-demo",
+      component: () => import("../views/TeacherDemo.vue"),
+      meta: {
+        requiresAuth: false,
+        title: "Teacher Demo",
+        description: "Demo page to access teacher dashboard.",
+      },
+    },
+    {
+      path: "/teacher-dashboard",
+      name: "teacher-dashboard",
+      component: () => import("../views/TeacherDashboard.vue"),
+      meta: {
+        requiresAuth: true,
+        title: "Teacher Dashboard",
+        description: "Teacher dashboard for managing assigned classes and entering marks.",
+      },
     },
     {
       path: "/forbidden",

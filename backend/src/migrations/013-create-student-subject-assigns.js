@@ -109,7 +109,9 @@ module.exports = {
       "student_id",
       "current_session_id",
       "current_term_id",
-    ]);
+    ], {
+      name: "idx_student_session_term"
+    });
   },
 
   async down(queryInterface, Sequelize) {

@@ -50,7 +50,7 @@
           <thead>
             <tr>
               <th>SN</th>
-              <th >Class</th>
+              <th>Class</th>
               <th class="d-none d-md-table-cell">Teacher Name</th>
               <th class="d-none d-lg-table-cell">Section</th>
               <th class="d-none d-xl-table-cell">Grading System</th>
@@ -72,10 +72,14 @@
               <td>
                 <strong>{{ teacher.class_name }}</strong>
                 <div class="d-md-none">
-                  <small class="text-muted">{{ teacher.SchoolStaff?.full_name }}</small>
+                  <small class="text-muted">{{
+                    teacher.SchoolStaff?.full_name
+                  }}</small>
                 </div>
               </td>
-              <td class="d-none d-md-table-cell">{{ teacher.SchoolStaff?.full_name }}</td>
+              <td class="d-none d-md-table-cell">
+                {{ teacher.SchoolStaff?.full_name }}
+              </td>
               <td class="d-none d-lg-table-cell">
                 <span
                   class="section-badge"
@@ -183,7 +187,7 @@ const getStatus = (status) => {
 };
 
 const editClass = (id) => {
-  selectedClass.value = allClasses.value.find((c)=>c.id == id);
+  selectedClass.value = allClasses.value.find((c) => c.id == id);
   classUpdRef.value.toggleModal();
 };
 
@@ -192,8 +196,6 @@ const deleteClassConfirmation = (data) => {
   console.log(data);
   showDeleteModal.value = true;
 };
-
-
 
 const getAllSections = (page = 1) => {
   isLoadingSection.value = true;
@@ -246,7 +248,7 @@ const deleteClass = () => {
     .deleteClass(selectedClass.value.id)
     .then((response) => {
       if (response.status === 200) {
-        getAllClases()
+        getAllClases();
         toast.success(
           "Class Deleted Successfully",
           `The class for ${selectedClass.value.name} has been deleted successfully.`
@@ -264,7 +266,6 @@ const deleteClass = () => {
     .finally(() => {
       showDeleteModal.value = false;
     });
-
 };
 
 const getAllClases = (page = 1) => {
@@ -273,7 +274,7 @@ const getAllClases = (page = 1) => {
     .getAllClases(page)
     .then((response) => {
       // The array of roles is inside response.data.data
-      allClasses.value = response.data.data.schoolclasss || [];
+      allClasses.value = response.data.data.schoolclasses || [];
       let paginate = response.data.data.pagination;
 
       // Update pagination data
@@ -317,8 +318,6 @@ const filteredClasses = computed(() => {
 
   return result;
 });
-
-
 
 const viewClassStudents = (classItem) => {
   router.push({

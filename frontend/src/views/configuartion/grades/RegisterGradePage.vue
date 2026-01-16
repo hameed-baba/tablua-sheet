@@ -66,6 +66,31 @@
               <vee-form-error name="grade_type" class="error-message" />
             </div>
           </div>
+          <div class="d-flex justify-content-end">
+            <label class="check-all-main">
+              <input
+                type="checkbox"
+                :checked="formData.allow_grade"
+                @change="toggleAllowGrade"
+              />
+              <span class="checkmark"></span>
+              <span class="permission-label">
+                Allow Grade <small>(A, B)</small>
+              </span>
+            </label>
+
+            <label class="check-all-main">
+              <input
+                type="checkbox"
+                :checked="formData.allow_remark"
+                @change="toggleAllowRemark"
+              />
+              <span class="checkmark"></span>
+              <span class="permission-label">
+                Allow Remark <small>(Excellent, Good)</small>
+              </span>
+            </label>
+          </div>
         </div>
 
         <div class="form-actions pe-4">
@@ -161,7 +186,17 @@
               </div>
 
               <div class="form-row">
-                <div class="form-group">
+                <div class="form-group" v-if="formData.allow_grade === true">
+                  <label class="form-label">Grade *</label>
+                  <input
+                    type="text"
+                    v-model="range.grade"
+                    class="form-input"
+                    placeholder="e.g., A+, B, 1st"
+                  />
+                </div>
+
+                <div class="form-group" v-if="formData.allow_remark === true">
                   <label class="form-label">Remark *</label>
                   <input
                     type="text"
@@ -169,18 +204,6 @@
                     class="form-input"
                     placeholder="e.g., Excellent, Good"
                   />
-                </div>
-
-                <div v-if="formData.grade_type !== 'remark_grade'">
-                  <div class="form-group">
-                    <label class="form-label">Grade *</label>
-                    <input
-                      type="text"
-                      v-model="range.grade"
-                      class="form-input"
-                      placeholder="e.g., A+, B, 1st"
-                    />
-                  </div>
                 </div>
               </div>
             </div>
@@ -202,7 +225,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import * as yup from "yup";
 import { useToast } from "../../../composables/useToast";
@@ -225,6 +248,8 @@ const loading = ref(false);
 const formData = ref({
   grade_name: "",
   grade_type: "",
+  allow_grade: true,
+  allow_remark: true,
   gradeSystems: [
     {
       from_mark: "",
@@ -234,6 +259,14 @@ const formData = ref({
     },
   ],
 });
+
+const toggleAllowGrade = () => {
+  formData.value.allow_grade = !formData.value.allow_grade;
+};
+
+const toggleAllowRemark = () => {
+  formData.value.allow_remark = !formData.value.allow_remark;
+};
 
 const goBack = () => {
   router.push("/configuration");
@@ -286,6 +319,24 @@ const handleSubmit = async () => {
       loading.value = false;
     });
 };
+
+// watch(
+//   () => formData.value.allow_grade,
+//   (val) => {
+//     if (!val) {
+//       formData.value.gradeSystems.forEach((r) => (r.grade = ""));
+//     }
+//   }
+// );
+
+// watch(
+//   () => formData.value.allow_remark,
+//   (val) => {
+//     if (!val) {
+//       formData.value.gradeSystems.forEach((r) => (r.remark = ""));
+//     }
+//   }
+// );
 </script>
 
 <style lang="scss" scoped>

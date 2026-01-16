@@ -15,6 +15,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "role_id",
         as: "Role",
       });
+      
+      SchoolStaff.hasMany(models.StaffSession, {
+        foreignKey: "staff_id",
+        as: "StaffSessions",
+      });
     }
 
     async comparePassword(candidatePassword) {

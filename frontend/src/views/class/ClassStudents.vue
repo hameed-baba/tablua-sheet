@@ -523,7 +523,7 @@ const getClassSubjects = async (id) => {
     .getClassAssignedSubjectByClassId(classId.value)
     .then((response) => {
       if (response.status === 200) {
-        assignedSubjects.value = response.data.data;
+        assignedSubjects.value = response.data.data
       }
     })
     .catch((error) => {

@@ -59,6 +59,12 @@ router.get(
   studentSubjectAssignController.getStudentAssignedSubjects
 );
 
+router.get(
+  "/assigned-subjects-2",
+  authenticate,
+  studentSubjectAssignController.getStudentAssignedSubjects2
+);
+
 // Get all student subjects with scores by session, term, and class
 router.get(
   "/all-subjects-with-scores",

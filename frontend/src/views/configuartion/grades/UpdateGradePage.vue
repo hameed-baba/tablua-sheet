@@ -68,6 +68,32 @@
               <small class="text-muted">Grade type cannot be changed</small>
             </div>
           </div>
+
+          <div class="d-flex justify-content-end">
+            <label class="check-all-main">
+              <input
+                type="checkbox"
+                :checked="gradeData.allow_grade"
+                @change="toggleAllowGrade"
+              />
+              <span class="checkmark"></span>
+              <span class="permission-label">
+                Allow Grade <small>(A, B)</small>
+              </span>
+            </label>
+
+            <label class="check-all-main">
+              <input
+                type="checkbox"
+                :checked="gradeData.allow_remark"
+                @change="toggleAllowRemark"
+              />
+              <span class="checkmark"></span>
+              <span class="permission-label">
+                Allow Remark <small>(Excellent, Good)</small>
+              </span>
+            </label>
+          </div>
         </div>
 
         <div class="form-actions pe-4">
@@ -161,7 +187,7 @@
                   />
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" v-if="gradeData.allow_remark === true">
                   <label class="form-label">Remark *</label>
                   <input
                     type="text"
@@ -170,10 +196,7 @@
                     placeholder="e.g., Excellent, Good"
                   />
                 </div>
-              </div>
-
-              <div class="form-row" v-if="gradeData.grade_type !== 'remark_grade'">
-                <div class="form-group">
+                <div class="form-group" v-if="gradeData.allow_grade === true">
                   <label class="form-label">Grade *</label>
                   <input
                     type="text"
@@ -226,8 +249,18 @@ const loading = ref(false);
 const gradeData = ref({
   grade_name: "",
   grade_type: "",
+  allow_grade: true,
+  allow_remark: true,
   gradeSystems: [],
 });
+
+const toggleAllowGrade = () => {
+  gradeData.value.allow_grade = !gradeData.value.allow_grade;
+};
+
+const toggleAllowRemark = () => {
+  gradeData.value.allow_remark = !gradeData.value.allow_remark;
+};
 
 const goBack = () => {
   router.push("/configuration");
@@ -269,6 +302,8 @@ const fetchGradeData = () => {
           gradeData.value = {
             grade_name: found.grade_name,
             grade_type: found.grade_type,
+            allow_grade: found.allow_grade,
+            allow_remark: found.allow_remark,
             gradeSystems: found.gradeSystems || found.gradeSystems || [],
           };
         } else {
@@ -303,6 +338,8 @@ const handleSubmit = async () => {
   const payload = {
     grade_name: gradeData.value.grade_name,
     grade_type: gradeData.value.grade_type,
+    allow_grade: gradeData.allow_grade,
+    allow_remark: gradeData.allow_remark,
     gradeSystems: gradeData.value.gradeSystems,
   };
 

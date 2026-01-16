@@ -29,6 +29,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       grade_name: DataTypes.STRING,
       grade_type: DataTypes.STRING,
+      allow_grade:DataTypes.BOOLEAN,
+      allow_remark:DataTypes.BOOLEAN,
     },
     {
       sequelize,

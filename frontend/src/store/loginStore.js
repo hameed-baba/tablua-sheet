@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import apiClient from '../services/apiClient'
+import sessionManager from '../utils/sessionManager'
 
 export const useLoginStore = defineStore('loginStore', {
   state: () => ({
@@ -88,8 +89,17 @@ export const useLoginStore = defineStore('loginStore', {
       location.reload()
     },
 
-    logout() {
-      this.LOGOUT()
+    async logout() {
+      try {
+        // Use session manager for logout
+        await sessionManager.logout()
+      } catch (error) {
+        console.error('Error during logout:', error)
+        // Continue with logout even if backend call fails
+      } finally {
+        // Always clear local state
+        this.LOGOUT()
+      }
     },
 
     // Update user information

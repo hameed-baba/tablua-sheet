@@ -1,70 +1,100 @@
 <template>
   <div class="login-container">
-    <div class="login-card">
-      <div class="login-header">
-        <div class="logo">
-          <i class="fa fa-graduation-cap logo-icon" aria-hidden="true"></i>
-          <h1>Greenwood Academy</h1>
+    <div class="login-wrapper">
+      <!-- Left Panel - Blue Wave Design -->
+      <div class="left-panel">
+        <div class="wave-background">
+          <svg
+            class="wave"
+            viewBox="0 0 400 600"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M0,0 L400,0 L400,400 Q350,450 300,400 Q250,350 200,400 Q150,450 100,400 Q50,350 0,400 Z"
+              fill="rgba(255,255,255,0.1)"
+            />
+            <path
+              d="M0,50 L400,50 L400,450 Q350,500 300,450 Q250,400 200,450 Q150,500 100,450 Q50,400 0,450 Z"
+              fill="rgba(255,255,255,0.05)"
+            />
+          </svg>
         </div>
-        <p class="login-subtitle">School Management System</p>
+
+        <div class="left-content">
+          <div class="brand-section">
+            <div class="brand-logo">
+              <div class="logo-circle">
+                <i class="fa fa-graduation-cap"></i>
+              </div>
+            </div>
+            <h1 class="brand-title">Welcome to</h1>
+            <h2 class="brand-name">Greenwood Academy</h2>
+            <p class="brand-description">
+              Streamline your school management with our comprehensive platform.
+              Manage students, staff, grades, and operations all in one place.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <vee-form
-        class="login-form"
-        :validation-schema="formValidation"
-        v-slot="{ errors }"
-        @submit="handleLogin"
-      >
-        <div class="form-group">
-          <label class="form-label">Email Address</label>
-          <vee-form-field
-            type="email"
-            v-model="formData.email"
-            class="form-input"
-            placeholder="Enter your email"
-            :disabled="loading"
-            name="email"
-            :class="{ 'text-danger': errors.email }"
-          />
-          <vee-form-error name="email" class="text-danger" />
-        </div>
+      <!-- Right Panel - Login Form -->
+      <div class="right-panel">
+        <div class="form-container">
+          <h2 class="form-title">Access your account</h2>
 
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <div class="password-input-container">
-            <vee-form-field
-              :type="showPassword ? 'text' : 'password'"
-              v-model="formData.password"
-              class="form-input"
-              placeholder="Enter your password"
-              :disabled="loading"
-              name="password"
-              :class="{ 'text-danger': errors.email }"
-            />
-            <button
-              type="button"
-              class="password-toggle"
-              @click="showPassword = !showPassword"
-              :disabled="loading"
-            >
-              <i :class="['fa', showPassword ? 'fa-eye' : 'fa-eye-slash']"></i>
+          <vee-form
+            class="login-form"
+            :validation-schema="formValidation"
+            v-slot="{ errors }"
+            @submit="handleLogin"
+          >
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <vee-form-field
+                type="email"
+                v-model="formData.email"
+                class="form-input"
+                placeholder="Enter your email"
+                :disabled="loading"
+                name="email"
+                :class="{ error: errors.email }"
+              />
+              <vee-form-error name="email" class="error-message" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <div class="password-input-container">
+                <vee-form-field
+                  :type="showPassword ? 'text' : 'password'"
+                  v-model="formData.password"
+                  class="form-input"
+                  placeholder="Enter your password"
+                  :disabled="loading"
+                  name="password"
+                  :class="{ error: errors.password }"
+                />
+                <button
+                  type="button"
+                  class="password-toggle"
+                  @click="showPassword = !showPassword"
+                  :disabled="loading"
+                >
+                  <i
+                    :class="['fa', showPassword ? 'fa-eye' : 'fa-eye-slash']"
+                  ></i>
+                </button>
+              </div>
+              <vee-form-error name="password" class="error-message" />
+            </div>
+
+            <button type="submit" class="sign-in-btn" :disabled="loading">
+              <span v-if="loading" class="spinner"></span>
+              {{ loading ? "Signing in..." : "Sign In" }}
             </button>
-          </div>
-          <vee-form-error name="password" class="text-danger" />
+          </vee-form>
         </div>
-
-        <button type="submit" class="login-btn" :disabled="loading">
-          <span v-if="loading" class="spinner"></span>
-          {{ loading ? "Signing in..." : "Sign In" }}
-        </button>
-      </vee-form>
-    </div>
-
-    <!-- Background decoration -->
-    <div class="login-bg">
-      <div class="bg-shape shape-1"></div>
-      <div class="bg-shape shape-2"></div>
-      <div class="bg-shape shape-3"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -104,7 +134,6 @@ const handleLogin = () => {
         return;
       }
 
-
       const data = response.data.data;
       const user = data.user;
       const role = user.role;
@@ -139,65 +168,139 @@ const handleLogin = () => {
 <style scoped>
 .login-container {
   min-height: 100vh;
+  /* background: #e5e7eb; */
   display: flex;
   align-items: center;
   justify-content: center;
-  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
   padding: 20px;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.login-wrapper {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  display: flex;
+  max-width: 900px;
+  width: 100%;
+  min-height: 600px;
+}
+
+/* Left Panel - Blue to Purple Gradient */
+.left-panel {
+  flex: 1;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
   overflow: hidden;
 }
 
-.login-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 16px;
-  padding: 32px;
+.wave-background {
+  position: absolute;
+  top: 0;
+  right: 0;
   width: 100%;
-  max-width: 420px;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  height: 100%;
+  opacity: 0.3;
+}
+
+.wave {
+  width: 100%;
+  height: 100%;
+}
+
+.left-content {
   position: relative;
-  z-index: 10;
-}
-
-.login-header {
+  z-index: 2;
   text-align: center;
-  margin-bottom: 28px;
+  padding: 40px;
+  max-width: 350px;
 }
 
-.logo {
+.brand-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
 }
 
-.logo-icon {
-  color: #667eea;
+.brand-logo {
+  margin-bottom: 30px;
+}
+
+.logo-circle {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  margin: 0 auto;
+}
+
+.logo-circle i {
+  font-size: 32px;
+  color: white;
+}
+
+.brand-title {
   font-size: 24px;
+  font-weight: 400;
+  margin: 0 0 8px 0;
+  opacity: 0.9;
 }
 
-.logo h1 {
-  font-size: 22px;
+.brand-name {
+  font-size: 32px;
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  margin: 0 0 24px 0;
+  line-height: 1.2;
+}
+
+.brand-description {
+  font-size: 16px;
+  line-height: 1.6;
+  opacity: 0.8;
   margin: 0;
 }
 
-.login-subtitle {
-  color: #64748b;
-  font-size: 14px;
-  margin: 0;
+/* Right Panel - Login Form */
+.right-panel {
+  flex: 1;
+  /* padding: 80px 60px; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 450px;
+  padding: 40px;
+  background: #fafbfc;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.form-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 40px 0;
+  text-align: center;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 24px;
 }
 
 .form-group {
@@ -207,67 +310,72 @@ const handleLogin = () => {
 }
 
 .form-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 2px;
 }
 
 .form-input {
-  padding: 12px 16px;
-  border: 2px solid rgba(102, 126, 234, 0.2);
-  border-radius: 8px;
-  font-size: 14px;
-  font-family: "Inter", sans-serif;
-  background: rgba(255, 255, 255, 0.8);
-  color: #1e293b;
-  transition: all 0.3s ease;
+  padding: 16px 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 16px;
+  background: #f9fafb;
+  color: #374151;
+  transition: all 0.2s ease;
   width: 100%;
   box-sizing: border-box;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #d1d5db;
   background: white;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.05);
+}
+
+.form-input.error {
+  border-color: #ef4444;
+  background: #fef2f2;
 }
 
 .form-input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  background: #f3f4f6;
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
 }
 
 .password-input-container {
   position: relative;
-  display: flex;
-  align-items: center;
 }
 
 .password-input-container .form-input {
-  padding-right: 44px; /* Make room for the toggle button */
+  padding-right: 50px;
 }
 
 .password-toggle {
   position: absolute;
-  right: 12px;
+  right: 16px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: #64748b;
+  color: #9ca3af;
   cursor: pointer;
   padding: 6px;
-  border-radius: 5px;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
+  border-radius: 4px;
+  transition: all 0.2s ease;
 }
 
 .password-toggle:hover:not(:disabled) {
-  color: #667eea;
-  background: rgba(102, 126, 234, 0.1);
+  color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.1);
 }
 
 .password-toggle:disabled {
@@ -275,123 +383,45 @@ const handleLogin = () => {
   cursor: not-allowed;
 }
 
-.checkbox-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-  color: #475569;
-  cursor: pointer;
-  user-select: none;
+.error-message {
+  font-size: 14px;
+  color: #ef4444;
+  margin-top: 4px;
 }
 
-.checkbox-container input[type="checkbox"] {
-  display: none;
-}
-
-.checkmark {
-  width: 18px;
-  height: 18px;
-  border: 2px solid rgba(102, 126, 234, 0.3);
-  border-radius: 4px;
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.checkbox-container input[type="checkbox"]:checked + .checkmark {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-color: #667eea;
-}
-
-.checkbox-container input[type="checkbox"]:checked + .checkmark::after {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 1px;
-  width: 5px;
-  height: 9px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
-
-.login-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.sign-in-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   color: white;
   border: none;
-  padding: 12px 20px;
-  border-radius: 8px;
+  padding: 16px 24px;
+  border-radius: 12px;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
+  margin-top: 8px;
 }
 
-.login-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4);
+.sign-in-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
-.login-btn:disabled {
+.sign-in-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
 
-.login-footer {
-  text-align: center;
-  margin-top: 18px;
-}
-
-.forgot-password {
-  color: #667eea;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.forgot-password:hover {
-  color: #764ba2;
-}
-
-.demo-credentials {
-  margin-top: 24px;
-  padding: 16px;
-  background: rgba(102, 126, 234, 0.1);
-  border-radius: 10px;
-  border: 1px solid rgba(102, 126, 234, 0.2);
-}
-
-.demo-credentials h4 {
-  margin: 0 0 10px 0;
-  color: #475569;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.demo-item {
-  font-size: 12px;
-  color: #64748b;
-  margin-bottom: 6px;
-}
-
-.demo-item:last-child {
-  margin-bottom: 0;
-}
-
-.demo-item strong {
-  color: #475569;
-}
-
 .spinner {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border: 2px solid transparent;
   border-top: 2px solid currentColor;
   border-radius: 50%;
@@ -404,86 +434,99 @@ const handleLogin = () => {
   }
 }
 
-/* Background decoration */
-.login-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.bg-shape {
-  position: absolute;
-  border-radius: 50%;
-  background: #f8f6fa;
-  /* background: rgba(255, 255, 255, 0.1); */
-  backdrop-filter: blur(10px);
-}
-
-.shape-1 {
-  width: 250px;
-  height: 250px;
-  top: -125px;
-  right: -125px;
-  animation: float 6s ease-in-out infinite;
-}
-
-.shape-2 {
-  width: 180px;
-  height: 180px;
-  bottom: -90px;
-  left: -90px;
-  animation: float 8s ease-in-out infinite reverse;
-}
-
-.shape-3 {
-  width: 130px;
-  height: 130px;
-  top: 50%;
-  left: -65px;
-  animation: float 10s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
 /* Responsive */
-@media (max-width: 640px) {
-  .login-card {
-    padding: 24px 20px;
-    margin: 16px;
+@media (max-width: 1024px) {
+  .login-wrapper {
+    flex-direction: column;
+    max-width: 500px;
   }
 
-  .logo h1 {
+  .left-panel {
+    min-height: 300px;
+    padding: 40px 30px;
+  }
+
+  .brand-title {
     font-size: 20px;
   }
 
-  .form-input {
-    padding: 11px 14px;
+  .brand-name {
+    font-size: 28px;
+  }
+
+  .brand-description {
     font-size: 14px;
   }
 
-  .password-input-container .form-input {
-    padding-right: 40px; /* Adjust for smaller screens */
+  .logo-circle {
+    width: 60px;
+    height: 60px;
   }
 
-  .password-toggle {
-    right: 10px;
-    padding: 5px;
+  .logo-circle i {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    padding: 10px;
   }
 
-  .login-btn {
-    padding: 11px 18px;
+  .left-panel {
+    padding: 30px 20px;
+    min-height: 250px;
+  }
+
+  .right-panel {
+    padding: 50px 30px;
+  }
+
+  .form-container {
+    padding: 30px;
+  }
+
+  .form-title {
+    font-size: 24px;
+  }
+
+  .brand-title {
+    font-size: 18px;
+  }
+
+  .brand-name {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .left-panel {
+    padding: 20px 15px;
+  }
+
+  .right-panel {
+    padding: 40px 20px;
+  }
+
+  .form-container {
+    padding: 25px;
+  }
+
+  .form-input {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  .logo-circle {
+    width: 50px;
+    height: 50px;
+  }
+
+  .logo-circle i {
+    font-size: 20px;
+  }
+
+  .brand-description {
+    font-size: 13px;
   }
 }
 </style>
