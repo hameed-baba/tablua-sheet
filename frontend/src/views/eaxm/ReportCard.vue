@@ -6,8 +6,11 @@
         <p>Generate report cards for all students in a class</p>
       </div>
       <div class="header-actions">
-        <button class="add-btn puppeteer-btn" @click="generatePdf">
-          <!-- :disabled="!reportGenerated || isGeneratingPDF" -->
+        <button
+          class="add-btn puppeteer-btn"
+          :disabled="isGeneratingPDF2"
+          @click="generatePdf"
+        >
           <svg
             width="18"
             height="18"
@@ -22,7 +25,7 @@
               d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 712-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          {{ isGeneratingPDF ? "Generating..." : "Classic PDF" }}
+          {{ isGeneratingPDF2 ? "Generating..." : "Classic PDF" }}
         </button>
         <button
           class="add-btn secondary"
@@ -107,31 +110,11 @@
       </button>
     </div>
 
-    <!-- Style Selector -->
-    <div v-if="reportGenerated" class="style-selector-section">
-      <div class="style-selector-container">
-        <label class="style-label">Report Card Style:</label>
-        <div class="style-options">
-          <button
-            @click="selectedStyle = 'classic'"
-            :class="['style-btn', { active: selectedStyle === 'classic' }]"
-          >
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-              <path
-                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"
-              />
-            </svg>
-            Report Card Style
-          </button>
-        </div>
-      </div>
-    </div>
-
-      <pre>{{ freshData }}</pre>
-
+    <!-- <pre>{{ freshData }}</pre> -->
 
     <!-- Search Section -->
-    <div v-if="reportGenerated" class="search-section">
+    <!-- v-if="reportGenerated"  -->
+    <div class="search-section">
       <div class="search-container">
         <div class="search-input-wrapper">
           <svg
@@ -184,174 +167,159 @@
           <span v-else> Showing all {{ allReportData.length }} students </span>
         </div>
       </div>
-      <pre>{{ freshData }}</pre>
+      <!-- <pre>{{ freshData }}</pre> -->
     </div>
 
-    <!-- No Search Results -->
     <div
-      v-if="reportGenerated && searchQuery && filteredReportData.length === 0"
-      class="no-results-state"
+      class="result-card mb-2"
+      v-for="(student, index) in freshData"
+      :key="index"
     >
-      <svg
-        width="64"
-        height="64"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-        />
-      </svg>
-      <h3>No Students Found</h3>
-      <p>No students match your search for "{{ searchQuery }}"</p>
-      <button @click="clearSearch" class="clear-search-action-btn">
-        Clear Search
-      </button>
-    </div>
+      <!-- Top Section: Student Basic Info -->
+      <div class="report-header">
+        <div class="header-left">
+          <div class="info-item">
+            <span class="info-label-inline text-capitalize">FULL NAME</span>
+            <span class="info-value-inline">{{
+              student.student?.full_name
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label-inline">ADMISSION NUMBER</span>
+            <span class="info-value-inline">{{
+              student.student.admission_number
+            }}</span>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="info-item">
+            <span class="info-label-inline">GENDER</span>
+            <span class="info-value-inline text-capitalize">{{ student.student.gender }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label-inline">DATE OF BIRTH</span>
+            <span class="info-value-inline">{{ student.student.dob }}</span>
+          </div>
+        </div>
+        <div class="position-box">
+          <div class="position-header">Position</div>
+          <div class="position-value">
+            {{
+              displayPosition(
+                student.class.grading_name.gradeSystems,
+                student.class.grading_name.grade_type,
+                student.performance.average,
+                student.performance.position
+              )
+            }}
+          </div>
+        </div>
+      </div>
 
-    <!-- Report Cards -->
-    <div
-      v-if="reportGenerated && filteredReportData.length > 0"
-      class="all-reports-container"
-    >
-      <div
-        v-for="(reportData, index) in filteredReportData"
-        :key="index"
-        :class="'report-card'"
-        :id="`report-card-${index}`"
-      >
-        <!-- Individual Student Download Button -->
-        <div class="student-download-section">
-          <button
-            class="student-download-btn"
-            @click="downloadIndividualReport(reportData, index)"
-            :disabled="isGeneratingPDF"
-          >
-            <svg
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 712-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            {{ isGeneratingPDF ? "Generating..." : "Download Report" }}
-          </button>
+      <!-- Main Content: Subjects Table and Summary Boxes -->
+      <!-- <pre>{{ student.term_performance_summary["First Term"] }}</pre> -->
+      <div class="report-body">
+        <!-- Left: Subjects Table -->
+        <div class="subjects-section">
+          <table class="subjects-table">
+            <thead>
+              <tr>
+                <th class="sn-col">SN</th>
+                <th class="subject-col">SUBJECT NAMES</th>
+                <th class="score-col">CA SCORE</th>
+                <th class="score-col">EXAM SCORE</th>
+                <th class="score-col">TOTAL</th>
+                <th class="grade-col">GRADE</th>
+                <th class="remark-col">REMARK</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(subject, sIndex) in student.subjects"
+                :key="sIndex"
+                class="subject-row"
+              >
+                <td class="sn-cell">{{ sIndex + 1 }}</td>
+                <td class="subject-name-cell">{{ subject.name }}</td>
+                <td class="score-cell">{{ subject.ca_1_score }}</td>
+                <td class="score-cell">{{ subject.exam_score }}</td>
+                <td class="score-cell total-score">{{ subject.total }}</td>
+                <td class="grade-cell">
+                  {{ subject.grade }}
+                </td>
+                <td class="remark-cell">
+                  {{ subject.remark }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        <!-- Print Button -->
-        <div class="print-button-section">
-          <button class="print-btn" @click="printReport">Print</button>
-        </div>
-
-        <!-- Main Report Content -->
-        <div class="report-content">
-          <!-- Header Section with Student Data and Academic Data -->
-          <div class="report-header-section">
-            <!-- Student Data Section -->
-            <div class="student-data-section">
-              <div class="section-header">STUDENT DATA</div>
-              <table class="data-table">
-                <tr>
-                  <td class="label-cell">STUDENT NAME</td>
-                  <td class="value-cell">{{ reportData.student.name }}</td>
-                </tr>
-                <tr>
-                  <td class="label-cell">DATE OF BIRTH</td>
-                  <td class="value-cell">07/11/1997</td>
-                </tr>
-                <tr>
-                  <td class="label-cell">GENDER</td>
-                  <td class="value-cell">
-                    {{ reportData.student.gender || "Female" }}
-                  </td>
-                </tr>
-              </table>
-            </div>
-
-            <!-- Academic Data Section -->
-            <div class="academic-data-section">
-              <div class="section-header">ACADEMIC DATA</div>
-              <table class="data-table">
-                <tr>
-                  <td class="label-cell">ADMISSION NUMBER</td>
-                  <td class="value-cell">
-                    {{ reportData.student.admissionNo }}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="label-cell">CURRENT CLASS</td>
-                  <td class="value-cell">{{ reportData.student.class }}</td>
-                </tr>
-                <tr>
-                  <td class="label-cell">CURRENT TERM</td>
-                  <td class="value-cell">{{ selectedTermName }}</td>
-                </tr>
-                <tr>
-                  <td class="label-cell">CURRENT SESSION</td>
-                  <td class="value-cell">{{ selectedSessionName }}</td>
-                </tr>
-              </table>
-            </div>
-
-            <!-- Position Section -->
-            <div class="position-section">
-              <div class="section-header">POSITION</div>
-              <div class="position-number">{{ reportData.position }}</div>
+        <!-- Right: Summary Boxes -->
+        <div class="summary-section">
+          <!-- Performance Summary -->
+          <div class="summary-box">
+            <div class="summary-box-header">PERFORMANCE SUMMARY</div>
+            <div class="summary-box-body">
+              <div class="summary-row-item">
+                <span class="summary-label-text">Marks Obtained</span>
+                <span class="summary-value-text">{{
+                  student.performance.mark_obtained
+                }}</span>
+              </div>
+              <div class="summary-row-item">
+                <span class="summary-label-text">Average Marks</span>
+                <span class="summary-value-text">{{
+                  student.performance.average
+                }}</span>
+              </div>
+              <div class="summary-row-item">
+                <span class="summary-label-text">Total Subjects</span>
+                <span class="summary-value-text">{{
+                  student.subjects.length
+                }}</span>
+              </div>
             </div>
           </div>
 
-          <!-- Academic Results Table -->
-          <div class="academic-results-section">
-            <table class="results-table">
-              <thead>
-                <tr>
-                  <th class="sn-col">SN</th>
-                  <th class="subject-col">SUBJECT NAME</th>
-                  <th class="score-col">CA</th>
-                  <th class="score-col">EXAM</th>
-                  <th class="score-col">TOTAL MARKS</th>
-                  <th class="remark-col">REMARK</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(subject, subjectIndex) in reportData.subjects"
-                  :key="subject.name"
-                >
-                  <td class="sn-cell">{{ subjectIndex + 1 }}</td>
-                  <td class="subject-name">{{ subject.name }}</td>
-                  <td class="score-cell">{{ subject.ca }}</td>
-                  <td class="score-cell">{{ subject.exam }}</td>
-                  <td class="total-cell" :class="getScoreClass(subject.total)">
-                    {{ subject.total }}
-                  </td>
-                  <td class="remark-cell">{{ subject.remark }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Summary Section -->
-          <div class="summary-footer">
-            <div class="summary-item">
-              <div class="summary-header">TOTAL MARKS</div>
-              <div class="summary-value">{{ reportData.totalMarks }}</div>
+          <!-- Session Info -->
+          <div class="summary-box">
+            <div class="summary-box-header">SESSION INFO</div>
+            <div class="summary-box-body">
+              <div class="session-info">
+                <div class="session-item">
+                  <span class="session-label">Current Session</span>
+                  <span class="session-value">{{ student.session.name }}</span>
+                </div>
+                <div class="session-item">
+                  <span class="session-label">Current Class</span>
+                  <span class="session-value">{{ student.class.name }}</span>
+                </div>
+              </div>
             </div>
-            <div class="summary-item">
-              <div class="summary-header">AVERAGE</div>
-              <div class="summary-value">
-                {{ reportData.average.toFixed(2) }}
+          </div>
+          <div class="summary-box">
+            <div class="summary-box-header">TERM POSITIONS</div>
+            <div class="summary-box-body">
+              <div class="session-info">
+                <div class="session-item">
+                  <span class="session-label">First Term</span>
+                  <span class="session-value">{{
+                    student.term_positions_scored["First Term"] || "-"
+                  }}</span>
+                </div>
+                <div class="session-item">
+                  <span class="session-label">Second Term</span>
+                  <span class="session-value">{{
+                    student.term_positions_scored["Second Term"] || "-"
+                  }}</span>
+                </div>
+                <div class="session-item">
+                  <span class="session-label">Third Term</span>
+                  <span class="session-value">{{
+                    student.term_positions_scored["Third Term"] || "-"
+                  }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -360,7 +328,7 @@
     </div>
 
     <!-- Empty State -->
-    <div v-if="!reportGenerated" class="empty-state">
+    <div v-if="!freshData" class="empty-state">
       <svg
         width="64"
         height="64"
@@ -389,7 +357,7 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useConfigStore } from "../../store/configStore";
 import apiServices from "../../services/apiServices";
 import { useToast } from "../../composables/useToast";
-import { getRemark } from "../../utils/gradeUtils";
+import { getRemark, displayPosition } from "../../utils/gradeUtils";
 import { generateReportCardPdf } from "../../PDF/reportCardPDF";
 
 // Helper function to handle CA/Exam scores (can be number or "ABS")
@@ -466,6 +434,7 @@ const reportGenerated = ref(false);
 const allReportData = ref([]);
 const searchQuery = ref("");
 const isGeneratingPDF = ref(false);
+const isGeneratingPDF2 = ref(false);
 const classes = ref([]);
 const sessions = ref([]);
 const subjects = ref([]);
@@ -492,7 +461,7 @@ const selectedClassName = computed(() => {
 // Computed property for filtered report data based on search query
 const filteredReportData = computed(() => {
   if (!searchQuery.value.trim()) {
-    return allReportData.value;
+    return freshData.value;
   }
 
   const query = searchQuery.value.toLowerCase().trim();
@@ -761,7 +730,6 @@ const printReport = () => {
 const exportClassicPDF = async () => {
   if (!reportGenerated.value) return;
 
-  isGeneratingPDF.value = true;
   try {
     toast.info("PDF Generation", "Generating PDF with pdfmake...");
 
@@ -795,13 +763,13 @@ const exportClassicPDF = async () => {
         (error.response?.data?.message || error.message)
     );
   } finally {
-    isGeneratingPDF.value = false;
+    // isGeneratingPDF.value = false;
   }
 };
 
 // 2. Individual Student Report Download
 const downloadIndividualReport = async (studentReportData, index) => {
-  isGeneratingPDF.value = true;
+  // isGeneratingPDF.value = true;
   try {
     toast.info(
       "PDF Generation",
@@ -853,13 +821,23 @@ const downloadIndividualReport = async (studentReportData, index) => {
         (error.response?.data?.message || error.message)
     );
   } finally {
-    isGeneratingPDF.value = false;
+    // isGeneratingPDF.value = false;
   }
 };
 
 // Clear search function
 const clearSearch = () => {
   searchQuery.value = "";
+};
+
+// Get position suffix (1st, 2nd, 3rd, etc.)
+const getPositionSuffix = (position) => {
+  const j = position % 10;
+  const k = position % 100;
+  if (j === 1 && k !== 11) return "st";
+  if (j === 2 && k !== 12) return "nd";
+  if (j === 3 && k !== 13) return "rd";
+  return "th";
 };
 
 // Get score class for styling based on score value
@@ -909,8 +887,7 @@ const getAssignedSubjects = () => {
 // };
 
 const generatePdf = () => {
-
-
+  isGeneratingPDF2.value = true;
   apiServices
     .generatePdfMakeReport2(freshData.value)
     .then((response) => {
@@ -922,27 +899,29 @@ const generatePdf = () => {
     })
     .catch((error) => {
       console.error(error);
+    })
+    .finally(() => {
+      isGeneratingPDF2.value = false;
     });
 
   const downloadPdf = () => {
-  apiServices
-    .generatePdfMakeReport2(freshData.value)
-    .then((response) => {
-      const pdfBlob = new Blob([response.data], {
-        type: "application/pdf",
+    apiServices
+      .generatePdfMakeReport2(freshData.value)
+      .then((response) => {
+        const pdfBlob = new Blob([response.data], {
+          type: "application/pdf",
+        });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "report-cards.pdf";
+        link.click();
+
+        URL.revokeObjectURL(link.href);
+      })
+      .catch((error) => {
+        console.error(error);
       });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "report-cards.pdf";
-      link.click();
-
-      URL.revokeObjectURL(link.href);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-
-  }
+  };
 };
 
 // Lifecycle
@@ -1165,6 +1144,7 @@ watch(
   display: flex;
   align-items: center;
   margin-bottom: 12px;
+  width: 25%;
 }
 
 .search-icon {
@@ -1175,7 +1155,7 @@ watch(
 }
 
 .search-input {
-  width: 100%;
+  width: 100% !important;
   padding: 12px 12px 12px 44px;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
@@ -1676,6 +1656,352 @@ watch(
   .print-btn {
     padding: 6px 12px;
     font-size: 11px;
+  }
+}
+
+.result-card {
+  background: white;
+  padding: 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+  border: 2px solid #e5e7eb;
+  overflow: hidden;
+}
+
+/* Report Header - Student Basic Info */
+.report-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 20px;
+  padding: 20px;
+  background: #f8fafc;
+  border-bottom: 2px solid #e5e7eb;
+  align-items: start;
+}
+
+.header-left,
+.header-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label-inline {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value-inline {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.position-box {
+  background: #3b82f6;
+  border-radius: 6px;
+  padding: 12px 24px;
+  text-align: center;
+  min-width: 120px;
+}
+
+.position-header {
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.position-value {
+  font-size: 48px;
+  font-weight: 900;
+  color: white;
+  line-height: 1;
+}
+
+/* Report Body - Main Content Area */
+.report-body {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* Subjects Table Section */
+.subjects-section {
+  overflow-x: auto;
+}
+
+.subjects-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #cbd5e1;
+}
+
+.subjects-table thead {
+  background: #f1f5f9;
+}
+
+.subjects-table thead th {
+  padding: 12px 10px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid #cbd5e1;
+}
+
+.sn-col {
+  width: 50px;
+}
+
+.subject-col {
+  text-align: left !important;
+  min-width: 180px;
+}
+
+.score-col {
+  width: 90px;
+}
+
+.grade-col {
+  width: 80px;
+}
+
+.remark-col {
+  width: 120px;
+}
+
+.subjects-table tbody .subject-row {
+  transition: background 0.2s ease;
+}
+
+.subjects-table tbody .subject-row:nth-child(even) {
+  background: #f8fafc;
+}
+
+.subjects-table tbody .subject-row:hover {
+  background: #e0f2fe;
+}
+
+.sn-cell {
+  padding: 12px 10px;
+  text-align: center;
+  font-weight: 600;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+}
+
+.subject-name-cell {
+  padding: 12px 12px;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: left;
+  border: 1px solid #cbd5e1;
+}
+
+.score-cell {
+  padding: 12px 10px;
+  text-align: center;
+  font-weight: 600;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.total-score {
+  background: #fef3c7;
+  color: #92400e;
+  font-weight: 700;
+}
+
+.grade-cell {
+  padding: 12px 10px;
+  text-align: center;
+  font-weight: 700;
+  color: #059669;
+  border: 1px solid #cbd5e1;
+}
+
+.remark-cell {
+  padding: 12px 10px;
+  text-align: center;
+  font-style: italic;
+  color: #64748b;
+  font-size: 12px;
+  border: 1px solid #cbd5e1;
+}
+
+/* Summary Section - Right Side Boxes */
+.summary-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.summary-box {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  overflow: hidden;
+  background: white;
+}
+
+.summary-box-header {
+  background: #f1f5f9;
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  text-align: center;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.summary-box-body {
+  padding: 16px;
+}
+
+.summary-row-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.summary-row-item:last-child {
+  border-bottom: none;
+}
+
+.summary-label-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.summary-value-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* Term Performance Styling */
+.term-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.term-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  text-align: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.term-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.term-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.term-detail-item span:first-child {
+  color: #64748b;
+  font-weight: 600;
+}
+
+.term-value {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 14px;
+}
+
+/* Session Info Styling */
+.session-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.session-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.session-item:last-child {
+  border-bottom: none;
+}
+
+.session-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.session-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .report-body {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-section {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    display: grid;
+  }
+}
+
+@media (max-width: 768px) {
+  .report-header {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .position-box {
+    width: 100%;
+  }
+
+  .report-body {
+    padding: 16px;
+  }
+
+  .subjects-section {
+    overflow-x: scroll;
+  }
+
+  .summary-section {
+    grid-template-columns: 1fr;
   }
 }
 </style>

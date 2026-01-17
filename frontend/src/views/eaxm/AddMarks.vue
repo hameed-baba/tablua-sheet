@@ -156,6 +156,31 @@
 
       <!-- Quick Actions -->
       <div class="quick-actions">
+        <button class="btn-quick-action auto-fill" @click="autoFillMarks">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 10V3L4 14h7v7l9-11h-7z"
+            />
+          </svg>
+          Auto Fill (Test)
+        </button>
+        <button
+          class="btn btn-submit"
+          @click="submitMarks"
+          :disabled="submitting || !canSubmit"
+        >
+          <span v-if="submitting" class="spinner"></span>
+          {{ submitting ? "Submitting..." : "Submit Marks" }}
+        </button>
         <button class="btn-quick-action" @click="clearAllMarks">
           <svg
             width="16"
@@ -1313,6 +1338,30 @@ const clearAllMarks = () => {
   }
 };
 
+const autoFillMarks = () => {
+  // if (
+  //   confirm(
+  //     "This will auto-fill random marks for all students (for testing purposes). Continue?"
+  //   )
+  // ) {
+  students.value.forEach((student) => {
+    if (selection.value.assessmentType === "CA") {
+      // Generate random CA marks between 0-40
+      const randomMark = Math.floor(Math.random() * 41); // 0 to 40
+      student.caMarks = randomMark.toString();
+    } else {
+      // Generate random Exam marks between 0-60
+      const randomMark = Math.floor(Math.random() * 61); // 0 to 60
+      student.examMarks = randomMark.toString();
+    }
+  });
+  toast.success(
+    "Auto Fill Complete",
+    `Random marks have been generated for all ${students.value.length} students.`
+  );
+  // }
+};
+
 const getSelectedClassName = () => {
   const cls = classes.value.find((c) => c.id == selection.value.class);
   return cls ? cls.class_name : "";
@@ -1707,6 +1756,17 @@ onMounted(() => {
 .btn-quick-action:hover {
   background: #667eea;
   color: white;
+}
+
+.btn-quick-action.auto-fill {
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.btn-quick-action.auto-fill:hover {
+  background: #059669;
+  border-color: #059669;
 }
 
 /* Enhanced Table Styles */

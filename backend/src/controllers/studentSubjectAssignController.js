@@ -10,6 +10,7 @@ const {
   GradeSystem,
 } = require("../models");
 const BaseController = require("./baseController");
+const { getRemark, displayPosition } = require("../utils/grading");
 
 class StudentSubjectAssignController extends BaseController {
   constructor() {
@@ -27,7 +28,7 @@ class StudentSubjectAssignController extends BaseController {
     const requestData = req.body;
     console.log(
       "Received CA1 request data:",
-      JSON.stringify(requestData, null, 2)
+      JSON.stringify(requestData, null, 2),
     );
 
     // Check if it's an array or single object
@@ -99,7 +100,7 @@ class StudentSubjectAssignController extends BaseController {
 
         console.log(
           `CA1 Assignment found for student ${student_id}:`,
-          assignment ? "YES" : "NO"
+          assignment ? "YES" : "NO",
         );
 
         if (!assignment) {
@@ -115,7 +116,7 @@ class StudentSubjectAssignController extends BaseController {
         // Update the CA1 score
         console.log(
           `Updating CA1 score for student ${student_id} to:`,
-          ca_1_score
+          ca_1_score,
         );
         await assignment.update({ ca_1_score });
 
@@ -124,7 +125,7 @@ class StudentSubjectAssignController extends BaseController {
           assignment.id,
           {
             include: this.includes,
-          }
+          },
         );
 
         results.push(updatedAssignment);
@@ -232,7 +233,7 @@ class StudentSubjectAssignController extends BaseController {
           assignment.id,
           {
             include: this.includes,
-          }
+          },
         );
 
         results.push(updatedAssignment);
@@ -340,7 +341,7 @@ class StudentSubjectAssignController extends BaseController {
       assignment.id,
       {
         include: this.includes,
-      }
+      },
     );
 
     res.json({
@@ -509,7 +510,7 @@ class StudentSubjectAssignController extends BaseController {
         exam_score: assignment.exam_score || null,
         total_score: this.calculateTotal(
           assignment.ca_1_score,
-          assignment.exam_score
+          assignment.exam_score,
         ),
       },
     };
@@ -710,7 +711,7 @@ class StudentSubjectAssignController extends BaseController {
       exam_score: assignment.exam_score || null,
       total_score: this.calculateTotal(
         assignment.ca_1_score,
-        assignment.exam_score
+        assignment.exam_score,
       ),
     }));
 
@@ -740,7 +741,7 @@ class StudentSubjectAssignController extends BaseController {
           students_with_ca: assignments.filter((a) => a.ca_1_score).length,
           students_with_exam: assignments.filter((a) => a.exam_score).length,
           students_completed: assignments.filter(
-            (a) => a.ca_1_score && a.exam_score
+            (a) => a.ca_1_score && a.exam_score,
           ).length,
         },
       },
@@ -849,7 +850,7 @@ class StudentSubjectAssignController extends BaseController {
           exam_score: assignment.exam_score || null,
           total_score: this.calculateTotal(
             assignment.ca_1_score,
-            assignment.exam_score
+            assignment.exam_score,
           ),
         },
       })),
@@ -858,7 +859,7 @@ class StudentSubjectAssignController extends BaseController {
         subjects_with_ca1: assignments.filter((a) => a.ca_1_score).length,
         subjects_with_exam: assignments.filter((a) => a.exam_score).length,
         subjects_completed: assignments.filter(
-          (a) => a.ca_1_score && a.exam_score
+          (a) => a.ca_1_score && a.exam_score,
         ).length,
       },
     };
@@ -989,7 +990,7 @@ class StudentSubjectAssignController extends BaseController {
         exam_score: assignment.exam_score || null,
         total_score: this.calculateTotal(
           assignment.ca_1_score,
-          assignment.exam_score
+          assignment.exam_score,
         ),
       },
       timestamps: {
@@ -1026,10 +1027,10 @@ class StudentSubjectAssignController extends BaseController {
           students_with_exam: assignments.filter((a) => a.exam_score !== null)
             .length,
           students_completed: assignments.filter(
-            (a) => a.ca_1_score !== null && a.exam_score !== null
+            (a) => a.ca_1_score !== null && a.exam_score !== null,
           ).length,
           students_pending: assignments.filter(
-            (a) => a.ca_1_score === null && a.exam_score === null
+            (a) => a.ca_1_score === null && a.exam_score === null,
           ).length,
         },
       },
@@ -1167,7 +1168,7 @@ class StudentSubjectAssignController extends BaseController {
                             to_mark: gradeSystem.to_mark,
                             grade: gradeSystem.grade,
                             remark: gradeSystem.remark,
-                          })
+                          }),
                         )
                       : [],
                   }
@@ -1197,7 +1198,7 @@ class StudentSubjectAssignController extends BaseController {
             exam_score: assignment.exam_score || null,
             total_score: this.calculateTotal(
               assignment.ca_1_score,
-              assignment.exam_score
+              assignment.exam_score,
             ),
           },
           timestamps: {
@@ -1213,13 +1214,13 @@ class StudentSubjectAssignController extends BaseController {
       // Calculate summary statistics
       const totalAssignments = assignments.length;
       const assignmentsWithCA = assignments.filter(
-        (a) => a.ca_1_score !== null
+        (a) => a.ca_1_score !== null,
       ).length;
       const assignmentsWithExam = assignments.filter(
-        (a) => a.exam_score !== null
+        (a) => a.exam_score !== null,
       ).length;
       const assignmentsCompleted = assignments.filter(
-        (a) => a.ca_1_score !== null && a.exam_score !== null
+        (a) => a.ca_1_score !== null && a.exam_score !== null,
       ).length;
 
       // Get unique subjects for summary
@@ -1228,7 +1229,7 @@ class StudentSubjectAssignController extends BaseController {
       ];
       const subjectsInfo = uniqueSubjects.map((subjectId) => {
         const assignment = assignments.find(
-          (a) => a.school_subject_id === subjectId
+          (a) => a.school_subject_id === subjectId,
         );
         return {
           id: assignment.Subject.id,
@@ -1257,7 +1258,7 @@ class StudentSubjectAssignController extends BaseController {
                           to_mark: gradeSystem.to_mark,
                           grade: gradeSystem.grade,
                           remark: gradeSystem.remark,
-                        })
+                        }),
                       )
                     : [],
                 }
@@ -1298,288 +1299,6 @@ class StudentSubjectAssignController extends BaseController {
       });
     }
   });
-
-  //   getStudentAssignedSubjects2 = asyncHandler(async (req, res) => {
-  //   const { current_class_id, current_session_id, current_term_id } = req.query;
-
-  //   if (!current_class_id || !current_session_id || !current_term_id) {
-  //     return res.status(400).json({
-  //       status: "error",
-  //       message:
-  //         "All query parameters are required: current_class_id, current_session_id, current_term_id",
-  //     });
-  //   }
-
-  //   const termId = Number(current_term_id);
-  //   let termIds = [];
-  //   if (termId === 1) termIds = [1];
-  //   if (termId === 2) termIds = [1, 2];
-  //   if (termId === 3) termIds = [1, 2, 3];
-
-  //   // Term mapping
-  //   const termMapping = {
-  //     1: "First Term",
-  //     2: "Second Term",
-  //     3: "Third Term",
-  //   };
-
-  //   // Fetch assignments for the relevant terms
-  //   const assignments = await StudentSubjectAssign.findAll({
-  //     where: {
-  //       current_class_id,
-  //       current_session_id,
-  //       current_term_id: termIds,
-  //     },
-  //     include: [
-  //       {
-  //         model: SchoolStudent,
-  //         as: "Student",
-  //         attributes: ["id", "full_name", "admission_number", "gender", "dob"],
-  //       },
-  //       {
-  //         model: SchoolClass,
-  //         as: "Class",
-  //         attributes: ["id", "class_name"],
-  //         include: [
-  //           {
-  //             model: GradeList,
-  //             as: "GradeList",
-  //             attributes: [
-  //               "id",
-  //               "grade_name",
-  //               "grade_type",
-  //               "allow_grade",
-  //               "allow_remark",
-  //             ],
-  //             include: [
-  //               {
-  //                 model: GradeSystem,
-  //                 as: "gradeSystems",
-  //                 attributes: ["id", "from_mark", "to_mark", "grade", "remark"],
-  //               },
-  //             ],
-  //           },
-  //         ],
-  //       },
-  //       {
-  //         model: SchoolSubject,
-  //         as: "Subject",
-  //         attributes: ["id", "subject_name"],
-  //       },
-  //       {
-  //         model: SchoolSession,
-  //         as: "Session",
-  //         attributes: [
-  //           "id",
-  //           "session_name",
-  //           "first_term_start",
-  //           "first_term_end",
-  //           "second_term_start",
-  //           "second_term_end",
-  //           "third_term_start",
-  //           "third_term_end",
-  //         ],
-  //       },
-  //       {
-  //         model: SchoolTerm,
-  //         as: "Term",
-  //         attributes: ["id", "term_name"],
-  //       },
-  //     ],
-  //   });
-
-  //   if (!assignments || assignments.length === 0) {
-  //     return res.status(404).json({
-  //       status: "error",
-  //       message: "No student subject assignments found",
-  //     });
-  //   }
-
-  //   // ===============================
-  //   // GROUP STUDENTS
-  //   // ===============================
-  //   const groupedStudents = {};
-
-  //   assignments.forEach((assignment) => {
-  //     const studentId = assignment.Student.id;
-  //     const tId = assignment.Term.id;
-  //     const termName = termMapping[tId];
-
-  //     if (!groupedStudents[studentId]) {
-  //       // Initialize the student object
-  //       groupedStudents[studentId] = {
-  //         student: {
-  //           id: assignment.Student.id,
-  //           full_name: assignment.Student.full_name,
-  //           admission_number: assignment.Student.admission_number,
-  //           gender: assignment.Student.gender,
-  //           dob: assignment.Student.dob,
-  //         },
-  //         class: {
-  //           id: assignment.Class.id,
-  //           name: assignment.Class.class_name,
-  //           grading_name: assignment.Class.GradeList,
-  //         },
-  //         session: {
-  //           id: assignment.Session.id,
-  //           name: assignment.Session.session_name,
-  //           first_term_start: assignment.Session.first_term_start,
-  //           first_term_end: assignment.Session.first_term_end,
-  //           second_term_start: assignment.Session.second_term_start,
-  //           second_term_end: assignment.Session.second_term_end,
-  //           third_term_start: assignment.Session.third_term_start,
-  //           third_term_end: assignment.Session.third_term_end,
-  //         },
-  //         // Current term info (based on query parameter)
-  //         current_term: {
-  //           id: termId,
-  //           name: termMapping[termId],
-  //         },
-  //         // Group subjects by term
-  //         subjects_by_term: {
-  //           "First Term": [],
-  //           "Second Term": [],
-  //           "Third Term": [],
-  //         },
-  //         // All subjects in a flat array (optional, remove if not needed)
-  //         subjects: [],
-  //         performance: {
-  //           mark_obtained: 0,
-  //           mark_obtainable: 0,
-  //           total_subjects: 0,
-  //           average: 0,
-  //           position: null,
-  //         },
-  //         term_performance_summary: {},
-  //         term_positions_scored: {},
-  //       };
-
-  //       // Initialize term_performance_summary & term_positions_scored with term names
-  //       Object.keys(termMapping).forEach((id) => {
-  //         const name = termMapping[id];
-  //         groupedStudents[studentId].term_performance_summary[name] = {
-  //           mark_obtained: 0,
-  //           total_subjects: 0,
-  //         };
-  //         groupedStudents[studentId].term_positions_scored[name] = null;
-  //       });
-  //     }
-
-  //     // Scores
-  //     const caRaw = assignment.ca_1_score;
-  //     const examRaw = assignment.exam_score;
-  //     let total = "ABS";
-
-  //     if (!this.isAbsent(caRaw) && !this.isAbsent(examRaw)) {
-  //       const ca = this.toNumber(caRaw);
-  //       const exam = this.toNumber(examRaw);
-  //       total = Math.abs(ca + exam);
-
-  //       // PERFORMANCE
-  //       groupedStudents[studentId].performance.mark_obtained += total;
-  //       groupedStudents[studentId].performance.mark_obtainable += 100;
-  //       groupedStudents[studentId].performance.total_subjects += 1;
-
-  //       // TERM PERFORMANCE
-  //       groupedStudents[studentId].term_performance_summary[
-  //         termName
-  //       ].mark_obtained += total;
-  //       groupedStudents[studentId].term_performance_summary[
-  //         termName
-  //       ].total_subjects += 1;
-  //     }
-
-  //     // Add subject to the appropriate term array
-  //     const subjectEntry = {
-  //       id: assignment.Subject.id,
-  //       name: assignment.Subject.subject_name,
-  //       ca_1_score: caRaw,
-  //       exam_score: examRaw,
-  //       total,
-  //     };
-
-  //     // Add to subjects_by_term
-  //     if (
-  //       !groupedStudents[studentId].subjects_by_term[termName].some(
-  //         (s) => s.id === assignment.Subject.id
-  //       )
-  //     ) {
-  //       groupedStudents[studentId].subjects_by_term[termName].push(subjectEntry);
-  //     }
-
-  //     // Add to flat subjects array (only for the current term if you want to avoid duplicates)
-  //     // If you want ALL subjects from all terms, keep as is
-  //     // If you want only current term subjects in the flat array, use:
-  //     if (tId === termId) {
-  //       if (
-  //         !groupedStudents[studentId].subjects.some(
-  //           (s) => s.id === assignment.Subject.id
-  //         )
-  //       ) {
-  //         groupedStudents[studentId].subjects.push({
-  //           ...subjectEntry,
-  //           term: termName,
-  //         });
-  //       }
-  //     }
-  //   });
-
-  //   // ===============================
-  //   // CALCULATE AVERAGE
-  //   // ===============================
-  //   const studentsArray = Object.values(groupedStudents);
-  //   studentsArray.forEach((student) => {
-  //     const { mark_obtained, total_subjects } = student.performance;
-  //     student.performance.average =
-  //       total_subjects > 0
-  //         ? Number((mark_obtained / total_subjects).toFixed(2))
-  //         : 0;
-  //   });
-
-  //   // ===============================
-  //   // CALCULATE OVERALL POSITION
-  //   // ===============================
-  //   const sortedByAverage = [...studentsArray].sort(
-  //     (a, b) => b.performance.average - a.performance.average
-  //   );
-
-  //   let currentPosition = 1;
-  //   let previousAverage = null;
-
-  //   sortedByAverage.forEach((student, index) => {
-  //     const avg = student.performance.average;
-  //     if (previousAverage === null) {
-  //       student.performance.position = currentPosition;
-  //     } else if (avg === previousAverage) {
-  //       student.performance.position = currentPosition;
-  //     } else {
-  //       currentPosition = index + 1;
-  //       student.performance.position = currentPosition;
-  //     }
-  //     previousAverage = avg;
-  //   });
-
-  //   studentsArray.sort(
-  //     (a, b) => a.performance.position - b.performance.position
-  //   );
-
-  //   // ===============================
-  //   // CALCULATE TERM POSITIONS
-  //   // ===============================
-  //   termIds.forEach((tId) => {
-  //     const termName = termMapping[tId];
-  //     this.calculateTermPositions(studentsArray, termName);
-  //   });
-
-  //   // ===============================
-  //   // RESPONSE
-  //   // ===============================
-  //   res.json({
-  //     status: "success",
-  //     message: "Student assigned subjects retrieved successfully",
-  //     data: studentsArray,
-  //   });
-  // });
 
   getStudentAssignedSubjects2 = asyncHandler(async (req, res) => {
     const { current_class_id, current_session_id, current_term_id } = req.query;
@@ -1682,6 +1401,10 @@ class StudentSubjectAssignController extends BaseController {
     // ===============================
     const groupedStudents = {};
 
+  
+    // ===============================
+    // CALCULATE PERFORMANCE FOR CURRENT TERM
+    // ===============================
     assignments.forEach((assignment) => {
       const studentId = assignment.Student.id;
       const tId = assignment.Term.id;
@@ -1712,12 +1435,10 @@ class StudentSubjectAssignController extends BaseController {
             third_term_start: assignment.Session.third_term_start,
             third_term_end: assignment.Session.third_term_end,
           },
-          // Current term from query
           current_term: {
             id: termId,
             name: termMapping[termId],
           },
-          // Subjects array for CURRENT TERM only
           subjects: [],
           performance: {
             mark_obtained: 0,
@@ -1741,7 +1462,7 @@ class StudentSubjectAssignController extends BaseController {
         });
       }
 
-      // Scores
+      // Scores calculation
       const caRaw = assignment.ca_1_score;
       const examRaw = assignment.exam_score;
       let total = "ABS";
@@ -1751,10 +1472,8 @@ class StudentSubjectAssignController extends BaseController {
         const exam = this.toNumber(examRaw);
         total = Math.abs(ca + exam);
       } else if (!this.isAbsent(caRaw)) {
-        // Only CA score available
         total = Math.abs(this.toNumber(caRaw));
       } else if (!this.isAbsent(examRaw)) {
-        // Only exam score available
         total = Math.abs(this.toNumber(examRaw));
       }
 
@@ -1768,27 +1487,50 @@ class StudentSubjectAssignController extends BaseController {
         ].total_subjects += 1;
       }
 
-      // Only add subjects for the CURRENT TERM (the one being queried)
+      // FIX: Only add subjects for the CURRENT TERM (the one being queried)
       if (tId === termId) {
-        if (
-          !groupedStudents[studentId].subjects.some(
-            (s) => s.id === assignment.Subject.id
-          )
-        ) {
+        const gradeList = assignment.Class.GradeList;
+        const gradeSystem = gradeList?.gradeSystems || [];
+
+        let subjectGrade = null;
+        let subjectRemark = null;
+
+        if (typeof total === "number") {
+          const result = getRemark(gradeSystem, total);
+          subjectGrade = result.grade;
+          subjectRemark = result.remark;
+        }
+
+        // Check if subject already exists to avoid duplicates
+        const existingSubjectIndex = groupedStudents[
+          studentId
+        ].subjects.findIndex((s) => s.id === assignment.Subject.id);
+
+        if (existingSubjectIndex === -1) {
           groupedStudents[studentId].subjects.push({
             id: assignment.Subject.id,
             name: assignment.Subject.subject_name,
             ca_1_score: caRaw,
             exam_score: examRaw,
             total,
+            grade: subjectGrade,
+            remark: subjectRemark,
           });
+        } else {
+          // Update existing subject if needed
+          groupedStudents[studentId].subjects[existingSubjectIndex] = {
+            id: assignment.Subject.id,
+            name: assignment.Subject.subject_name,
+            ca_1_score: caRaw,
+            exam_score: examRaw,
+            total,
+            grade: subjectGrade,
+            remark: subjectRemark,
+          };
         }
       }
     });
 
-    // ===============================
-    // CALCULATE PERFORMANCE FOR CURRENT TERM
-    // ===============================
     Object.values(groupedStudents).forEach((student) => {
       const currentTermName = termMapping[termId];
       const termSummary = student.term_performance_summary[currentTermName];
@@ -1803,7 +1545,7 @@ class StudentSubjectAssignController extends BaseController {
             ? Number(
                 (
                   termSummary.mark_obtained / termSummary.total_subjects
-                ).toFixed(2)
+                ).toFixed(2),
               )
             : 0;
       }
@@ -1816,7 +1558,7 @@ class StudentSubjectAssignController extends BaseController {
 
     // Sort by current term average
     const sortedByAverage = [...studentsArray].sort(
-      (a, b) => b.performance.average - a.performance.average
+      (a, b) => b.performance.average - a.performance.average,
     );
 
     let currentPosition = 1;
@@ -1836,8 +1578,23 @@ class StudentSubjectAssignController extends BaseController {
     });
 
     studentsArray.sort(
-      (a, b) => a.performance.position - b.performance.position
+      (a, b) => a.performance.position - b.performance.position,
     );
+
+    studentsArray.forEach((student) => {
+      const gradeList = student.class.grading_name;
+      if (!gradeList) return;
+
+      const gradeSystem = gradeList.gradeSystems || [];
+      const gradeType = gradeList.grade_type;
+
+      student.performance.display_position = displayPosition(
+        gradeSystem,
+        gradeType,
+        student.performance.average,
+        student.performance.position,
+      );
+    });
 
     // ===============================
     // CALCULATE TERM POSITIONS FOR ALL TERMS
@@ -1858,14 +1615,14 @@ class StudentSubjectAssignController extends BaseController {
                   (
                     student.term_performance_summary[termName].mark_obtained /
                     student.term_performance_summary[termName].total_subjects
-                  ).toFixed(2)
+                  ).toFixed(2),
                 )
               : 0,
         }));
 
         // Sort by term average
         const sortedForTerm = [...studentsForTerm].sort(
-          (a, b) => b.termAverage - a.termAverage
+          (a, b) => b.termAverage - a.termAverage,
         );
 
         let position = 1;
@@ -1888,7 +1645,7 @@ class StudentSubjectAssignController extends BaseController {
         // Update the original studentsArray with positions
         sortedForTerm.forEach((sortedStudent) => {
           const originalStudent = studentsArray.find(
-            (s) => s.student.id === sortedStudent.student.id
+            (s) => s.student.id === sortedStudent.student.id,
           );
           if (originalStudent) {
             originalStudent.term_positions_scored[termName] =
@@ -1896,6 +1653,37 @@ class StudentSubjectAssignController extends BaseController {
           }
         });
       }
+    });
+    // ===============================
+    // APPLY DISPLAY POSITION TO ALL TERMS
+    // ===============================
+    studentsArray.forEach((student) => {
+      const gradeList = student.class.grading_name;
+      if (!gradeList) return;
+
+      const gradeSystem = gradeList.gradeSystems || [];
+      const gradeType = gradeList.grade_type;
+
+      Object.keys(student.term_positions_scored).forEach((termName) => {
+        const numericPosition = student.term_positions_scored[termName];
+
+        const termSummary = student.term_performance_summary[termName];
+        const termAverage =
+          termSummary.total_subjects > 0
+            ? Number(
+                (
+                  termSummary.mark_obtained / termSummary.total_subjects
+                ).toFixed(2),
+              )
+            : null;
+
+        student.term_positions_scored[termName] = displayPosition(
+          gradeSystem,
+          gradeType,
+          termAverage,
+          numericPosition,
+        );
+      });
     });
 
     // ===============================
