@@ -56,7 +56,7 @@ const schemas = {
     has_school_access: { type: "boolean", optional: true },
     has_system_access: { type: "boolean", optional: true },
     is_default_password: { type: "boolean", optional: true },
-    section_ids: { type: "string", optional: true },
+    section_ids: { type: "string" || null, optional: true },
     gender: { type: "enum", values: ["male", "female"], required: true },
     date_of_birth: { type: "date", optional: true, convert: true },
     employee_id: { type: "string", optional: true },
@@ -112,7 +112,14 @@ const schemas = {
     admitted_session: { type: "number", max: 50, required: true },
     student_status: {
       type: "enum",
-      values: ["active", "graduated", "transferred", "suspended", "withdrawn", "leave"],
+      values: [
+        "active",
+        "graduated",
+        "transferred",
+        "suspended",
+        "withdrawn",
+        "leave",
+      ],
       default: "active",
       optional: true,
     },
@@ -128,7 +135,12 @@ const schemas = {
       positive: true,
       required: true,
     },
-    parent_id: { type: "number", integer: true, positive: true, required: true },
+    parent_id: {
+      type: "number",
+      integer: true,
+      positive: true,
+      required: true,
+    },
   },
 
   // New nested structure for student registration with subjects
@@ -150,7 +162,14 @@ const schemas = {
         admitted_session: { type: "number", max: 50, required: true },
         student_status: {
           type: "enum",
-          values: ["active", "graduated", "transferred", "suspended", "withdrawn", "leave"],
+          values: [
+            "active",
+            "graduated",
+            "transferred",
+            "suspended",
+            "withdrawn",
+            "leave",
+          ],
           default: "active",
           optional: true,
         },
@@ -166,7 +185,12 @@ const schemas = {
           positive: true,
           required: true,
         },
-        parent_id: { type: "number", integer: true, positive: true, required: true },
+        parent_id: {
+          type: "number",
+          integer: true,
+          positive: true,
+          required: true,
+        },
       },
     },
     subjects: {
@@ -175,9 +199,24 @@ const schemas = {
       items: {
         type: "object",
         props: {
-          school_subject_id: { type: "number", integer: true, positive: true, required: true },
-          current_class_id: { type: "number", integer: true, positive: true, required: true },
-          current_session_id: { type: "number", integer: true, positive: true, required: true },
+          school_subject_id: {
+            type: "number",
+            integer: true,
+            positive: true,
+            required: true,
+          },
+          current_class_id: {
+            type: "number",
+            integer: true,
+            positive: true,
+            required: true,
+          },
+          current_session_id: {
+            type: "number",
+            integer: true,
+            positive: true,
+            required: true,
+          },
         },
       },
     },
@@ -185,7 +224,11 @@ const schemas = {
 
   parentRegistration: {
     full_name: { type: "string", min: 2, max: 100, required: true },
-    religion: { type: "enum", values: ["islam", "christianity", "other"], optional: true },
+    religion: {
+      type: "enum",
+      values: ["islam", "christianity", "other"],
+      optional: true,
+    },
     gender: { type: "enum", values: ["male", "female"], required: true },
     address: { type: "string", max: 255, required: true },
     state: { type: "string", max: 50, required: true },

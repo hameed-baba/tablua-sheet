@@ -30,7 +30,7 @@ module.exports = {
         parent_id: faker.number.int({ min: 1, max: 4 }),
         createdAt: new Date(),
         updatedAt: new Date(),
-        deletedAt: null,
+        // deletedAt: null,
       });
     }
 

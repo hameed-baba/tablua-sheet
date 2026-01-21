@@ -6,7 +6,7 @@ module.exports = {
     const terms = [
       {
         term_name: "Fisrt Term",
-        status: "inactive",
+        status: "active",
         createdAt: new Date(),
         updatedAt: new Date(),
       },

@@ -1,24 +1,24 @@
-const getSchoolName = () => ({
+const getSchoolName = (fontSize = 20) => ({
   text: "DAYLIGHT ACADEMY",
   bold: true,
   margin: [0, 0, 0, 0],
-  fontSize: 20,
+  fontSize: fontSize,
   alignment: "center",
   color: "#3771c8",
 });
 
-const getSchoolAddress = () => ({
+const getSchoolAddress = (fontSize = 10) => ({
   text: "TALATA MAFARA, ZAMFARA STATE",
-  fontSize: 10,
+  fontSize: fontSize,
   bold: true,
   alignment: "center",
   color: "#3771c8",
   margin: [0, 5, 0, 0],
 });
 
-const getSchoolMotto = () => ({
+const getSchoolMotto = (fontSize = 9) => ({
   text: "Education is the soul of success",
-  fontSize: 9,
+  fontSize: fontSize,
   alignment: "center",
   italics: true,
   color: "#3771c8",
