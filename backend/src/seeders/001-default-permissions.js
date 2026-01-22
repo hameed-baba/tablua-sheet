@@ -37,6 +37,10 @@ module.exports = {
       "parent.read",
       "parent.update",
       "parent.delete",
+      "role.create",
+      "role.read",
+      "role.update",
+      "role.delete",
     ].map((name) => ({
       permission_name: name,
       createdAt: new Date(),

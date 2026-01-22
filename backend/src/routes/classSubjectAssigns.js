@@ -1,5 +1,9 @@
 const express = require("express");
-const { authenticate, checkSchoolAccess } = require("../middleware/auth");
+const {
+  authenticate,
+  checkSchoolAccess,
+  authorize,
+} = require("../middleware/auth");
 const {
   validate,
   validateQuery,
@@ -12,41 +16,49 @@ const router = express.Router();
 router.get(
   "/",
   authenticate,
+  authorize("subject.read"),
   validateQuery(schemas.pagination),
-  classSubjectAssignController.getAll
+  classSubjectAssignController.getAll,
 );
 
-router.get(
-  "/:id",
-  authenticate,
-  classSubjectAssignController.getById
-);
+router.get("/:id", authenticate, classSubjectAssignController.getById);
 
 router.get(
   "/class/:classId",
   authenticate,
-  classSubjectAssignController.getClassAssignedSubject
+  authorize("subject.read"),
+  classSubjectAssignController.getClassAssignedSubject,
 );
 
 router.post(
   "/",
   authenticate,
+  authorize("subject.create"),
   classSubjectAssignController.validateAssignmentRequest,
-  classSubjectAssignController.createAssignment
+  classSubjectAssignController.createAssignment,
+);
+
+router.post(
+  "/student/assign-subject",
+  authenticate,
+  authorize("subject.create"),
+  classSubjectAssignController.assignSubjectToClassStudents,
 );
 
 router.put(
   "/:id",
   authenticate,
+  authorize("subject.create"),
   checkSchoolAccess,
-  classSubjectAssignController.updateAssignment
+  classSubjectAssignController.updateAssignment,
 );
 
 router.delete(
   "/:id",
   authenticate,
   checkSchoolAccess,
-  classSubjectAssignController.delete
+  authorize("subject.delete"),
+  classSubjectAssignController.delete,
 );
 
 module.exports = router;

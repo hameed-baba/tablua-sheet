@@ -904,6 +904,7 @@ const generatePdf = () => {
       isGeneratingPDF2.value = false;
     });
 
+  };
   const downloadPdf = () => {
     apiServices
       .generatePdfMakeReport2(freshData.value)
@@ -922,7 +923,6 @@ const generatePdf = () => {
         console.error(error);
       });
   };
-};
 
 // Lifecycle
 onMounted(() => {

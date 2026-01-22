@@ -19,9 +19,19 @@
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-icon primary">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          <svg
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+            />
           </svg>
         </div>
         <div class="stat-content">
@@ -32,9 +42,19 @@
 
       <div class="stat-card">
         <div class="stat-icon success">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          <svg
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+            />
           </svg>
         </div>
         <div class="stat-content">
@@ -45,9 +65,19 @@
 
       <div class="stat-card">
         <div class="stat-icon warning">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          <svg
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+            />
           </svg>
         </div>
         <div class="stat-content">
@@ -67,19 +97,49 @@
       </div>
     </div>
 
+    <!-- <pre>{{ assignedSubjects }}</pre> -->
+
     <!-- Tabs Navigation -->
     <div class="tabs-container">
-      <button class="tab-btn" :class="{ active: activeTab === 'students' }" @click="activeTab = 'students'">
-        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+      <button
+        class="tab-btn"
+        :class="{ active: activeTab === 'students' }"
+        @click="activeTab = 'students'"
+      >
+        <svg
+          width="18"
+          height="18"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+          />
         </svg>
         Students
       </button>
-      <button class="tab-btn" :class="{ active: activeTab === 'subjects' }" @click="activeTab = 'subjects'">
-        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      <button
+        class="tab-btn"
+        :class="{ active: activeTab === 'subjects' }"
+        @click="activeTab = 'subjects'"
+      >
+        <svg
+          width="18"
+          height="18"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+          />
         </svg>
         Subjects
       </button>
@@ -91,7 +151,11 @@
       <div class="filters-section">
         <div class="filter-group">
           <label class="filter-label">Gender:</label>
-          <select v-model="filters.gender" class="filter-select" @change="applyFilters">
+          <select
+            v-model="filters.gender"
+            class="filter-select"
+            @change="applyFilters"
+          >
             <option value="">All</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
@@ -101,17 +165,47 @@
         <div class="search-filter-group">
           <label class="filter-label">Search:</label>
           <div class="search-container">
-            <input type="text" v-model="filters.search" class="search-box"
-              placeholder="Search by name or admission number..." @keyup.enter="handleSearch" />
+            <input
+              type="text"
+              v-model="filters.search"
+              class="search-box"
+              placeholder="Search by name or admission number..."
+              @keyup.enter="handleSearch"
+            />
             <button class="search-btn" @click="handleSearch">
-              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </button>
-            <button v-if="filters.search" class="btn-clear-filters ms-0" @click="clearSearch">
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <button
+              v-if="filters.search"
+              class="btn-clear-filters ms-0"
+              @click="clearSearch"
+            >
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
               Clear Filters
             </button>
@@ -124,9 +218,19 @@
         <div class="table-header">
           <h2 class="table-title">Students List</h2>
           <button class="export-btn" @click="exportToExcel">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            <svg
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
             </svg>
             Export
           </button>
@@ -148,8 +252,15 @@
             </thead>
             <tbody>
               <no-results-row v-if="loading" :loading="loading" :colspan="9" />
-              <no-results-row v-else-if="filteredStudents.length === 0" :colspan="9" />
-              <tr v-else v-for="(student, index) in filteredStudents" :key="student.id">
+              <no-results-row
+                v-else-if="filteredStudents.length === 0"
+                :colspan="9"
+              />
+              <tr
+                v-else
+                v-for="(student, index) in filteredStudents"
+                :key="student.id"
+              >
                 <td>{{ getSerialNumber(index) }}</td>
                 <td>
                   <strong>{{ student.admission_number }}</strong>
@@ -161,7 +272,10 @@
                   </div>
                 </td>
                 <td class="d-none d-md-table-cell text-capitalize">
-                  <span class="gender-badge" :class="student.gender?.toLowerCase()">
+                  <span
+                    class="gender-badge"
+                    :class="student.gender?.toLowerCase()"
+                  >
                     {{ student.gender }}
                   </span>
                 </td>
@@ -175,10 +289,12 @@
                   {{ student.Parent?.phone_number || "N/A" }}
                 </td>
                 <td>
-                  <span :class="[
-                    'status-badge',
-                    `status-${student.student_status}`,
-                  ]">
+                  <span
+                    :class="[
+                      'status-badge',
+                      `status-${student.student_status}`,
+                    ]"
+                  >
                     {{ student.student_status }}
                   </span>
                 </td>
@@ -195,10 +311,16 @@
           </table>
         </div>
         <div class="ps-5 pe-5">
-          <Pagination v-if="pagination.totalPages > 0" :currentPage="pagination.currentPage"
-            :totalPages="pagination.totalPages" :totalCount="pagination.totalCount" :limit="pagination.limit"
-            :hasNextPage="pagination.hasNextPage" :hasPrevPage="pagination.hasPrevPage"
-            @page-change="handlePageChange" />
+          <Pagination
+            v-if="pagination.totalPages > 0"
+            :currentPage="pagination.currentPage"
+            :totalPages="pagination.totalPages"
+            :totalCount="pagination.totalCount"
+            :limit="pagination.limit"
+            :hasNextPage="pagination.hasNextPage"
+            :hasPrevPage="pagination.hasPrevPage"
+            @page-change="handlePageChange"
+          />
         </div>
       </div>
     </div>
@@ -209,8 +331,19 @@
         <div class="table-header">
           <h2 class="table-title">Assigned Subjects</h2>
           <button class="add-btn" @click="openAssignSubjectModal">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            <svg
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
             </svg>
             Assign Subject
           </button>
@@ -222,14 +355,25 @@
                 <th>SN</th>
                 <th>Subject Name</th>
                 <th>Teacher</th>
-                <th class="d-none d-lg-table-cell">Assigned Date</th>
+                <th class="d-none d-lg-table-cell">Total Student Assigned</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              <no-results-row v-if="loadingSubjects" :loading="loadingSubjects" :colspan="6" />
-              <no-results-row v-else-if="assignedSubjects.length === 0" :colspan="6" />
-              <tr v-else v-for="(subject, index) in assignedSubjects" :key="subject.id">
+              <no-results-row
+                v-if="loadingSubjects"
+                :loading="loadingSubjects"
+                :colspan="6"
+              />
+              <no-results-row
+                v-else-if="assignedSubjects.length === 0"
+                :colspan="6"
+              />
+              <tr
+                v-else
+                v-for="(subject, index) in assignedSubjects"
+                :key="subject.id"
+              >
                 <td>{{ index + 1 }}</td>
                 <td>
                   <strong>{{ subject.Subject?.subject_name }}</strong>
@@ -237,13 +381,39 @@
 
                 <td>{{ subject.Staff?.full_name || "Not Assigned" }}</td>
                 <td class="d-none d-lg-table-cell">
-                  {{ formatDate(subject.createdAt) }}
+                  <div class="assign-list">
+                    <span
+                      class="status-badge"
+                      :class="
+                        subject.total_students === 0
+                          ? 'status-inactive'
+                          : 'status-active'
+                      "
+                    >
+                      {{ subject.total_students }} Student{{
+                        subject.total_students > 1 ? "s" : ""
+                      }}
+                    </span>
+                  </div>
                 </td>
+
                 <td>
-                  <button class="action-btn edit" @click="editSubjectAssignment(subject)">
+                  <button
+                    class="action-btn primary"
+                    @click="getSelectedSubject(subject.Subject?.id)"
+                  >
+                    Assign to students
+                  </button>
+                  <button
+                    class="action-btn edit"
+                    @click="editSubjectAssignment(subject)"
+                  >
                     Edit
                   </button>
-                  <button class="action-btn delete" @click="removeSubjectConfirmation(subject)">
+                  <button
+                    class="action-btn delete"
+                    @click="removeSubjectConfirmation(subject)"
+                  >
                     Remove
                   </button>
                 </td>
@@ -257,16 +427,25 @@
 
   <!-- Assign Subject Modal -->
   <AssignSubjectModal ref="assignSubjectRef" @send-status="getStatus($event)" />
-  <UpdateAssignSubjectModal ref="updateAssignSubjectRef" :subject-info="selectedSubject"
-    @send-status="getStatus($event)" />
+  <UpdateAssignSubjectModal
+    ref="updateAssignSubjectRef"
+    :subject-info="selectedSubject"
+    @send-status="getStatus($event)"
+  />
 
   <!-- Confirm Delete Modal -->
-  <ConfirmDeleteModal :show="showDeleteSubjectModal" @confirm="removeSubject"
-    @cancel="showDeleteSubjectModal = false" />
+  <ConfirmDeleteModal
+    :show="showDeleteSubjectModal"
+    @confirm="removeSubject"
+    @cancel="showDeleteSubjectModal = false"
+  />
 
   <!-- Student Quick View Modal -->
-  <StudentQuickViewModal ref="studentQuickViewRef" @edit-student="handleEditFromModal"
-    @manage-subjects="handleManageSubjectsFromModal" />
+  <StudentQuickViewModal
+    ref="studentQuickViewRef"
+    @edit-student="handleEditFromModal"
+    @manage-subjects="handleManageSubjectsFromModal"
+  />
 </template>
 
 <script setup>
@@ -290,6 +469,7 @@ const classId = ref(null);
 const students = ref([]);
 const loading = ref(false);
 const activeTab = ref("students");
+const singleAssignPayload = ref([]);
 const pagination = ref({
   currentPage: 1,
   totalPages: 0,
@@ -324,7 +504,6 @@ const femaleCount = computed(
   () =>
     students.value.filter((s) => s.gender?.toLowerCase() === "female").length
 );
-
 
 const totalAssignedSubjects = computed(
   () => assignedSubjects.value.length || 0
@@ -381,9 +560,9 @@ const editStudent = (student) => {
   router.push({
     path: `/students/update/${student.id}`,
     query: {
-      from: 'class',
-      classId: classId.value
-    }
+      from: "class",
+      classId: classId.value,
+    },
   });
 };
 
@@ -442,7 +621,8 @@ const exportToExcel = () => {
     link.setAttribute("href", url);
     link.setAttribute(
       "download",
-      `${classInfo.value.class_name || "Class"}_Students_${new Date().toISOString().split("T")[0]
+      `${classInfo.value.class_name || "Class"}_Students_${
+        new Date().toISOString().split("T")[0]
       }.csv`
     );
     link.style.visibility = "hidden";
@@ -509,25 +689,79 @@ const getClassStudents = (id, page = 1) => {
       toast.error(
         "Failed to Load Students",
         error.response?.data?.message ||
-        "An error occurred while fetching students."
+          "An error occurred while fetching students."
       );
       students.value = [];
       loading.value = false;
     });
 };
 
-const getClassSubjects = async (id) => {
+const getClassSubjects = async () => {
   loadingSubjects.value = true;
 
   apiServices
     .getClassAssignedSubjectByClassId(classId.value)
     .then((response) => {
       if (response.status === 200) {
-        assignedSubjects.value = response.data.data
+        assignedSubjects.value = response.data.data;
       }
     })
     .catch((error) => {
       console.log(error);
+    })
+    .finally(() => {
+      loadingSubjects.value = false;
+    });
+};
+
+const getSelectedSubject = async (id) => {
+  if (!students.value?.length) {
+    toast.error("error", "No students available for assignment");
+    return;
+  }
+
+  const selectedSubject = assignedSubjects.value.find(
+    (item) => item.Subject?.id === id
+  );
+
+  if (!selectedSubject) {
+    toast.error("error", "No subject found", "Selected subject not found");
+    return;
+  }
+
+  const studentinfo = students.value[0];
+
+  singleAssignPayload.value = {
+    subject_id: selectedSubject.school_subject_id,
+    current_class_id: studentinfo.current_class_id,
+    current_session_id: studentinfo.current_session_id,
+  };
+
+  await assignSubjectToClassStudents(singleAssignPayload.value);
+};
+
+const assignSubjectToClassStudents = async (data) => {
+  loadingSubjects.value = true;
+
+  apiServices
+    .assignSubjectToClassStudents(data)
+    .then((response) => {
+      if (response.status === 200) {
+        toast.success(
+          "success",
+          response.data.message || "Subject successfully assigned to students"
+        );
+      } else {
+        toast.success("error", "Assignment Failed");
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+
+      toast.error(
+        "error",
+        error?.response?.data?.message || "Something went wrong"
+      );
     })
     .finally(() => {
       loadingSubjects.value = false;
@@ -672,6 +906,11 @@ onMounted(() => {
   font-weight: 500;
 }
 
+.action-btn.primary {
+  background: #48bb78;
+  color: #fff;
+}
+
 .gender-badge.male {
   background: #e6f7ff;
   color: #0066cc;
@@ -803,5 +1042,12 @@ onMounted(() => {
 .status-leave {
   background-color: #fef3c7;
   color: #92400e;
+}
+
+.assign-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
 }
 </style>

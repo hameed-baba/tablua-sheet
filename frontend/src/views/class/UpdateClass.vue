@@ -121,7 +121,6 @@
         </button>
       </div>
     </vee-form>
-    <pre>{{ classToUpdate }}</pre>
   </BaseModal>
 </template>
 

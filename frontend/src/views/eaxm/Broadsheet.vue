@@ -6,7 +6,7 @@
         <p>Class performance report with student rankings</p>
       </div>
       <div class="header-actions">
-        <button class="add-btn" :disabled="!reportGenerated">
+        <button class="add-btn" @click="generatePdf">
           <svg
             width="18"
             height="18"
@@ -113,13 +113,17 @@
     <!-- <pre>{{ classSubjects }}</pre> -->
 
     <!-- Broadsheet Table -->
-    <div class="table-container broadsheet-table">
+
+    <div
+      class="table-container broadsheet-table card card-bodys p-"
+      v-if="!reportGenerated && students.length > 0"
+    >
       <table>
         <thead>
           <tr>
             <!-- Sticky Columns -->
             <th rowspan="3" class="sticky-col">SN</th>
-            <th rowspan="3" class="sticky-col-22">Student Name</th>
+            <th rowspan="3" class="text-start">Student Name</th>
             <th rowspan="3">Admission No</th>
 
             <!-- Subjects Headers -->
@@ -146,7 +150,7 @@
             >
               <th class="subject-sub-col">CA</th>
               <th class="subject-sub-col">Exam</th>
-              <th class="subject-sub-col">Total</th>
+              <th class="subject-sub-col total">Total</th>
             </template>
           </tr>
 
@@ -161,13 +165,13 @@
           >
             <!-- Position -->
             <td class="sticky-col position-cell">
-              <span class="position-badge" :class="getPositionClass(index)">
-                {{ getPositionText(index +1) }}
+              <span class="position-badge">
+                {{ index + 1 }}
               </span>
             </td>
 
             <!-- Student Name -->
-            <td class="sticky-col-22 student-name">
+            <td class="student-name text-start">
               {{ studentData.student.full_name }}
             </td>
 
@@ -230,8 +234,11 @@
       </table>
     </div>
 
-    <!-- Empty State -->
-    <div v class="empty-state">
+    <div
+      v
+      class="empty-state border"
+      v-if="!reportGenerated && students.length == 0"
+    >
       <svg
         width="64"
         height="64"
@@ -249,6 +256,8 @@
       <h3>No Report Generated</h3>
       <p>Select session, term, and class to generate broadsheet report</p>
     </div>
+
+    <!-- Empty State -->
   </div>
 </template>
 
@@ -369,6 +378,8 @@ const getAllRowClases = () => {
 };
 
 const getClassAssignedSubjects = async () => {
+  students.value = [];
+  // classSubjects.value = []
   apiServices
     .getClassAssignedSubject(filters.value.current_class_id)
     .then((response) => {
@@ -381,6 +392,9 @@ const getClassAssignedSubjects = async () => {
 };
 
 const getAssignedSubjects = () => {
+  reportGenerated.value = true;
+  students.value = [];
+
   apiServices
     .getAssignedSubjects(
       filters.value.current_class_id,
@@ -390,9 +404,30 @@ const getAssignedSubjects = () => {
     .then((response) => {
       students.value = response.data.data;
     })
-    .catch((error) => console.log(error));
+    .catch((error) => console.log(error))
+    .finally(() => {
+      reportGenerated.value = false;
+    });
 };
 
+const generatePdf = () => {
+  // isGeneratingPDF2.value = true;
+  apiServices
+    .generatePdfBroadsheet(students.value, classSubjects.value)
+    .then((response) => {
+      const pdfBlob = new Blob([response.data], {
+        type: "application/pdf",
+      });
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl, "_blank");
+    })
+    .catch((error) => {
+      console.error(error);
+    })
+    .finally(() => {
+      // isGeneratingPDF2.value = false;
+    });
+};
 // Lifecycle
 onMounted(() => {
   getAllRowSessions();
@@ -531,12 +566,13 @@ onMounted(() => {
   color: white;
   font-weight: 600;
   font-size: 12px;
-  padding: 10px 8px;
+  padding: 5px 5px;
   text-align: center;
   border: 1px solid #374151;
   position: sticky;
   top: 0;
   z-index: 10;
+  white-space: nowrap;
 }
 
 .subjects-header {
@@ -571,7 +607,7 @@ onMounted(() => {
 }
 
 .ca-cell {
-  background: #fef3c7;
+  /* background: #fef3c7; */
   font-size: 11px;
   text-align: center;
   min-width: 60px;
@@ -579,7 +615,7 @@ onMounted(() => {
 }
 
 .exam-cell {
-  background: #dbeafe;
+  /* background: #dbeafe; */
   font-size: 11px;
   text-align: center;
   min-width: 60px;
@@ -587,7 +623,7 @@ onMounted(() => {
 }
 
 .total-cell {
-  background: #d1fae5;
+  background: #fef3c7 !important;
   font-size: 11px;
   text-align: center;
   font-weight: 600;
@@ -620,10 +656,11 @@ onMounted(() => {
 }
 
 .broadsheet-table tbody td {
-  padding: 8px;
+  padding: 3px;
   font-size: 13px;
   border: 1px solid #e5e7eb;
   text-align: center;
+  white-space: nowrap;
 }
 
 .broadsheet-table tbody .sticky-col {

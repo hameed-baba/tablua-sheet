@@ -150,6 +150,12 @@ export default {
     // Uses the same endpoint but with bulk data structure
     return apiClient.post("/class-subject-assigns", data);
   },
+  assignSubjectToClassStudents(data) {
+    return apiClient.post(
+      "/class-subject-assigns/student/assign-subject",
+      data,
+    );
+  },
   getClassSubjectAssignmentById(id) {
     return apiClient.get(`/class-subject-assigns/${id}`);
   },
@@ -230,12 +236,12 @@ export default {
   updateClassSubject(classId, assignmentId, data) {
     return apiClient.put(
       `/school-classes/${classId}/subjects/${assignmentId}`,
-      data
+      data,
     );
   },
   removeClassSubject(classId, assignmentId) {
     return apiClient.delete(
-      `/school-classes/${classId}/subjects/${assignmentId}`
+      `/school-classes/${classId}/subjects/${assignmentId}`,
     );
   },
 
@@ -339,7 +345,7 @@ export default {
   getStudentMarks(studentId, params = {}) {
     return apiClient.get(
       `/student-subject-assigns/student/${studentId}/marks`,
-      { params }
+      { params },
     );
   },
 
@@ -352,7 +358,7 @@ export default {
 
   getAssignedSubjects(current_class_id, current_session_id, current_term_id) {
     return apiClient.get(
-      `/student-subject-assigns/assigned-subjects-2?current_class_id=${current_class_id}&current_session_id=${current_session_id}&current_term_id=${current_term_id}`
+      `/student-subject-assigns/assigned-subjects-2?current_class_id=${current_class_id}&current_session_id=${current_session_id}&current_term_id=${current_term_id}`,
     );
   },
 
@@ -480,7 +486,15 @@ export default {
     return apiClient.post(
       "/pdf/generate-pdfmake-2",
       studentsData,
-      { responseType: "blob" } // important to get PDF
+      { responseType: "blob" }, // important to get PDF
+    );
+  },
+
+  generatePdfBroadsheet(studentsData, classSubjects) {
+    return apiClient.post(
+      "/pdf/generate-broadheet",
+      { studentsData, classSubjects },
+      { responseType: "blob" }, // important to get PDF
     );
   },
 };
