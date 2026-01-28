@@ -1,5 +1,9 @@
 const express = require("express");
-const { authenticate, checkSchoolAccess, authorize } = require("../middleware/auth");
+const {
+  authenticate,
+  checkSchoolAccess,
+  authorize,
+} = require("../middleware/auth");
 const {
   validate,
   validateQuery,
@@ -12,23 +16,38 @@ const router = express.Router();
 router.get(
   "/",
   authenticate,
-  authorize('section.read'),
+  authorize(["super_admin", "admin"]),
   validateQuery(schemas.pagination),
-  schoolSectionController.getAll
+  schoolSectionController.getAll,
 );
 
-router.get("/:id", authenticate,authorize('section.read'), schoolSectionController.getById);
+router.get(
+  "/:id",
+  authenticate,
+  authorize(["super_admin", "admin"]),
+  schoolSectionController.getById,
+);
 
 router.post(
   "/",
   authenticate,
-  authorize('section.create'),
+  authorize(["super_admin", "admin"]),
   validate(schemas.schoolSectionCreation),
-  schoolSectionController.create
+  schoolSectionController.create,
 );
 
-router.put("/:id", authenticate,authorize('section.update'), schoolSectionController.update);
+router.put(
+  "/:id",
+  authenticate,
+  authorize(["super_admin", "admin"]),
+  schoolSectionController.update,
+);
 
-router.delete("/:id", authenticate,authorize('section.delete'), schoolSectionController.delete);
+router.delete(
+  "/:id",
+  authenticate,
+  authorize(["super_admin", "admin"]),
+  schoolSectionController.delete,
+);
 
 module.exports = router;

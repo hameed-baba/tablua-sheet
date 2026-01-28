@@ -8,7 +8,11 @@
         </p>
       </div>
       <div class="header-actions">
-        <button class="btn btn-secondary btn-sm" @click="refreshDashboard" :disabled="dashboardLoading">
+        <button
+          class="btn btn-secondary btn-sm"
+          @click="refreshDashboard"
+          :disabled="isGettingSummary"
+        >
           <svg
             width="16"
             height="16"
@@ -24,33 +28,26 @@
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
           </svg>
-          {{ dashboardLoading ? 'Loading...' : 'Refresh' }}
+          {{ isGettingSummary ? "Loading..." : "Refresh" }}
         </button>
-        <span class="current-term">
-          <svg
-            width="16"
-            height="16"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-            />
-          </svg>
-          {{ currentSession }} - {{ currentTerm }}
-        </span>
+        <div class="current-term">
+          <span v-if="isGettingSummary">
+            <i class="fa fa-spinner fa-spin"></i>
+            0000/0000 - Term Term
+          </span>
+          <span class="" v-else>
+            <i class="fa fa-calendar"></i>
+            {{ sessionInfo.session }} - {{ sessionInfo.term }}
+          </span>
+        </div>
       </div>
     </div>
 
     <!-- Stats Cards -->
-    <div class="stats-grid" :class="{ 'loading': dashboardLoading }">
+    <div class="stats-grid" :class="{ loading: isGettingSummary }">
       <div class="stat-card">
         <div class="stat-card-header">
-          <span class="stat-card-title">Total Students</span>
+          <span class="stat-card-title">Total Active Students</span>
           <div
             class="stat-card-icon"
             style="background: rgba(59, 130, 246, 0.1); color: #3b82f6"
@@ -71,15 +68,13 @@
             </svg>
           </div>
         </div>
-        <div class="stat-card-value">{{ stats.totalStudents }}</div>
-        <div class="stat-card-change positive">
-          {{ dashboardStats.activity?.newStudentsThisTerm ? `+${dashboardStats.activity.newStudentsThisTerm} new this term` : '+23 new this term' }}
-        </div>
+        <i class="fa fa-spinner fa-spin" v-if="isGettingSummary"></i>
+        <div class="stat-card-value" v-else>{{ stats.totalStudents || 0 }}</div>
       </div>
 
       <div class="stat-card">
         <div class="stat-card-header">
-          <span class="stat-card-title">Teaching Staff</span>
+          <span class="stat-card-title">Active Teaching Staff</span>
           <div
             class="stat-card-icon"
             style="background: rgba(16, 185, 129, 0.1); color: #10b981"
@@ -100,9 +95,9 @@
             </svg>
           </div>
         </div>
-        <div class="stat-card-value">{{ stats.totalStaff }}</div>
-        <div class="stat-card-change positive">
-          {{ staffActivity.summary.total_active }} currently active
+        <div class="sum-box">
+          <i class="fa fa-spinner fa-spin" v-if="isGettingSummary"></i>
+          <div class="stat-card-value" v-else>{{ stats.totalStaff || 0 }}</div>
         </div>
       </div>
 
@@ -129,88 +124,14 @@
             </svg>
           </div>
         </div>
-        <div class="stat-card-value">{{ stats.totalClasses }}</div>
-        <div class="stat-card-change positive">All classes running</div>
-      </div>
-
-      <!-- <div class="stat-card">
-        <div class="stat-card-header">
-          <span class="stat-card-title">Today's Attendance</span>
-          <div class="stat-card-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-            </svg>
+        <div class="sum-box">
+          <i class="fa fa-spinner fa-spin" v-if="isGettingSummary"></i>
+          <div class="stat-card-value" v-else>
+            {{ stats.totalClasses || 0 }}
           </div>
-        </div>
-        <div class="stat-card-value">92.5%</div>
-        <div class="stat-card-change positive">Excellent attendance</div>
-      </div> -->
-    </div>
-
-    <!-- Charts Section - Commented Out -->
-    <!--
-    <div class="charts-section"></div>
-      <div class="charts-grid">
-        <div class="chart-card">
-          <BarChart
-            title="Students by Class"
-            subtitle="Distribution of students across different classes"
-            :data="classDistribution"
-            :loading="chartsLoading.classDistribution"
-            :error="chartsError.classDistribution"
-          />
-        </div>
-
-        <div class="chart-card">
-          <DonutChart
-            title="Gender Distribution"
-            subtitle="Male vs Female students"
-            :data="genderDistribution"
-            :loading="chartsLoading.genderDistribution"
-            :error="chartsError.genderDistribution"
-            :size="180"
-          />
-          <div class="debug-info" v-if="genderDistribution.length > 0">
-            <small>Debug: {{ JSON.stringify(genderDistribution) }}</small>
-          </div>
-        </div>
-
-        <div class="chart-card full-width">
-          <LineChart
-            title="Enrollment Trends"
-            subtitle="Monthly student enrollment for current year"
-            :data="enrollmentTrends"
-            :loading="chartsLoading.enrollmentTrends"
-            :error="chartsError.enrollmentTrends"
-            :width="800"
-            :height="300"
-          />
-        </div>
-
-        <div class="chart-card">
-          <DonutChart
-            title="Student Status"
-            subtitle="Active, graduated, and other statuses"
-            :data="studentStatus"
-            :loading="chartsLoading.studentStatus"
-            :error="chartsError.studentStatus"
-            :size="180"
-          />
-        </div>
-
-        <div class="chart-card">
-          <BarChart
-            title="Age Distribution"
-            subtitle="Students grouped by age ranges"
-            :data="ageDistribution"
-            :loading="chartsLoading.ageDistribution"
-            :error="chartsError.ageDistribution"
-            :colors="['#06b6d4', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#10b981']"
-          />
         </div>
       </div>
     </div>
-    -->
 
     <!-- Quick Actions -->
     <div class="quick-actions-section">
@@ -299,30 +220,6 @@
             <p>Enter student examination marks</p>
           </div>
         </router-link>
-
-        <!-- <router-link to="/attendance" class="quick-action-card">
-          <div class="action-icon" style="background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-            </svg>
-          </div>
-          <div class="action-content">
-            <h3>Take Attendance</h3>
-            <p>Mark student attendance</p>
-          </div>
-        </router-link>
-
-        <router-link to="/report-card" class="quick-action-card">
-          <div class="action-icon" style="background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-          <div class="action-content">
-            <h3>Report Card</h3>
-            <p>Generate student report cards</p>
-          </div>
-        </router-link> -->
 
         <router-link to="/classes" class="quick-action-card">
           <div
@@ -562,59 +459,18 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import apiServices from "../services/apiServices";
-// import BarChart from '../components/charts/BarChart.vue'
-// import DonutChart from '../components/charts/DonutChart.vue'
-// import LineChart from '../components/charts/LineChart.vue'
-
-const currentSession = ref("2024/2025 Session");
-const currentTerm = ref("First Term");
-
+import { gsap } from "gsap";
 const stats = ref({
   totalStudents: 0,
   totalStaff: 0,
   totalClasses: 0,
 });
 
-const dashboardStats = ref({
-  overview: {},
-  activity: {},
-  session: {},
-  cards: [],
-});
-
 const sessionInfo = ref({
   session: null,
   term: null,
 });
-
-// Chart data
-// const classDistribution = ref([])
-// const genderDistribution = ref([
-//   // Test data to see if chart renders
-//   { label: 'Male', value: 50 },
-//   { label: 'Female', value: 45 }
-// ])
-// const enrollmentTrends = ref([])
-// const studentStatus = ref([])
-// const ageDistribution = ref([])
-
-// Loading states
-// const chartsLoading = ref({
-//   classDistribution: false,
-//   genderDistribution: false,
-//   enrollmentTrends: false,
-//   studentStatus: false,
-//   ageDistribution: false
-// })
-
-// Error states
-// const chartsError = ref({
-//   classDistribution: null,
-//   genderDistribution: null,
-//   enrollmentTrends: null,
-//   studentStatus: null,
-//   ageDistribution: null
-// })
+const isGettingSummary = ref(false);
 
 // Staff Activity Data
 const staffActivity = ref({
@@ -630,25 +486,25 @@ const staffActivity = ref({
 const staffActivityLoading = ref(false);
 const staffActivityError = ref(null);
 const cleanupLoading = ref(false);
-const dashboardLoading = ref(false);
+// const isGettingSummary = ref(false);
 
 // Load staff activity status
-const loadStaffActivity = async () => {
+const loadStaffActivity = () => {
   staffActivityLoading.value = true;
   staffActivityError.value = null;
 
-  try {
-    console.log("Loading staff activity...");
-    const response = await apiServices.getStaffActivityStatus();
-    console.log("Staff activity response:", response.data);
-
-    staffActivity.value = response.data.data;
-  } catch (error) {
-    console.error("Failed to load staff activity:", error);
-    staffActivityError.value = "Failed to load staff activity data";
-  } finally {
-    staffActivityLoading.value = false;
-  }
+  apiServices
+    .getStaffActivityStatus()
+    .then((response) => {
+      staffActivity.value = response.data.data;
+    })
+    .catch((error) => {
+      console.error("Failed to load staff activity:", error);
+      staffActivityError.value = "Failed to load staff activity data";
+    })
+    .finally(() => {
+      staffActivityLoading.value = false;
+    });
 };
 
 // Refresh staff activity
@@ -658,31 +514,29 @@ const refreshStaffActivity = () => {
 
 // Refresh all dashboard data
 const refreshDashboard = async () => {
-  await Promise.all([loadDashboardStats(), loadStaffActivity()]);
+  await Promise.all([getDashboardSummary(), loadStaffActivity()]);
 };
 
-// Cleanup stale sessions
-const cleanupStaleSessions = async () => {
+const cleanupStaleSessions = () => {
   cleanupLoading.value = true;
 
-  try {
-    console.log("Cleaning up stale sessions...");
-    const response = await apiServices.cleanupStaleSessions();
-    console.log("Cleanup response:", response.data);
+  apiServices
+    .cleanupStaleSessions()
+    .then((response) => {
+      alert(
+        `Successfully cleaned up ${response.data.data.sessions_cleaned} stale sessions`
+      );
 
-    // Show success message (you can add a toast notification here)
-    alert(
-      `Successfully cleaned up ${response.data.data.sessions_cleaned} stale sessions`
-    );
-
-    // Refresh the staff activity data
-    await loadStaffActivity();
-  } catch (error) {
-    console.error("Failed to cleanup stale sessions:", error);
-    alert("Failed to cleanup stale sessions");
-  } finally {
-    cleanupLoading.value = false;
-  }
+      // Refresh the staff activity data
+      return loadStaffActivity();
+    })
+    .catch((error) => {
+      console.error("Failed to cleanup stale sessions:", error);
+      alert("Failed to cleanup stale sessions");
+    })
+    .finally(() => {
+      cleanupLoading.value = false;
+    });
 };
 
 // Format time helper
@@ -710,159 +564,37 @@ const formatTime = (timeString) => {
   }
 };
 
-// Load dashboard statistics
-// const loadDashboardStats = async () => {
-//   chartsLoading.value.genderDistribution = true
-//   chartsError.value.genderDistribution = null
-
-//   try {
-//     console.log('Loading dashboard stats...')
-//     const response = await apiServices.getDashboardStats()
-//     console.log('Dashboard stats response:', response.data)
-
-//     const data = response.data.data
-
-//     stats.value = {
-//       totalStudents: data.overview.totalStudents,
-//       totalStaff: data.overview.totalStaff,
-//       totalClasses: data.overview.totalClasses
-//     }
-
-//     // Update gender distribution
-//     const genderData = [
-//       { label: 'Male', value: data.genderDistribution.male },
-//       { label: 'Female', value: data.genderDistribution.female }
-//     ]
-
-//     console.log('Gender distribution data:', genderData)
-//     genderDistribution.value = genderData
-
-//   } catch (error) {
-//     console.error('Failed to load dashboard stats:', error)
-//     chartsError.value.genderDistribution = 'Failed to load gender distribution data'
-//   } finally {
-//     chartsLoading.value.genderDistribution = false
-//   }
-// }
-
-// Load class distribution
-// const loadClassDistribution = async () => {
-//   chartsLoading.value.classDistribution = true
-//   chartsError.value.classDistribution = null
-
-//   try {
-//     const response = await apiServices.getClassDistribution()
-//     classDistribution.value = response.data.data.distribution.map(item => ({
-//       label: item.className,
-//       value: item.count
-//     }))
-//   } catch (error) {
-//     console.error('Failed to load class distribution:', error)
-//     chartsError.value.classDistribution = 'Failed to load class distribution data'
-//   } finally {
-//     chartsLoading.value.classDistribution = false
-//   }
-// }
-
-// Load enrollment trends
-// const loadEnrollmentTrends = async () => {
-//   chartsLoading.value.enrollmentTrends = true
-//   chartsError.value.enrollmentTrends = null
-
-//   try {
-//     const response = await apiServices.getEnrollmentTrends()
-//     enrollmentTrends.value = response.data.data.trends
-//   } catch (error) {
-//     console.error('Failed to load enrollment trends:', error)
-//     chartsError.value.enrollmentTrends = 'Failed to load enrollment trends data'
-//   } finally {
-//     chartsLoading.value.enrollmentTrends = false
-//   }
-// }
-
-// Load student status distribution
-// const loadStudentStatus = async () => {
-//   chartsLoading.value.studentStatus = true
-//   chartsError.value.studentStatus = null
-
-//   try {
-//     const response = await apiServices.getStudentStatusDistribution()
-//     studentStatus.value = response.data.data.distribution.map(item => ({
-//       label: item.status,
-//       value: item.count
-//     }))
-//   } catch (error) {
-//     console.error('Failed to load student status:', error)
-//     chartsError.value.studentStatus = 'Failed to load student status data'
-//   } finally {
-//     chartsLoading.value.studentStatus = false
-//   }
-// }
-
-// Load age distribution
-// const loadAgeDistribution = async () => {
-//   chartsLoading.value.ageDistribution = true
-//   chartsError.value.ageDistribution = null
-
-//   try {
-//     const response = await apiServices.getAgeDistribution()
-//     ageDistribution.value = response.data.data.distribution.map(item => ({
-//       label: item.ageRange,
-//       value: item.count
-//     }))
-//   } catch (error) {
-//     console.error('Failed to load age distribution:', error)
-//     chartsError.value.ageDistribution = 'Failed to load age distribution data'
-//   } finally {
-//     chartsLoading.value.ageDistribution = false
-//   }
-// }
-
-// Load dashboard statistics
-const loadDashboardStats = async () => {
-  dashboardLoading.value = true;
-  
-  try {
-    console.log("Loading dashboard stats...");
-    const response = await apiServices.getDashboardStats();
-    console.log("Dashboard stats response:", response.data);
-
-    const data = response.data.data;
-
-    // Update stats
-    stats.value = {
-      totalStudents: data.overview.totalStudents,
-      totalStaff: data.overview.totalStaff,
-      totalClasses: data.overview.totalClasses,
-    };
-
-    // Store full dashboard stats
-    dashboardStats.value = data;
-
-    // Update session info
-    if (data.session.currentSession) {
-      currentSession.value =
-        data.session.currentSession.session_name || "2024/2025 Session";
-    }
-    if (data.session.currentTerm) {
-      currentTerm.value = data.session.currentTerm.term_name || "First Term";
-    }
-  } catch (error) {
-    console.error("Failed to load dashboard stats:", error);
-    // Set default values on error
-    stats.value = {
-      totalStudents: 0,
-      totalStaff: 0,
-      totalClasses: 0,
-    };
-  } finally {
-    dashboardLoading.value = false;
-  }
+const getDashboardSummary = () => {
+  isGettingSummary.value = true;
+  apiServices
+    .getDashboardSummary()
+    .then((response) => {
+      const data = response.data.data;
+      stats.value.totalStudents = data.totals?.students;
+      stats.value.totalStaff = data.totals?.staff;
+      stats.value.totalClasses = data.totals?.classes;
+      sessionInfo.value.session = data.session?.name;
+      sessionInfo.value.term = data.term?.name;
+    })
+    .catch((error) => {
+      console.error("Failed to load dashboard summary:", error);
+    })
+    .finally(() => {
+      isGettingSummary.value = false;
+    });
 };
 
 onMounted(async () => {
   // Load all dashboard data
-  await Promise.all([loadDashboardStats(), loadStaffActivity()]);
+  await Promise.all([getDashboardSummary(), loadStaffActivity()]);
+
+  gsap.from(".sum-box", {
+    opacity: 0,
+    y: 30,
+    duration: 0.8,
+    stagger: 0.2, // each block enters one after another
+    ease: "power3.out",
+  });
 });
 </script>
 
@@ -1091,7 +823,8 @@ onMounted(async () => {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {

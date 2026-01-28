@@ -16,7 +16,7 @@ const router = express.Router();
 router.get(
   "/",
   authenticate,
-  authorize("subject.read"),
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   validateQuery(schemas.pagination),
   classSubjectAssignController.getAll,
 );
@@ -26,14 +26,14 @@ router.get("/:id", authenticate, classSubjectAssignController.getById);
 router.get(
   "/class/:classId",
   authenticate,
-  authorize("subject.read"),
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   classSubjectAssignController.getClassAssignedSubject,
 );
 
 router.post(
   "/",
   authenticate,
-  authorize("subject.create"),
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   classSubjectAssignController.validateAssignmentRequest,
   classSubjectAssignController.createAssignment,
 );
@@ -41,14 +41,14 @@ router.post(
 router.post(
   "/student/assign-subject",
   authenticate,
-  authorize("subject.create"),
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   classSubjectAssignController.assignSubjectToClassStudents,
 );
 
 router.put(
   "/:id",
   authenticate,
-  authorize("subject.create"),
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   checkSchoolAccess,
   classSubjectAssignController.updateAssignment,
 );
@@ -57,7 +57,7 @@ router.delete(
   "/:id",
   authenticate,
   checkSchoolAccess,
-  authorize("subject.delete"),
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   classSubjectAssignController.delete,
 );
 

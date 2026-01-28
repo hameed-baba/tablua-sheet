@@ -2,6 +2,8 @@ const express = require("express");
 const {
   authenticate,
   checkSystemAccess,
+  requireAdmin,
+  requireSuperAdmin,
   authorize,
 } = require("../middleware/auth");
 const {
@@ -13,75 +15,76 @@ const { schoolStaffController } = require("../controllers");
 
 const router = express.Router();
 
-// Register new staff
+// Register new staff - Only admins can create staff
 router.post(
   "/",
   authenticate,
-  authorize("staff.create"),
+  requireSuperAdmin,
   validate(schemas.staffRegistration),
-  schoolStaffController.register
+  schoolStaffController.register,
 );
 
-// Get all staff with pagination and filters
+// Get all staff with pagination and filters - Admins and teachers can view
 router.get(
   "/",
   authenticate,
-  authorize("staff.read"),
+  requireSuperAdmin,
   validateQuery(schemas.pagination),
-  schoolStaffController.getAll
+  schoolStaffController.getAll,
 );
 
-// Get staff by ID
+// Get staff by ID - Admins and teachers can view
 router.get(
   "/:id",
   authenticate,
-  authorize("staff.read"),
-  schoolStaffController.getById
+  requireSuperAdmin,
+  schoolStaffController.getById,
 );
+
 router.get(
   "/profile/:id",
   authenticate,
-  authorize("staff.read"),
-  schoolStaffController.getStaffProfile
+  requireSuperAdmin,
+  schoolStaffController.getStaffProfile,
 );
 
 router.get(
   "/section/:id",
   authenticate,
-  authorize("staff.read"),
-  schoolStaffController.getAllStaffBySection
+  requireSuperAdmin,
+  schoolStaffController.getAllStaffBySection,
 );
 
-// Update staff
+// Update staff - Only admins can update
 router.put(
   "/:id",
   authenticate,
-  authorize("staff.update"),
+  requireSuperAdmin,
   checkSystemAccess,
-  schoolStaffController.update
+  schoolStaffController.update,
 );
 
 router.patch(
   "/:id/toggle-access",
   authenticate,
-  authorize("staff.update"),
-  schoolStaffController.toggleSchoolAccess
+  requireSuperAdmin,
+  schoolStaffController.toggleSchoolAccess,
 );
 
 router.patch(
   "/:id/toggle-status",
   authenticate,
-  authorize("staff.update"),
-  schoolStaffController.toggleStaffStatus
+  requireSuperAdmin,
+  schoolStaffController.toggleStaffStatus,
 );
 
-// Soft delete staff
+// Soft delete staff - Only super admin can delete
 router.delete(
   "/:id",
   authenticate,
-  authorize("staff.delete"),
+  requireSuperAdmin,
   checkSystemAccess,
-  schoolStaffController.delete
+  schoolStaffController.delete,
 );
 
 module.exports = router;

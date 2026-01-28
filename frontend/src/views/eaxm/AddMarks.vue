@@ -79,6 +79,7 @@
             class="form-select"
             :disabled="loadingSubjects"
             required
+            @change="handleAssessmentTypeChange"
           >
             <option value="">
               {{ loadingSubjects ? "Loading subjects..." : "Select Subject" }}
@@ -108,7 +109,7 @@
         </div>
       </div>
 
-      <div class="selection-actions">
+      <div class="selection-actions gap-2">
         <button
           class="btn-load-students"
           @click="loadStudentsList"
@@ -129,6 +130,31 @@
             />
           </svg>
           {{ loading ? "Loading..." : "Load Students" }}
+        </button>
+        <button class="btn-quick-action auto-fill" @click="autoFillMarks">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 10V3L4 14h7v7l9-11h-7z"
+            />
+          </svg>
+          Auto Fill (Test)
+        </button>
+        <button
+          class="btn btn-submit"
+          @click="submitMarks"
+          :disabled="submitting || !canSubmit"
+        >
+          <span v-if="submitting" class="spinner"></span>
+          {{ submitting ? "Submitting..." : "Submit Marks" }}
         </button>
       </div>
     </div>
@@ -368,67 +394,6 @@
                         @input="handleMarksInput(student, 'caMarks', $event)"
                         @blur="formatMarksInput(student, 'caMarks')"
                       />
-                      <!-- <div class="input-feedback">
-                        <span
-                          v-if="student.caMarks === 'ABS'"
-                          class="absent-msg"
-                        >
-                          <svg
-                            width="14"
-                            height="14"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18 21l-2.636-2.636M6 6l2.636 2.636"
-                            />
-                          </svg>
-                          Student marked as absent
-                        </span>
-                        <span
-                          v-else-if="isInvalidCAMark(student.caMarks)"
-                          class="error-msg"
-                        >
-                          <svg
-                            width="14"
-                            height="14"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          Enter 0-40 or "ABS"
-                        </span>
-                        <span
-                          v-else-if="isValidCAMark(student.caMarks)"
-                          class="success-msg"
-                        >
-                          <svg
-                            width="14"
-                            height="14"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                        </span>
-                      </div> -->
                     </template>
 
                     <!-- Exam Input -->
@@ -464,68 +429,6 @@
                           </div>
                         </div>
                       </div>
-
-                      <!-- <div class="input-feedback"> -->
-                      <!-- <span
-                          v-if="student.examMarks === 'ABS'"
-                          class="absent-msg"
-                        >
-                          <svg
-                            width="14"
-                            height="14"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18 21l-2.636-2.636M6 6l2.636 2.636"
-                            />
-                          </svg>
-                          Student marked as absent
-                        </span> -->
-                      <!-- <span
-                          v-else-if="isInvalidExamMark(student.examMarks)"
-                          class="error-msg"
-                        >
-                          <svg
-                            width="14"
-                            height="14"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          Enter 0-60 or "ABS"
-                        </span> -->
-                      <!-- <span
-                          v-else-if="isValidExamMark(student.examMarks)"
-                          class="success-msg"
-                        >
-                          <svg
-                            width="14"
-                            height="14"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                        </span> -->
-                      <!-- </div> -->
                     </template>
                   </div>
                 </td>
@@ -682,64 +585,6 @@
                       @input="handleMarksInput(student, 'caMarks', $event)"
                       @blur="formatMarksInput(student, 'caMarks')"
                     />
-                    <!-- <div class="input-feedback">
-                      <span v-if="student.caMarks === 'ABS'" class="absent-msg">
-                        <svg
-                          width="12"
-                          height="12"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18 21l-2.636-2.636M6 6l2.636 2.636"
-                          />
-                        </svg>
-                        Student marked as absent
-                      </span>
-                      <span
-                        v-else-if="isInvalidCAMark(student.caMarks)"
-                        class="error-msg"
-                      >
-                        <svg
-                          width="12"
-                          height="12"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        Enter 0-40 or "ABS"
-                      </span>
-                      <span
-                        v-else-if="isValidCAMark(student.caMarks)"
-                        class="success-msg"
-                      >
-                        <svg
-                          width="12"
-                          height="12"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      </span>
-                    </div> -->
                   </template>
 
                   <!-- Exam Input -->
@@ -783,68 +628,6 @@
                         </span>
                       </div>
                     </div>
-
-                    <!-- <div class="input-feedback">
-                      <span
-                        v-if="student.examMarks === 'ABS'"
-                        class="absent-msg"
-                      >
-                        <svg
-                          width="12"
-                          height="12"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18 21l-2.636-2.636M6 6l2.636 2.636"
-                          />
-                        </svg>
-                        Student marked as absent
-                      </span>
-                      <span
-                        v-else-if="isInvalidExamMark(student.examMarks)"
-                        class="error-msg"
-                      >
-                        <svg
-                          width="12"
-                          height="12"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        Enter 0-60 or "ABS"
-                      </span>
-                      <span
-                        v-else-if="isValidExamMark(student.examMarks)"
-                        class="success-msg"
-                      >
-                        <svg
-                          width="12"
-                          height="12"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      </span>
-                    </div> -->
                   </template>
                 </div>
               </div>
@@ -1108,8 +891,6 @@ const getClassStudents = () => {
     current_term_id: selection.value.term,
   };
 
-  console.log("Getting student assigned subjects with params:", params);
-
   apiServices
     .getAssignedSubjectsByFilters(params)
     .then((response) => {
@@ -1147,14 +928,12 @@ const getClassStudents = () => {
       studentsLoaded.value = true;
 
       const summary = responseData.summary;
-      toast.success(
-        "Students Loaded",
-        `${transformedStudents.length} students loaded successfully. ${
-          summary.students_with_ca || 0
-        } have CA marks, ${summary.students_with_exam || 0} have exam marks.`
-      );
-
-      console.log("Transformed students:", transformedStudents);
+      // toast.success(
+      //   "Students Loaded",
+      //   `${transformedStudents.length} students loaded successfully. ${
+      //     summary.students_with_ca || 0
+      //   } have CA marks, ${summary.students_with_exam || 0} have exam marks.`
+      // );
     })
     .catch((error) => {
       console.error("Error fetching student assigned subjects:", error);
@@ -1355,10 +1134,10 @@ const autoFillMarks = () => {
       student.examMarks = randomMark.toString();
     }
   });
-  toast.success(
-    "Auto Fill Complete",
-    `Random marks have been generated for all ${students.value.length} students.`
-  );
+  // toast.success(
+  //   "Auto Fill Complete",
+  //   `Random marks have been generated for all ${students.value.length} students.`
+  // );
   // }
 };
 
@@ -1404,15 +1183,10 @@ const submitMarks = async () => {
       if (studentsWithCAMarks.length > 0) {
         await updateCA1Score(studentsWithCAMarks);
 
-        toast.success(
-          "Marks Submitted Successfully",
-          `CA marks for ${studentsWithCAMarks.length} students have been submitted successfully.`
-        );
-
-        // // Reset or navigate after successful submission
-        // setTimeout(() => {
-        //   router.push("/grades");
-        // }, 1500);
+        // toast.success(
+        //   "Marks Submitted Successfully",
+        //   `CA marks for ${studentsWithCAMarks.length} students have been submitted successfully.`
+        // );
       } else {
         toast.warning("No Marks to Submit", "No CA marks found to submit.");
       }
@@ -1428,15 +1202,10 @@ const submitMarks = async () => {
       if (studentsWithExamMarks.length > 0) {
         await updateExamScore(studentsWithExamMarks);
 
-        toast.success(
-          "Marks Submitted Successfully",
-          `Exam marks for ${studentsWithExamMarks.length} students have been submitted successfully.`
-        );
-
-        // Reset or navigate after successful submission
-        // setTimeout(() => {
-        //   router.push("/grades");
-        // }, 1500);
+        // toast.success(
+        //   "Marks Submitted Successfully",
+        //   `Exam marks for ${studentsWithExamMarks.length} students have been submitted successfully.`
+        // );
       } else {
         toast.warning("No Marks to Submit", "No exam marks found to submit.");
       }
@@ -1452,21 +1221,10 @@ const submitMarks = async () => {
   }
 };
 
-// Note: Existing marks are now loaded directly by getClassStudents function
-// No need for separate CA/Exam score loading functions
-
 const updateCA1Score = async (studentsArray) => {
   // Filter only students whose CA marks have changed
   const changedStudents = studentsArray.filter((studentData) => {
-    const currentCA =
-      studentData.caMarks === "ABS" ? null : parseFloat(studentData.caMarks);
-    const existingCA =
-      studentData.existingCA === "ABS"
-        ? null
-        : parseFloat(studentData.existingCA);
-
-    // Compare current vs existing (handle null/undefined cases)
-    return currentCA !== existingCA;
+    return String(studentData.caMarks) !== String(studentData.existingCA);
   });
 
   if (changedStudents.length === 0) {
@@ -1474,6 +1232,7 @@ const updateCA1Score = async (studentsArray) => {
       "No Changes Detected",
       "No CA marks have been modified. Nothing to update."
     );
+
     return Promise.resolve({ status: "success", count: 0 });
   }
 
@@ -1484,27 +1243,13 @@ const updateCA1Score = async (studentsArray) => {
     current_session_id: selection.value.session,
     current_term_id: selection.value.term,
     ca_1_score:
-      studentData.caMarks === "ABS" ? null : parseFloat(studentData.caMarks),
+      studentData.caMarks === "ABS" ? "ABS" : parseFloat(studentData.caMarks),
   }));
-
-  console.log(
-    `Sending CA1 data for ${changedStudents.length} changed students out of ${studentsArray.length} total:`,
-    data
-  );
-
-  // console.log("Sending CA1 data:", data);
-  // console.log("Selection values:", {
-  //   class: selection.value.class,
-  //   subject: selection.value.subject,
-  //   session: selection.value.session,
-  //   term: selection.value.term,
-  // });
 
   return apiServices
     .updateCA1Score(data)
     .then((response) => {
       const responseData = response.data;
-      // console.log("CA1 Response:", responseData);
 
       if (responseData.status === "success") {
         toast.success(
@@ -1514,14 +1259,12 @@ const updateCA1Score = async (studentsArray) => {
           } students`
         );
       } else if (responseData.status === "partial_success") {
-        // console.log("Partial success errors:", responseData.errors);
         toast.warning(
           "Partial Success",
           `${responseData.successful_count} CA scores updated successfully, ${responseData.error_count} failed. Check console for details.`
         );
 
-        // Log detailed errors
-        responseData.errors?.forEach((error, index) => {
+        responseData.errors?.forEach((error) => {
           console.error(`Student ${error.student_id} error:`, error.error);
         });
       }
@@ -1531,11 +1274,13 @@ const updateCA1Score = async (studentsArray) => {
     .catch((error) => {
       console.error("Error updating CA1 scores:", error);
       console.error("Full error response:", error.response);
+
       toast.error(
         "Update Failed",
         error.response?.data?.message ||
           "Failed to update CA scores. Please try again."
       );
+
       throw error;
     });
 };
@@ -1543,17 +1288,7 @@ const updateCA1Score = async (studentsArray) => {
 const updateExamScore = async (studentsArray) => {
   // Filter only students whose exam marks have changed
   const changedStudents = studentsArray.filter((studentData) => {
-    const currentExam =
-      studentData.examMarks === "ABS"
-        ? null
-        : parseFloat(studentData.examMarks);
-    const existingExam =
-      studentData.existingExam === "ABS"
-        ? null
-        : parseFloat(studentData.existingExam);
-
-    // Compare current vs existing (handle null/undefined cases)
-    return currentExam !== existingExam;
+    return String(studentData.examMarks) !== String(studentData.existingExam);
   });
 
   if (changedStudents.length === 0) {
@@ -1572,28 +1307,14 @@ const updateExamScore = async (studentsArray) => {
     current_term_id: selection.value.term,
     exam_score:
       studentData.examMarks === "ABS"
-        ? null
+        ? "ABS"
         : parseFloat(studentData.examMarks),
   }));
-
-  console.log(
-    `Sending Exam data for ${changedStudents.length} changed students out of ${studentsArray.length} total:`,
-    data
-  );
-
-  // console.log("Sending Exam data:", data);
-  // console.log("Selection values:", {
-  //   class: selection.value.class,
-  //   subject: selection.value.subject,
-  //   session: selection.value.session,
-  //   term: selection.value.term,
-  // });
 
   return apiServices
     .updateExamScore(data)
     .then((response) => {
       const responseData = response.data;
-      console.log("Exam Response:", responseData);
 
       if (responseData.status === "success") {
         toast.success(
@@ -1604,13 +1325,13 @@ const updateExamScore = async (studentsArray) => {
         );
       } else if (responseData.status === "partial_success") {
         console.log("Partial success errors:", responseData.errors);
+
         toast.warning(
           "Partial Success",
           `${responseData.successful_count} exam scores updated successfully, ${responseData.error_count} failed. Check console for details.`
         );
 
-        // Log detailed errors
-        responseData.errors?.forEach((error, index) => {
+        responseData.errors?.forEach((error) => {
           console.error(`Student ${error.student_id} error:`, error.error);
         });
       }
@@ -1620,16 +1341,17 @@ const updateExamScore = async (studentsArray) => {
     .catch((error) => {
       console.error("Error updating exam scores:", error);
       console.error("Full error response:", error.response);
+
       toast.error(
         "Update Failed",
         error.response?.data?.message ||
           "Failed to update exam scores. Please try again."
       );
+
       throw error;
     });
 };
 
-// Initialize data on component mount
 onMounted(() => {
   getAllRowSessions();
   getAllRowClases();

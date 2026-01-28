@@ -15,7 +15,7 @@ const router = express.Router();
 router.get(
   "/",
   authenticate,
-  authorize("grade.read"),
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   validateQuery(schemas.pagination),
   gradeListController.getAllGradeLists
 );
@@ -23,14 +23,14 @@ router.get(
 router.get(
   "/:id",
   authenticate,
-  authorize("grade.read"),
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   gradeListController.getGradeListById
 );
 
 router.post(
   "/",
   authenticate,
-  authorize("grade.create"),
+  authorize(["super_admin", "admin"]),
   validate(schemas.gradeListCreation),
   gradeListController.createGradeList
 );
@@ -38,14 +38,14 @@ router.post(
 router.put(
   "/:id",
   authenticate,
-  authorize("grade.update"),
+  authorize(["super_admin", "admin"]),
   gradeListController.updateGradeList
 );
 
 router.delete(
   "/:id",
   authenticate,
-  authorize("grade.delete"),
+  authorize(["super_admin", "admin"]),
   gradeListController.deleteGradeList
 );
 

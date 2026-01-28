@@ -269,39 +269,6 @@ const router = createRouter({
             description: "Update grade system information.",
           },
         },
-
-        {
-          path: "/roles",
-          name: "roles",
-          component: () => import("../views/Role.vue"),
-          meta: {
-            requiresAuth: true,
-            title: "Role",
-            description: "Manage staff role",
-          },
-        },
-
-        {
-          path: "/roles/register",
-          name: "roles-register",
-          component: () => import("../views/role/RegisterRole.vue"),
-          meta: {
-            requiresAuth: true,
-            title: "Register Role",
-            description: "Register staff role",
-          },
-        },
-
-        {
-          path: "/roles/update/:id",
-          name: "roles-update",
-          component: () => import("../views/role/UpdateRole.vue"),
-          meta: {
-            requiresAuth: true,
-            title: "Register Role",
-            description: "Register staff role",
-          },
-        },
         {
           path: "/profile",
           name: "profile",

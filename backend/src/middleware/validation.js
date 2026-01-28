@@ -243,22 +243,9 @@ const schemas = {
   roleCreation: {
     role_name: { type: "string", min: 2, max: 50, required: true },
     description: { type: "string", max: 255, optional: true },
-    permissions: { type: "array", items: "number", optional: true },
   },
 
-  permissionCreation: {
-    permission_name: { type: "string", min: 2, max: 100, required: true },
-  },
-
-  rolePermissionAssignment: {
-    role_id: { type: "number", integer: true, positive: true, required: true },
-    permissionId: {
-      type: "number",
-      integer: true,
-      positive: true,
-      required: true,
-    },
-  },
+  // Permission validation schemas removed
 
   schoolClassCreation: {
     class_name: { type: "string", min: 1, max: 50, required: true },

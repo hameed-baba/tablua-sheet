@@ -17,144 +17,144 @@ const router = express.Router();
 router.post(
   "/",
   authenticate,
-  authorize("student.create"),
+  authorize(["super_admin","admin"]),
   validate(schemas.studentRegistrationWithSubjects),
-  schoolStudentController.register
+  schoolStudentController.register,
 );
 
 // Get all students with pagination and filters
 router.get(
   "/",
   authenticate,
-  authorize("student.read"),
+  authorize(["super_admin","admin"]),
   validateQuery(schemas.pagination),
-  schoolStudentController.getAll
+  schoolStudentController.getAll,
 );
 
 router.get(
   "/session",
   authenticate,
-  authorize("student.read"),
+  authorize(["super_admin","admin"]),
   validateQuery(schemas.pagination),
-  schoolStudentController.getAllStudentByActiveSession
+  schoolStudentController.getAllStudentByActiveSession,
 );
 
 // Search students by multiple criteria
 router.get(
   "/search",
   authenticate,
-  authorize("student.read"),
-  schoolStudentController.getStudents
+  authorize(["super_admin","admin"]),
+  schoolStudentController.getStudents,
 );
 
 // Get student by ID
 router.get(
   "/:id",
   authenticate,
-  authorize("student.read"),
-  schoolStudentController.getById
+  authorize(["super_admin","admin"]),
+  schoolStudentController.getById,
 );
 
 router.get(
   "/class/:classId",
   authenticate,
-  authorize("student.read"),
-  schoolStudentController.getStudentsByClassId
+  authorize(["super_admin","admin"]),
+  schoolStudentController.getStudentsByClassId,
 );
 
 router.get(
   "/:id/subjects",
   authenticate,
-  authorize("student.read"),
-  schoolStudentController.getStudentSubjects
+  authorize(["super_admin","admin"]),
+  schoolStudentController.getStudentSubjects,
 );
 
 // Debug endpoint to check class subjects
 router.get(
   "/debug/class-subjects/:classId",
   authenticate,
-  authorize("student.read"),
-  schoolStudentController.debugClassSubjects
+  authorize(["super_admin","admin"]),
+  schoolStudentController.debugClassSubjects,
 );
 
 // Create test class subject assignments
 router.post(
   "/debug/create-class-subjects",
   authenticate,
-  authorize("student.create"),
-  schoolStudentController.createTestClassSubjects
+  authorize(["super_admin","admin"]),
+  schoolStudentController.createTestClassSubjects,
 );
 
 // Debug all promotion data
 router.get(
   "/debug/promotion-data",
   authenticate,
-  authorize("student.read"),
-  schoolStudentController.debugPromotionData
+  authorize(["super_admin","admin"]),
+  schoolStudentController.debugPromotionData,
 );
 
 // Debug student assignments
 router.get(
   "/debug/assignments/:studentId",
   authenticate,
-  authorize("student.read"),
-  schoolStudentController.debugStudentAssignments
+  authorize(["super_admin","admin"]),
+  schoolStudentController.debugStudentAssignments,
 );
 
 // Test promotion without full auth (for debugging)
 router.post(
   "/debug/test-promote",
   authenticate,
-  authorize("student.read"),
-  schoolStudentController.testPromote
+  authorize(["super_admin","admin"]),
+  schoolStudentController.testPromote,
 );
 
 // Get students by status
 router.get(
   "/status/:status",
   authenticate,
-  authorize("student.read"),
-  schoolStudentController.getStudentsByStatus
+  authorize(["super_admin","admin"]),
+  schoolStudentController.getStudentsByStatus,
 );
 
 // Update student status
 router.put(
   "/:id/status",
   authenticate,
-  authorize("student.update"),
-  schoolStudentController.updateStudentStatus
+  authorize(["super_admin","admin"]),
+  schoolStudentController.updateStudentStatus,
 );
 
 // Promote single student
 router.put(
   "/:id/promote",
   authenticate,
-  authorize("student.update"),
-  schoolStudentController.promoteStudent
+  authorize(["super_admin","admin"]),
+  schoolStudentController.promoteStudent,
 );
 
 // Bulk promote students
 router.put(
   "/bulk-promote",
   authenticate,
-  authorize("student.update"),
-  schoolStudentController.bulkPromoteStudents
+  authorize(["super_admin","admin"]),
+  schoolStudentController.bulkPromoteStudents,
 );
 
 // Update student
 router.put(
   "/:id",
   authenticate,
-  authorize("student.update"),
-  schoolStudentController.updateStudent
+  authorize(["super_admin","admin"]),
+  schoolStudentController.updateStudent,
 );
 
 // Delete student
 router.delete(
   "/:id",
   authenticate,
-  authorize("student.delete"),
-  schoolStudentController.delete
+  authorize(["super_admin","admin"]),
+  schoolStudentController.delete,
 );
 
 module.exports = router;

@@ -1,20 +1,13 @@
-const { Role, Permission } = require('../models');
-const { asyncHandler } = require('../middleware/errorHandler');
-const { Op } = require('sequelize');
+const { Role } = require("../models");
+const { asyncHandler } = require("../middleware/errorHandler");
+const { Op } = require("sequelize");
 
 /**
  * @desc Get all roles
  * @route GET /api/roles
  */
 const getAllRoles = asyncHandler(async (req, res) => {
-  const allRoles = await Role.findAll({
-    include: [{
-      model: Permission,
-      as: "permissions",
-      attributes: ["id", "permission_name"],
-      through: { attributes: [] },
-    }],
-  });
+  const allRoles = await Role.findAll({});
 
   res.json({
     success: true,
@@ -24,20 +17,13 @@ const getAllRoles = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc Get a single role by ID (with permissions)
+ * @desc Get a single role by ID
  * @route GET /api/role/:id
  */
 const getRoleById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const role = await Role.findByPk(id, {
-    include: [{
-      model: Permission,
-      as: "permissions",
-      attributes: ["id", "permission_name"],
-      through: { attributes: [] },
-    }],
-  });
+  const role = await Role.findByPk(id, {});
 
   if (!role) {
     return res.status(404).json({
@@ -55,11 +41,11 @@ const getRoleById = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc Create a role with permissions
+ * @desc Create a role
  * @route POST /api/role
  */
 const createRole = asyncHandler(async (req, res) => {
-  const { role_name, description, permissions } = req.body;
+  const { role_name } = req.body;
 
   // Validate payload
   if (!role_name) {
@@ -83,23 +69,8 @@ const createRole = asyncHandler(async (req, res) => {
   // Create role
   const newRole = await Role.create({ role_name, description });
 
-  // Assign permissions if provided
-  if (Array.isArray(permissions) && permissions.length > 0) {
-    const validPermissions = await Permission.findAll({
-      where: { id: permissions },
-    });
-    await newRole.setPermissions(validPermissions);
-  }
-
-  // Return the newly created role with permissions
-  const createdRole = await Role.findByPk(newRole.id, {
-    include: [{
-      model: Permission,
-      as: "permissions",
-      attributes: ["id", "permission_name"],
-      through: { attributes: [] },
-    }],
-  });
+  // Return the newly created role
+  const createdRole = await Role.findByPk(newRole.id);
 
   res.status(201).json({
     success: true,
@@ -109,12 +80,12 @@ const createRole = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc Update a role and its permissions
+ * @desc Update a role
  * @route PUT /api/role/:id
  */
 const updateRole = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { role_name, description, permissions } = req.body;
+  const { role_name, description } = req.body;
 
   const role = await Role.findByPk(id);
   if (!role) {
@@ -145,23 +116,11 @@ const updateRole = asyncHandler(async (req, res) => {
     description: description || role.description,
   });
 
-  // Update role permissions if provided
-  if (Array.isArray(permissions)) {
-    const validPermissions = await Permission.findAll({
-      where: { id: permissions },
-    });
-    await role.setPermissions(validPermissions);
-  }
+  // Update role permissions if provided - REMOVED
+  // Permission functionality has been removed
 
   // Fetch updated role
-  const updatedRole = await Role.findByPk(id, {
-    include: [{
-      model: Permission,
-      as: "permissions",
-      attributes: ["id", "permission_name"],
-      through: { attributes: [] },
-    }],
-  });
+  const updatedRole = await Role.findByPk(id);
 
   res.json({
     success: true,

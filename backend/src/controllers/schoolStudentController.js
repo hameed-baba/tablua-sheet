@@ -669,6 +669,10 @@ const getStudentsByClassId = asyncHandler(async (req, res) => {
 
   const totalPages = Math.ceil(count / limitNumber);
 
+  if (count === 0) {
+  return res.status(204).send(); // no body
+}
+
   res.json({
     status: "success",
     data: {

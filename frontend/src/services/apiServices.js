@@ -424,25 +424,6 @@ export default {
     });
   },
 
-  // Chart APIs
-  getDashboardStats() {
-    return apiClient.get("/charts/dashboard-stats");
-  },
-  getEnrollmentTrends(params = {}) {
-    return apiClient.get("/charts/enrollment-trends", { params });
-  },
-  getClassDistribution() {
-    return apiClient.get("/charts/class-distribution");
-  },
-  getStudentStatusDistribution() {
-    return apiClient.get("/charts/student-status");
-  },
-  getSubjectPerformance(params = {}) {
-    return apiClient.get("/charts/subject-performance", { params });
-  },
-  getAgeDistribution() {
-    return apiClient.get("/charts/age-distribution");
-  },
 
   // =================== STAFF ACTIVITY ===================
   getStaffActivityStatus() {
@@ -465,15 +446,13 @@ export default {
   },
 
   // =================== DASHBOARD ===================
-  getDashboardStats() {
-    return apiClient.get("/dashboard/stats");
+  getDashboardSummary() {
+    return apiClient.get("/dashboard/summary");
   },
   getDashboardOverview() {
     return apiClient.get("/dashboard/overview");
   },
-  getSessionInfo() {
-    return apiClient.get("/dashboard/session-info");
-  },
+ 
 
   // =================== PDF ===================
   // generatePdfMakeReport2() {

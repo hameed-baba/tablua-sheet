@@ -8,14 +8,14 @@ const router = express.Router();
 router.get(
   "/",
   authenticate,
-  authorize("grade.read"),
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   gradeSystemController.getAll
 );
 
 router.post(
   "/",
   authenticate,
-  authorize("grade.create"),
+  authorize(["super_admin", "admin"]),
   validate(schemas.gradeSystemCreation),
   gradeSystemController.create
 );
@@ -23,14 +23,14 @@ router.post(
 router.put(
   "/:id",
   authenticate,
-  authorize("grade.update"),
+  authorize(["super_admin", "admin"]),
   gradeSystemController.update
 );
 
 router.delete(
   "/:id",
   authenticate,
-  authorize("grade.delete"),
+  authorize(["super_admin", "admin"]),
   gradeSystemController.delete
 );
 

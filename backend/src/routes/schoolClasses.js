@@ -16,7 +16,7 @@ const router = express.Router();
 router.get(
   "/",
   authenticate,
-  authorize("class.read"),
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   validateQuery(schemas.pagination),
   schoolClassController.getAll
 );
@@ -24,14 +24,14 @@ router.get(
 router.get(
   "/row",
   authenticate,
-  authorize("class.read"),
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   schoolClassController.getAllRowClases
 );
 
 router.get(
   "/:id",
   authenticate,
-  authorize("class.read"),
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   schoolClassController.getById
 );
 
@@ -39,7 +39,7 @@ router.get(
 router.post(
   "/",
   authenticate,
-  authorize("class.create"),
+  authorize(["super_admin", "admin"]),
   validate(schemas.schoolClassCreation),
   schoolClassController.create
 );
@@ -47,14 +47,14 @@ router.post(
 router.put(
   "/:id",
   authenticate,
-  authorize("class.update"),
+  authorize(["super_admin", "admin"]),
   schoolClassController.update
 );
 
 router.delete(
   "/:id",
   authenticate,
-  authorize("class.delete"),
+  authorize(["super_admin", "admin"]),
   schoolClassController.delete
 );
 

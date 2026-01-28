@@ -1,5 +1,5 @@
 const express = require("express");
-const { authenticate, checkSchoolAccess } = require("../middleware/auth");
+const { authenticate, checkSchoolAccess, authorize } = require("../middleware/auth");
 const {
   validate,
   validateQuery,
@@ -13,6 +13,7 @@ const router = express.Router();
 router.get(
   "/",
   authenticate,
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   validateQuery(schemas.pagination),
   studentSubjectAssignController.getAll
 );
@@ -21,6 +22,7 @@ router.get(
 router.get(
   "/class-ca-scores",
   authenticate,
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   studentSubjectAssignController.getClassCAScores
 );
 
@@ -28,6 +30,7 @@ router.get(
 router.get(
   "/class-exam-scores",
   authenticate,
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   studentSubjectAssignController.getClassExamScores
 );
 
@@ -35,6 +38,7 @@ router.get(
 router.get(
   "/by-identifiers",
   authenticate,
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   studentSubjectAssignController.getByIdentifiers
 );
 
@@ -42,6 +46,7 @@ router.get(
 router.get(
   "/marks",
   authenticate,
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   studentSubjectAssignController.getMarks
 );
 
@@ -49,6 +54,7 @@ router.get(
 router.get(
   "/student/:student_id/marks",
   authenticate,
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   studentSubjectAssignController.getStudentMarks
 );
 
@@ -56,12 +62,14 @@ router.get(
 router.get(
   "/assigned-subjects",
   authenticate,
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   studentSubjectAssignController.getStudentAssignedSubjects
 );
 
 router.get(
   "/assigned-subjects-2",
   authenticate,
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   studentSubjectAssignController.getStudentAssignedSubjects2
 );
 
@@ -69,6 +77,7 @@ router.get(
 router.get(
   "/all-subjects-with-scores",
   authenticate,
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   studentSubjectAssignController.getAllStudentSubjectsWithScores
 );
 
@@ -76,6 +85,7 @@ router.get(
 router.get(
   "/:id",
   authenticate,
+  authorize(["super_admin", "admin","teacher","student","parent"]),
   studentSubjectAssignController.getById
 );
 
@@ -83,6 +93,7 @@ router.get(
 router.post(
   "/",
   authenticate,
+  authorize(["super_admin", "admin"]),
   checkSchoolAccess,
   studentSubjectAssignController.create
 );
@@ -91,6 +102,7 @@ router.post(
 router.put(
   "/update-ca1-score",
   authenticate,
+  authorize(["super_admin", "admin","teacher"]),
   checkSchoolAccess,
   studentSubjectAssignController.updateCA1Score
 );
@@ -99,6 +111,7 @@ router.put(
 router.put(
   "/update-exam-score",
   authenticate,
+  authorize(["super_admin", "admin","teacher"]),
   checkSchoolAccess,
   studentSubjectAssignController.updateExamScore
 );
@@ -107,6 +120,7 @@ router.put(
 router.put(
   "/update-scores",
   authenticate,
+  authorize(["super_admin", "admin","teacher"]),
   checkSchoolAccess,
   studentSubjectAssignController.updateScores
 );
@@ -115,6 +129,7 @@ router.put(
 router.put(
   "/:id",
   authenticate,
+  authorize(["super_admin", "admin"]),
   checkSchoolAccess,
   studentSubjectAssignController.update
 );
@@ -123,6 +138,7 @@ router.put(
 router.delete(
   "/:id",
   authenticate,
+  authorize(["super_admin", "admin"]),
   checkSchoolAccess,
   studentSubjectAssignController.delete
 );

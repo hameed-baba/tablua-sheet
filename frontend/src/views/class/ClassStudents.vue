@@ -2,11 +2,11 @@
   <div class="page">
     <div class="page-header mt-4">
       <div>
-        <h1>{{ classInfo.class_name || "Class" }} Students</h1>
-        <p v-if="classInfo.SchoolStaff">
-          Teacher: {{ classInfo.SchoolStaff.full_name }} | Section:
-          {{ classInfo.Section?.section_name }} | Grading:
-          {{ classInfo.GradeList?.grade_name }}
+        <h1>{{ classInfo.class_name || "Class" }} <small>Students</small></h1>
+        <p>
+          <b> Class Master:</b> {{ classInfo.class_master }} | <b>Section:</b>
+          {{ classInfo.class_section }} | <b>Grading:</b>
+          {{ classInfo.grade_name }}
         </p>
       </div>
       <button class="add-btn" @click="goBack">
@@ -35,7 +35,10 @@
           </svg>
         </div>
         <div class="stat-content">
-          <h3>{{ students.length }}</h3>
+          <div class="sum-box">
+            <i class="fa fa-spinner fa-spin" v-if="loading"></i>
+            <h3 v-else>{{ summary.totalStudents }}</h3>
+          </div>
           <p>Total Students</p>
         </div>
       </div>
@@ -58,7 +61,10 @@
           </svg>
         </div>
         <div class="stat-content">
-          <h3>{{ maleCount }}</h3>
+          <div class="sum-box">
+            <i class="fa fa-spinner fa-spin" v-if="loading"></i>
+            <h3 v-else>{{ summary.totalMale }}</h3>
+          </div>
           <p>Male Students</p>
         </div>
       </div>
@@ -81,7 +87,10 @@
           </svg>
         </div>
         <div class="stat-content">
-          <h3>{{ femaleCount }}</h3>
+          <div class="sum-box">
+            <i class="fa fa-spinner fa-spin" v-if="loading"></i>
+            <h3 v-else>{{ summary.totalFemale }}</h3>
+          </div>
           <p>Female Students</p>
         </div>
       </div>
@@ -91,7 +100,10 @@
           <i class="fa fa-book" style="font-size: 19px"></i>
         </div>
         <div class="stat-content">
-          <h3>{{ totalAssignedSubjects }}</h3>
+          <div class="sum-box">
+            <i class="fa fa-spinner fa-spin" v-if="loading"></i>
+            <h3 v-else>{{ totalAssignedSubjects }}</h3>
+          </div>
           <p>Total Class Subjects</p>
         </div>
       </div>
@@ -400,10 +412,10 @@
                 <td>
                   <button
                     class="action-btn primary"
+                    :disabled="isAssigningSubjects"
                     @click="getSelectedSubject(subject.Subject?.id)"
-                  >
-                    Assign to students
-                  </button>
+                    v-html="assignSUbjectBtn"
+                  ></button>
                   <button
                     class="action-btn edit"
                     @click="editSubjectAssignment(subject)"
@@ -444,7 +456,6 @@
   <StudentQuickViewModal
     ref="studentQuickViewRef"
     @edit-student="handleEditFromModal"
-    @manage-subjects="handleManageSubjectsFromModal"
   />
 </template>
 
@@ -459,10 +470,17 @@ import ConfirmDeleteModal from "../../components/public/ConfirmDeleteModal.vue";
 import StudentQuickViewModal from "./StudentQuickViewModal.vue";
 import Pagination from "../../components/public/Pagination.vue";
 import UpdateAssignSubjectModal from "./UpdateAssignSubjectModal.vue";
+import { gsap } from "gsap";
 
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
+
+const summary = ref({
+  totalStudents: 0,
+  totalMale: 0,
+  totalFemale: 0,
+});
 
 const classInfo = ref({});
 const classId = ref(null);
@@ -482,6 +500,7 @@ const pagination = ref({
 // Subjects related
 const assignedSubjects = ref([]);
 const loadingSubjects = ref(false);
+const isAssigningSubjects = ref(false);
 const assignSubjectRef = ref(null);
 const selectedSubject = ref(null);
 const showDeleteSubjectModal = ref(false);
@@ -496,14 +515,6 @@ const filters = ref({
 });
 
 // Computed properties for stats
-const maleCount = computed(
-  () => students.value.filter((s) => s.gender?.toLowerCase() === "male").length
-);
-
-const femaleCount = computed(
-  () =>
-    students.value.filter((s) => s.gender?.toLowerCase() === "female").length
-);
 
 const totalAssignedSubjects = computed(
   () => assignedSubjects.value.length || 0
@@ -551,10 +562,6 @@ const handleEditFromModal = (student) => {
   editStudent(student);
 };
 
-const handleManageSubjectsFromModal = (student) => {
-  manageStudentSubjects(student);
-};
-
 const editStudent = (student) => {
   // Navigate to edit student page
   router.push({
@@ -562,19 +569,6 @@ const editStudent = (student) => {
     query: {
       from: "class",
       classId: classId.value,
-    },
-  });
-};
-
-const manageStudentSubjects = (student) => {
-  router.push({
-    name: "student-subjects",
-    params: {
-      studentId: student.id,
-    },
-    query: {
-      studentName: student.full_name,
-      className: classInfo.value.class_name,
     },
   });
 };
@@ -662,38 +656,74 @@ const getClassStudents = (id, page = 1) => {
     params.gender = filters.value.gender;
   }
 
-  apiServices
-    .getStudentsByClassId(id, params)
-    .then((response) => {
-      // Ensure we always get an array
-      const data = response.data.data.students;
-      students.value = Array.isArray(data) ? data : [];
-
-      // Update pagination data
-      const paginate = response.data.data.pagination;
-      if (paginate) {
-        pagination.value = {
-          currentPage: paginate.currentPage,
-          totalPages: paginate.totalPages,
-          totalCount: paginate.totalCount,
-          limit: paginate.limit,
-          hasNextPage: paginate.hasNextPage,
-          hasPrevPage: paginate.hasPrevPage,
-        };
-      }
-
-      loading.value = false;
-    })
-    .catch((error) => {
-      console.error("Error fetching students:", error);
-      toast.error(
-        "Failed to Load Students",
-        error.response?.data?.message ||
-          "An error occurred while fetching students."
-      );
+apiServices
+  .getStudentsByClassId(id, params)
+  .then((response) => {
+    // Check 204 first
+    if (response.status === 204) {
       students.value = [];
+      summary.value = {
+        totalStudents: 0,
+        totalMale: 0,
+        totalFemale: 0,
+      };
+      classInfo.value = {
+        class_name: "",
+        class_master: "",
+        class_section: "",
+        grade_name: "",
+      };
+
+      toast.error("No Students", "This class has no students assigned yet.");
       loading.value = false;
-    });
+      return; // Stop further processing
+    }
+
+    // Normal 200 response
+    const data = response.data?.data?.students || [];
+    const summaryData = response.data?.data?.summary || {
+      totalStudents: 0,
+      totalMale: 0,
+      totalFemale: 0,
+    };
+
+    summary.value = summaryData;
+    students.value = data;
+
+    classInfo.value = {
+      class_name: data[0]?.Class?.class_name || "",
+      class_master: data[0]?.Class?.SchoolStaff?.full_name || "",
+      class_section: data[0]?.Class?.Section?.section_name || "",
+      grade_name: data[0]?.Class?.GradeList?.grade_name || "",
+    };
+
+    // Pagination
+    const paginate = response.data?.data?.pagination;
+    if (paginate) {
+      pagination.value = {
+        currentPage: paginate.currentPage,
+        totalPages: paginate.totalPages,
+        totalCount: paginate.totalCount,
+        limit: paginate.limit,
+        hasNextPage: paginate.hasNextPage,
+        hasPrevPage: paginate.hasPrevPage,
+      };
+    }
+
+    loading.value = false;
+  })
+  .catch((error) => {
+    console.error("Error fetching students:", error);
+
+    toast.error(
+      "Failed to Load Students",
+      error.response?.data?.message ||
+        "An error occurred while fetching students."
+    );
+    students.value = [];
+    loading.value = false;
+  });
+
 };
 
 const getClassSubjects = async () => {
@@ -741,7 +771,7 @@ const getSelectedSubject = async (id) => {
 };
 
 const assignSubjectToClassStudents = async (data) => {
-  loadingSubjects.value = true;
+  isAssigningSubjects.value = true;
 
   apiServices
     .assignSubjectToClassStudents(data)
@@ -754,6 +784,7 @@ const assignSubjectToClassStudents = async (data) => {
       } else {
         toast.success("error", "Assignment Failed");
       }
+      getClassSubjects();
     })
     .catch((error) => {
       console.error(error);
@@ -764,9 +795,15 @@ const assignSubjectToClassStudents = async (data) => {
       );
     })
     .finally(() => {
-      loadingSubjects.value = false;
+      isAssigningSubjects.value = false;
     });
 };
+
+const assignSUbjectBtn = computed(() => {
+  return isAssigningSubjects.value
+    ? "<i class='fa fa-spinner fa-spin'></i> Assigning..."
+    : "Assign to student";
+});
 
 const getStatus = (status) => {
   if (status === "success") {
@@ -820,15 +857,21 @@ onMounted(() => {
   classId.value = route.params.id;
   if (classId.value) {
     // Get class info from route params if passed
-    if (route.params.classData) {
-      classInfo.value = route.params.classData;
-    }
+
     getClassStudents(classId.value);
     getClassSubjects(classId.value);
   } else {
     toast.error("Invalid Class", "No class ID provided.");
     router.push({ name: "classes" });
   }
+
+  gsap.from(".sum-box", {
+    opacity: 0,
+    y: 30,
+    duration: 0.8,
+    stagger: 0.2, // each block enters one after another
+    ease: "power3.out",
+  });
 });
 </script>
 

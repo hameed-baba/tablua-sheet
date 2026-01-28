@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div class="page-header">
+    <div class="page-header mt-4">
       <div>
         <h1>Broadsheet Report</h1>
         <p>Class performance report with student rankings</p>
@@ -40,6 +40,7 @@
           </svg>
           Print
         </button>
+        <!-- <button class="btn border" @click="exportResultSheet">Export Result Sheet</button> -->
       </div>
     </div>
 
@@ -98,7 +99,7 @@
               viewBox="0 0 24 24"
             >
               <path
-                stroke-linecap="round"
+                stroke-liCSVExportButtonnecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
@@ -109,13 +110,9 @@
         </div>
       </div>
     </div>
-    <!-- <pre>{{ students }}</pre> -->
-    <!-- <pre>{{ classSubjects }}</pre> -->
-
-    <!-- Broadsheet Table -->
 
     <div
-      class="table-container broadsheet-table card card-bodys p-"
+      class="table-container broadsheet-table card"
       v-if="!reportGenerated && students.length > 0"
     >
       <table>
@@ -137,7 +134,7 @@
             </th>
 
             <!-- Remaining columns -->
-            <th rowspan="3">Grand Total</th>
+            <th rowspan="3">Total</th>
             <th rowspan="3">Average</th>
             <th rowspan="3">Position</th>
           </tr>
@@ -211,8 +208,8 @@
               </td>
             </template>
 
-            <!-- Grand Total -->
-            <td class="grand-total-cell">
+            <!-- Total -->
+            <td class="total-cell">
               {{ studentData.performance.mark_obtained }}
             </td>
 
@@ -265,7 +262,8 @@
 import { ref, computed, onMounted } from "vue";
 import apiServices from "../../services/apiServices";
 import { useToast } from "../../composables/useToast";
-
+// import CSVExportButton from "../../components/CSVExportButton2.vue";
+import * as XLSX from "xlsx";
 const toast = useToast();
 
 // Reactive data
@@ -281,72 +279,10 @@ const sessions = ref([]);
 const classSubjects = ref([]);
 const students = ref([]);
 
-// Helper functions
-
-const getPositionText = (position) => {
-  if (position === 1) return "1st";
-  if (position === 2) return "2nd";
-  if (position === 3) return "3rd";
-  return `${position}th`;
-};
-
-const getPositionClass = (index) => {
-  if (index === 0) return "position-gold";
-  if (index === 1) return "position-silver";
-  if (index === 2) return "position-bronze";
-  return "";
-};
-
-const getRowClass = (index) => {
-  if (index === 0) return "top-student";
-  if (index < 3) return "top-three";
-  return "";
-};
-
-const getScoreClass = (score) => {
-  if (!score) return "";
-  if (score >= 80) return "score-excellent";
-  if (score >= 70) return "score-good";
-  if (score >= 60) return "score-average";
-  if (score >= 50) return "score-fair";
-  return "score-poor";
-};
-
-const getScoreColor = (score) => {
-  if (!score) return "#6b7280";
-  if (score >= 80) return "#059669";
-  if (score >= 70) return "#2563eb";
-  if (score >= 60) return "#d97706";
-  if (score >= 50) return "#dc2626";
-  return "#991b1b";
-};
-
-const getGradeColor = (grade) => {
-  const colors = {
-    A: "#065f46",
-    B: "#1e40af",
-    C: "#92400e",
-    D: "#9a3412",
-    E: "#991b1b",
-    F: "#991b1b",
-  };
-  return colors[grade] || "#111827";
-};
-
 // Get a specific score for a subject
 const getStudentSubjectScore = (studentData, subjectId, key) => {
   const subject = studentData.subjects.find((s) => s.id === subjectId);
   return subject ? subject[key] : "-";
-};
-
-// Overall grade (you can use average or total logic)
-const getOverallGrade = (studentData) => {
-  // Example: take the grade of the first subject or compute based on average
-  return studentData.subjects[0]?.grade || "-";
-};
-
-const getOverallRemark = (studentData) => {
-  return studentData.subjects[0]?.remark || "-";
 };
 
 // API functions
@@ -383,7 +319,6 @@ const getClassAssignedSubjects = async () => {
   apiServices
     .getClassAssignedSubject(filters.value.current_class_id)
     .then((response) => {
-      console.log(response);
       classSubjects.value = response.data.data;
     })
     .finally((error) => {
@@ -404,7 +339,13 @@ const getAssignedSubjects = () => {
     .then((response) => {
       students.value = response.data.data;
     })
-    .catch((error) => console.log(error))
+    .catch((error) => {
+      console.log(error);
+      toast.error(
+        "Failed to Generate Report",
+        error.response.data.message || "Could not load broadsheet data"
+      );
+    })
     .finally(() => {
       reportGenerated.value = false;
     });
@@ -428,6 +369,7 @@ const generatePdf = () => {
       // isGeneratingPDF2.value = false;
     });
 };
+
 // Lifecycle
 onMounted(() => {
   getAllRowSessions();
@@ -631,7 +573,7 @@ onMounted(() => {
   white-space: nowrap;
 }
 
-.grand-total-cell {
+.total-cell {
   font-weight: 700;
   color: #111827;
   background: #f3f4f6;
@@ -819,19 +761,6 @@ onMounted(() => {
   color: #6b7280;
   font-size: 14px;
 }
-
-/* Form Controls - Match AddMarks.vue styling */
-/* .form-control {
-  width: 100%;
-  padding: 4px 8px;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  background: white;
-  text-align: center;
-} */
 
 .form-control:focus {
   outline: none;

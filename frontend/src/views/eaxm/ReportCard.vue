@@ -1,13 +1,13 @@
 <template>
   <div class="page">
-    <div class="page-header">
+    <div class="page-header mt-4">
       <div>
         <h1>Report Card</h1>
         <p>Generate report cards for all students in a class</p>
       </div>
       <div class="header-actions">
         <button
-          class="add-btn puppeteer-btn"
+          class="add-btn"
           :disabled="isGeneratingPDF2"
           @click="generatePdf"
         >
@@ -22,10 +22,10 @@
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 712-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          {{ isGeneratingPDF2 ? "Generating..." : "Classic PDF" }}
+          {{ isGeneratingPDF2 ? "Generating..." : "Export PDF" }}
         </button>
         <button
           class="add-btn secondary"
@@ -51,70 +51,71 @@
       </div>
     </div>
 
-    <!-- Filters -->
-    <div class="filters-section">
-      <div class="filter-group">
-        <label>Session</label>
-        <select v-model="filters.current_session_id" class="form-select">
-          <option value="">Select Session</option>
-          <option
-            v-for="(session, index) in sessions"
-            :key="index"
-            :value="session.id"
-          >
-            {{ session.session_name }}
-          </option>
-        </select>
-      </div>
+    <div class="marks-selection-card">
+      <div class="selection-grid">
+        <div class="form-group">
+          <label class="form-label">Session</label>
+          <select v-model="filters.current_session_id" class="form-select">
+            <option value="">Select Session</option>
+            <option
+              v-for="(session, index) in sessions"
+              :key="index"
+              :value="session.id"
+            >
+              {{ session.session_name }}
+            </option>
+          </select>
+        </div>
 
-      <div class="filter-group">
-        <label>Term</label>
-        <select v-model="filters.current_term_id" class="form-select">
-          <option value="" selected disabled>Select Term</option>
-          <option value="1">First Term</option>
-          <option value="2">Second Term</option>
-          <option value="3">Third Term</option>
-        </select>
-      </div>
+        <div class="form-group">
+          <label class="form-label">Term</label>
+          <select v-model="filters.current_term_id" class="form-select">
+            <option value="" selected disabled>Select Term</option>
+            <option value="1">First Term</option>
+            <option value="2">Second Term</option>
+            <option value="3">Third Term</option>
+          </select>
+        </div>
 
-      <div class="filter-group">
-        <label>Class</label>
-        <select v-model="filters.current_class_id" class="form-select">
-          <option value="">Select Class</option>
-          <option
-            v-for="(sClass, index) in classes"
-            :key="index"
-            :value="sClass.id"
-          >
-            {{ sClass.class_name }}
-          </option>
-        </select>
-      </div>
+        <div class="form-group">
+          <label class="form-label">Class</label>
+          <select v-model="filters.current_class_id" class="form-select">
+            <!-- @change="getClassAssignedSubjects" -->
+            <option value="">Select Class</option>
+            <option
+              v-for="(sClass, index) in classes"
+              :key="index"
+              :value="sClass.id"
+            >
+              {{ sClass.class_name }}
+            </option>
+          </select>
+        </div>
 
-      <button class="search-btn" @click="getAssignedSubjects">
-        <svg
-          width="16"
-          height="16"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
-        </svg>
-        Generate Report Cards
-      </button>
+        <div class="mt-auto">
+          <button class="btn-load-students" @click="getAssignedSubjects">
+            <svg
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-liCSVExportButtonnecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            Generate Report Cards
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- <pre>{{ freshData }}</pre> -->
-
     <!-- Search Section -->
-    <!-- v-if="reportGenerated"  -->
-    <div class="search-section">
+    <div class="search-section" v-if="freshData.length > 0">
       <div class="search-container">
         <div class="search-input-wrapper">
           <svg
@@ -194,7 +195,9 @@
         <div class="header-right">
           <div class="info-item">
             <span class="info-label-inline">GENDER</span>
-            <span class="info-value-inline text-capitalize">{{ student.student.gender }}</span>
+            <span class="info-value-inline text-capitalize">{{
+              student.student.gender
+            }}</span>
           </div>
           <div class="info-item">
             <span class="info-label-inline">DATE OF BIRTH</span>
@@ -204,14 +207,7 @@
         <div class="position-box">
           <div class="position-header">Position</div>
           <div class="position-value">
-            {{
-              displayPosition(
-                student.class.grading_name.gradeSystems,
-                student.class.grading_name.grade_type,
-                student.performance.average,
-                student.performance.position
-              )
-            }}
+            {{ student.performance.display_position }}
           </div>
         </div>
       </div>
@@ -247,7 +243,7 @@
                 <td class="grade-cell">
                   {{ subject.grade }}
                 </td>
-                <td class="remark-cell">
+                <td class="remark-cell font-semibold">
                   {{ subject.remark }}
                 </td>
               </tr>
@@ -298,37 +294,14 @@
               </div>
             </div>
           </div>
-          <div class="summary-box">
-            <div class="summary-box-header">TERM POSITIONS</div>
-            <div class="summary-box-body">
-              <div class="session-info">
-                <div class="session-item">
-                  <span class="session-label">First Term</span>
-                  <span class="session-value">{{
-                    student.term_positions_scored["First Term"] || "-"
-                  }}</span>
-                </div>
-                <div class="session-item">
-                  <span class="session-label">Second Term</span>
-                  <span class="session-value">{{
-                    student.term_positions_scored["Second Term"] || "-"
-                  }}</span>
-                </div>
-                <div class="session-item">
-                  <span class="session-label">Third Term</span>
-                  <span class="session-value">{{
-                    student.term_positions_scored["Third Term"] || "-"
-                  }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
 
-    <!-- Empty State -->
-    <div v-if="!freshData" class="empty-state">
+    <div
+      class="empty-state border"
+      v-if="!reportGenerated && freshData.length == 0"
+    >
       <svg
         width="64"
         height="64"
@@ -340,87 +313,21 @@
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="2"
-          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 712-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
         />
       </svg>
-      <h3>No Report Cards Generated</h3>
-      <p>
-        Select session, term, and class to generate report cards for all
-        students
-      </p>
+      <h3>No Report Card Generated</h3>
+      <p>Select session, term, and class to generate report card</p>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
-import { useConfigStore } from "../../store/configStore";
 import apiServices from "../../services/apiServices";
 import { useToast } from "../../composables/useToast";
-import { getRemark, displayPosition } from "../../utils/gradeUtils";
-import { generateReportCardPdf } from "../../PDF/reportCardPDF";
 
-// Helper function to handle CA/Exam scores (can be number or "ABS")
-const processScore = (score) => {
-  if (score === null || score === undefined || score === "") {
-    return 0;
-  }
-
-  // Convert to string and check if it's "ABS"
-  const scoreStr = String(score).toUpperCase().trim();
-  if (scoreStr === "ABS") {
-    return "ABS";
-  }
-
-  // Try to convert to number
-  const numScore = Number(score);
-  if (isNaN(numScore)) {
-    return 0;
-  }
-
-  return numScore;
-};
-
-// Helper function to calculate total from CA and Exam scores
-const calculateTotal = (caScore, examScore) => {
-  const processedCA = processScore(caScore);
-  const processedExam = processScore(examScore);
-
-  // If either is "ABS", return "ABS"
-  if (processedCA === "ABS" || processedExam === "ABS") {
-    return "ABS";
-  }
-
-  // If both are numbers, add them
-  if (typeof processedCA === "number" && typeof processedExam === "number") {
-    return processedCA + processedExam;
-  }
-
-  return 0;
-};
-
-// Default grading function as fallback
-const getDefaultGrade = (score) => {
-  // Handle "ABS" case
-  if (score === "ABS" || String(score).toUpperCase() === "ABS") {
-    return { grade: "ABS", remark: "Absent" };
-  }
-
-  const numScore = Number(score);
-  if (isNaN(numScore)) {
-    return { grade: "F", remark: "Invalid Score" };
-  }
-
-  if (numScore >= 80) return { grade: "A", remark: "Excellent" };
-  if (numScore >= 70) return { grade: "B", remark: "Very Good" };
-  if (numScore >= 60) return { grade: "C", remark: "Good" };
-  if (numScore >= 50) return { grade: "D", remark: "Fair" };
-  if (numScore >= 40) return { grade: "E", remark: "Pass" };
-  return { grade: "F", remark: "Fail" };
-};
 const freshData = ref([]);
-
-const configStore = useConfigStore();
 const toast = useToast();
 
 // Reactive data
@@ -440,25 +347,7 @@ const sessions = ref([]);
 const subjects = ref([]);
 const gradeList = ref(null);
 
-// Computed properties for display names
-const selectedSessionName = computed(() => {
-  const session = sessions.value.find(
-    (s) => s.id == filters.value.current_session_id
-  );
-  return session ? session.session_name : "";
-});
 
-const selectedTermName = computed(() => {
-  const termNames = { 1: "First Term", 2: "Second Term", 3: "Third Term" };
-  return termNames[filters.value.current_term_id] || "";
-});
-
-const selectedClassName = computed(() => {
-  const cls = classes.value.find((c) => c.id == filters.value.current_class_id);
-  return cls ? cls.class_name : "";
-});
-
-// Computed property for filtered report data based on search query
 const filteredReportData = computed(() => {
   if (!searchQuery.value.trim()) {
     return freshData.value;
@@ -501,328 +390,9 @@ const getAllRowClases = () => {
     });
 };
 
-const getClassAssignedSubjects = async (classId) => {
-  try {
-    const response = await apiServices.getClassAssignedSubject(classId);
-    return response.data.data || [];
-  } catch (error) {
-    console.error("Error fetching class assigned subjects:", error);
-    toast.error(
-      "Failed to Load Class Subjects",
-      "Could not load subjects assigned to this class"
-    );
-    return [];
-  }
-};
-
-const generateReport = async () => {
-  if (
-    !filters.value.current_session_id ||
-    !filters.value.current_term_id ||
-    !filters.value.current_class_id
-  ) {
-    toast.error(
-      "Validation Error",
-      "Please select session, term, and class to generate report cards"
-    );
-    return;
-  }
-
-  try {
-    const classSubjects = await getClassAssignedSubjects(
-      filters.value.current_class_id
-    );
-
-    if (!classSubjects || classSubjects.length === 0) {
-      toast.warning(
-        "No Class Subjects Found",
-        "No subjects are assigned to this class"
-      );
-      return;
-    }
-
-    subjects.value = classSubjects.map(
-      (assignment) => assignment.Subject.subject_name
-    );
-
-    const params = {
-      current_session_id: filters.value.current_session_id,
-      current_term_id: filters.value.current_term_id,
-      current_class_id: filters.value.current_class_id,
-    };
-
-    const response = await apiServices.getStudentAssignedSubjects(params);
-    const responseData = response.data.data;
-    freshData.value = responseData;
-
-    console.log("API Response:", responseData); // Debug log
-
-    // Handle different response structures
-    gradeList.value =
-      responseData.class?.gradeList || responseData.gradeList || null;
-
-    if (!responseData.students || responseData.students.length === 0) {
-      toast.error("No Students Found", "No students found in this class");
-      return;
-    }
-
-    // Calculate all students' totals for ranking
-    const allStudents = responseData.students.map((studentData) => {
-      let studentTotal = 0;
-      let studentSubjectCount = 0;
-
-      studentData.subjects.forEach((subjectAssignment) => {
-        let total;
-
-        if (
-          subjectAssignment.marks.total_score !== null &&
-          subjectAssignment.marks.total_score !== undefined
-        ) {
-          total = processScore(subjectAssignment.marks.total_score);
-        } else {
-          const caScore = processScore(subjectAssignment.marks.ca_1_score);
-          const examScore = processScore(subjectAssignment.marks.exam_score);
-          total = calculateTotal(caScore, examScore);
-        }
-
-        // Only count numeric totals for ranking (exclude "ABS")
-        if (typeof total === "number" && total > 0) {
-          studentTotal += total;
-          studentSubjectCount++;
-        }
-      });
-
-      return {
-        id: studentData.student.id,
-        total: studentTotal,
-        average:
-          studentSubjectCount > 0 ? studentTotal / studentSubjectCount : 0,
-      };
-    });
-
-    allStudents.sort((a, b) => b.total - a.total);
-
-    // Generate report data for each student
-    const allReports = [];
-
-    responseData.students.forEach((selectedStudentData) => {
-      const studentSubjectMap = {};
-      selectedStudentData.subjects.forEach((subjectAssignment) => {
-        const subjectName = subjectAssignment.subject.name;
-        studentSubjectMap[subjectName] = subjectAssignment;
-      });
-
-      const subjectScores = [];
-      let totalMarks = 0;
-      let subjectCount = 0;
-
-      subjects.value.forEach((subjectName) => {
-        const subjectAssignment = studentSubjectMap[subjectName];
-
-        if (subjectAssignment) {
-          const caScore = processScore(subjectAssignment.marks.ca_1_score);
-          const examScore = processScore(subjectAssignment.marks.exam_score);
-
-          let total;
-          if (
-            subjectAssignment.marks.total_score !== null &&
-            subjectAssignment.marks.total_score !== undefined
-          ) {
-            total = processScore(subjectAssignment.marks.total_score);
-          } else {
-            total = calculateTotal(caScore, examScore);
-          }
-
-          const gradeResult = gradeList.value
-            ? getRemark(gradeList.value, total)
-            : getDefaultGrade(total);
-
-          subjectScores.push({
-            name: subjectName,
-            ca: caScore,
-            exam: examScore,
-            total: total,
-            grade: gradeResult.grade,
-            remark: gradeResult.remark,
-          });
-
-          // Only count numeric totals for overall calculation (exclude "ABS")
-          if (typeof total === "number" && total > 0) {
-            totalMarks += total;
-            subjectCount++;
-          }
-        } else {
-          subjectScores.push({
-            name: subjectName,
-            ca: "---",
-            exam: "---",
-            total: "---",
-            grade: "---",
-            remark: "Not Assigned",
-          });
-        }
-      });
-
-      const average = subjectCount > 0 ? totalMarks / subjectCount : 0;
-      const maxMarks = subjects.value.length * 100;
-      const position =
-        allStudents.findIndex((s) => s.id == selectedStudentData.student.id) +
-        1;
-
-      allReports.push({
-        student: {
-          name: selectedStudentData.student.full_name,
-          admissionNo: selectedStudentData.student.admission_number,
-          class: selectedClassName.value,
-        },
-        subjects: subjectScores,
-        totalMarks,
-        maxMarks,
-        average,
-        position,
-        totalStudents: responseData.students.length,
-        attendance: {
-          totalDays: 90,
-          present: Math.floor(Math.random() * 10) + 85,
-          absent: Math.floor(Math.random() * 5) + 1,
-          rate: (Math.floor(Math.random() * 10) + 90).toFixed(1),
-        },
-        teacherComment:
-          average >= 80
-            ? "An excellent student who shows great dedication and commitment to studies. Keep up the good work!"
-            : average >= 70
-            ? "A very good student with consistent performance. Continue working hard!"
-            : average >= 60
-            ? "Good performance overall. There's room for improvement in some areas."
-            : "Fair performance. More effort is needed to improve academic standing.",
-        principalComment:
-          average >= 80
-            ? "Outstanding performance. Continue to maintain this excellent standard."
-            : average >= 70
-            ? "Very good work. Keep striving for excellence."
-            : average >= 60
-            ? "Satisfactory performance. Aim higher next term."
-            : "Needs improvement. Please seek additional support from teachers.",
-        nextTermDate: "15th January, 2025",
-      });
-    });
-
-    allReportData.value = allReports;
-    reportGenerated.value = true;
-    toast.success(
-      "Report Cards Generated",
-      `Successfully generated report cards for ${allReports.length} students`
-    );
-  } catch (error) {
-    console.error("Error generating report card:", error);
-    toast.error(
-      "Failed to Generate Report",
-      error.response?.data?.message || "Could not generate report card"
-    );
-  }
-};
 
 const printReport = () => {
   window.print();
-};
-
-// 1. Classic pdfmake PDF Export (Server-side)
-const exportClassicPDF = async () => {
-  if (!reportGenerated.value) return;
-
-  try {
-    toast.info("PDF Generation", "Generating PDF with pdfmake...");
-
-    const response = await apiServices.generatePdfMakeReport({
-      reportData: filteredReportData.value,
-      schoolInfo: {
-        schoolName: configStore.schoolName,
-        schoolAddress: configStore.schoolAddress,
-      },
-      termName: selectedTermName.value,
-      sessionName: selectedSessionName.value,
-    });
-
-    // Create download link
-    const blob = new Blob([response.data], { type: "application/pdf" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `report-cards-pdfmake-${Date.now()}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-
-    toast.success("PDF Generated", "pdfmake PDF downloaded successfully");
-  } catch (error) {
-    console.error("pdfmake PDF generation error:", error);
-    toast.error(
-      "PDF Export Failed",
-      "Could not generate PDF with pdfmake: " +
-        (error.response?.data?.message || error.message)
-    );
-  } finally {
-    // isGeneratingPDF.value = false;
-  }
-};
-
-// 2. Individual Student Report Download
-const downloadIndividualReport = async (studentReportData, index) => {
-  // isGeneratingPDF.value = true;
-  try {
-    toast.info(
-      "PDF Generation",
-      `Generating report for ${studentReportData.student.name}...`
-    );
-
-    const response = await apiServices.generatePdfMakeReport({
-      reportData: [studentReportData], // Single student data in array
-      schoolInfo: {
-        schoolName: configStore.schoolName,
-        schoolAddress: configStore.schoolAddress,
-      },
-      termName: selectedTermName.value,
-      sessionName: selectedSessionName.value,
-    });
-
-    // Create download link
-    const blob = new Blob([response.data], { type: "application/pdf" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-
-    // Generate filename with student name and admission number
-    const studentName = studentReportData.student.name.replace(
-      /[^a-zA-Z0-9]/g,
-      "_"
-    );
-    const admissionNo = studentReportData.student.admissionNo.replace(
-      /[^a-zA-Z0-9]/g,
-      "_"
-    );
-    const stylePrefix = selectedStyle.value === "modern" ? "modern" : "classic";
-
-    a.download = `report-card-${stylePrefix}-${studentName}-${admissionNo}-${Date.now()}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-
-    toast.success(
-      "PDF Generated",
-      `Report for ${studentReportData.student.name} downloaded successfully`
-    );
-  } catch (error) {
-    console.error("Individual PDF generation error:", error);
-    toast.error(
-      "PDF Export Failed",
-      `Could not generate report for ${studentReportData.student.name}: ` +
-        (error.response?.data?.message || error.message)
-    );
-  } finally {
-    // isGeneratingPDF.value = false;
-  }
 };
 
 // Clear search function
@@ -830,33 +400,7 @@ const clearSearch = () => {
   searchQuery.value = "";
 };
 
-// Get position suffix (1st, 2nd, 3rd, etc.)
-const getPositionSuffix = (position) => {
-  const j = position % 10;
-  const k = position % 100;
-  if (j === 1 && k !== 11) return "st";
-  if (j === 2 && k !== 12) return "nd";
-  if (j === 3 && k !== 13) return "rd";
-  return "th";
-};
-
-// Get score class for styling based on score value
-const getScoreClass = (score) => {
-  if (typeof score === "number") {
-    if (score >= 80) return "score-excellent";
-    if (score >= 70) return "score-very-good";
-    if (score >= 60) return "score-good";
-    if (score >= 50) return "score-fair";
-    if (score >= 40) return "score-pass";
-    return "score-fail";
-  }
-  return "score-default";
-};
-
 const getAssignedSubjects = () => {
-  const data = {
-    ...filters.value,
-  };
   apiServices
     .getAssignedSubjects(
       filters.value.current_class_id,
@@ -866,7 +410,13 @@ const getAssignedSubjects = () => {
     .then((response) => {
       freshData.value = response.data.data;
     })
-    .catch((error) => console.log(error));
+    .catch((error) => {
+      console.log(error);
+      toast.error(
+        "Failed to Generate Report",
+        error.response.data.message || "Could not load broadsheet data"
+      );
+    });
 };
 
 // const generatePdf = () => {
@@ -903,26 +453,25 @@ const generatePdf = () => {
     .finally(() => {
       isGeneratingPDF2.value = false;
     });
-
-  };
-  const downloadPdf = () => {
-    apiServices
-      .generatePdfMakeReport2(freshData.value)
-      .then((response) => {
-        const pdfBlob = new Blob([response.data], {
-          type: "application/pdf",
-        });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "report-cards.pdf";
-        link.click();
-
-        URL.revokeObjectURL(link.href);
-      })
-      .catch((error) => {
-        console.error(error);
+};
+const downloadPdf = () => {
+  apiServices
+    .generatePdfMakeReport2(freshData.value)
+    .then((response) => {
+      const pdfBlob = new Blob([response.data], {
+        type: "application/pdf",
       });
-  };
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "report-cards.pdf";
+      link.click();
+
+      URL.revokeObjectURL(link.href);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
 
 // Lifecycle
 onMounted(() => {
@@ -948,53 +497,10 @@ watch(
 
 <style scoped>
 /* Page Layout */
-.page {
-  padding: 20px;
-  background: #f8fafc;
-  min-height: 100vh;
-}
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.page-header h1 {
-  margin: 0 0 4px 0;
-  color: #1f2937;
-  font-size: 24px;
-}
-
-.page-header p {
-  margin: 0;
-  color: #6b7280;
-  font-size: 14px;
-}
 
 .header-actions {
   display: flex;
   gap: 8px;
-}
-
-.add-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
 }
 
 .add-btn:hover {
@@ -1041,7 +547,7 @@ watch(
   color: #374151;
 }
 
-.form-select {
+/* .form-select {
   padding: 10px 12px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -1054,7 +560,7 @@ watch(
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
+} */
 
 .search-btn {
   display: flex;
@@ -1742,6 +1248,7 @@ watch(
 /* Subjects Table Section */
 .subjects-section {
   overflow-x: auto;
+
 }
 
 .subjects-table {
@@ -1766,7 +1273,7 @@ watch(
 }
 
 .sn-col {
-  width: 50px;
+  width:0px !important;
 }
 
 .subject-col {
@@ -1832,7 +1339,8 @@ watch(
   padding: 12px 10px;
   text-align: center;
   font-weight: 700;
-  color: #059669;
+  /* color: #059669; */
+  color: #475569;
   border: 1px solid #cbd5e1;
 }
 
@@ -2003,5 +1511,74 @@ watch(
   .summary-section {
     grid-template-columns: 1fr;
   }
+}
+
+.marks-selection-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.selection-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-load-students {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-load-students:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-load-students:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 8px;
+}
+
+.empty-state svg {
+  color: #9ca3af;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px 0;
+  color: #111827;
+  font-size: 18px;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
 }
 </style>

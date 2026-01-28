@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { SchoolStaff, Role, RolePermission, Permission } = require('../models');
+const { SchoolStaff, Role } = require('../models');
 
 const authenticate = async (req, res, next) => {
   try {
@@ -44,11 +44,6 @@ const authenticate = async (req, res, next) => {
         include: [{
           model: Role,
           as: 'Role',
-          include: [{
-            model: Permission,
-            as: 'permissions',
-            through: { attributes: [] }
-          }]
         }]
       });
       req.user = staffWithRole || staff;
@@ -68,31 +63,36 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-const authorize = (requiredPermission) => {
+const authorize = (requiredRoles = []) => {
   return async (req, res, next) => {
     try {
-      // If no permission is required, just continue
-      if (!requiredPermission) {
+      if (!req.user) {
+        return res.status(401).json({
+          status: 'error',
+          message: 'Authentication required.'
+        });
+      }
+
+      // If no roles specified, just check if user is authenticated
+      if (requiredRoles.length === 0) {
         return next();
       }
 
-      // Check if user has role and permissions loaded
-      if (!req.user.Role) {
+      // Get user's role
+      const userRole = req.user.Role?.slug;
+      
+      if (!userRole) {
         return res.status(403).json({
           status: 'error',
           message: 'User role not found.'
         });
       }
 
-      const userPermissions = req.user.Role.permissions?.map(permission =>
-        permission.permission_name
-      ) || [];
-
-      // Check if user has the required permission
-      if (!userPermissions.includes(requiredPermission)) {
+      // Check if user has required role
+      if (!requiredRoles.includes(userRole)) {
         return res.status(403).json({
           status: 'error',
-          message: `Access denied. Required permission`,
+          message: 'Insufficient permissions. Required roles: ' + requiredRoles.join(', ')
         });
       }
 
@@ -107,33 +107,34 @@ const authorize = (requiredPermission) => {
   };
 };
 
-// Helper function to check multiple permissions (user needs ANY of them)
-const authorizeAny = (permissions = []) => {
+// Helper function to check multiple roles (user needs ANY of them)
+const authorizeAny = (roles = []) => {
   return async (req, res, next) => {
     try {
-      if (!permissions.length) {
+      if (!req.user) {
+        return res.status(401).json({
+          status: 'error',
+          message: 'Authentication required.'
+        });
+      }
+
+      if (roles.length === 0) {
         return next();
       }
 
-      if (!req.user.Role) {
+      const userRole = req.user.Role?.slug;
+      
+      if (!userRole) {
         return res.status(403).json({
           status: 'error',
           message: 'User role not found.'
         });
       }
 
-      const userPermissions = req.user.Role.permissions?.map(permission =>
-        permission.permission_name
-      ) || [];
-
-      const hasAnyPermission = permissions.some(permission =>
-        userPermissions.includes(permission)
-      );
-
-      if (!hasAnyPermission) {
+      if (!roles.includes(userRole)) {
         return res.status(403).json({
           status: 'error',
-          message: `Access denied. Required any of: ${permissions.join(', ')}`
+          message: 'Insufficient permissions. Required roles: ' + roles.join(', ')
         });
       }
 
@@ -148,36 +149,23 @@ const authorizeAny = (permissions = []) => {
   };
 };
 
-// Helper function to check multiple permissions (user needs ALL of them)
-const authorizeAll = (permissions = []) => {
+// Helper function to check role level (user needs minimum level)
+const authorizeLevel = (minLevel = 0) => {
   return async (req, res, next) => {
     try {
-      if (!permissions.length) {
-        return next();
-      }
-
-      if (!req.user.Role) {
-        return res.status(403).json({
+      if (!req.user) {
+        return res.status(401).json({
           status: 'error',
-          message: 'User role not found.'
+          message: 'Authentication required.'
         });
       }
 
-      const userPermissions = req.user.Role.permissions?.map(permission =>
-        permission.permission_name
-      ) || [];
-
-      const hasAllPermissions = permissions.every(permission =>
-        userPermissions.includes(permission)
-      );
-
-      if (!hasAllPermissions) {
-        const missingPermissions = permissions.filter(permission =>
-          !userPermissions.includes(permission)
-        );
+      const userLevel = req.user.Role?.level || 0;
+      
+      if (userLevel < minLevel) {
         return res.status(403).json({
           status: 'error',
-          message: `Access denied. Missing permissions: ${missingPermissions.join(', ')}`
+          message: 'Insufficient permissions. Required level: ' + minLevel
         });
       }
 
@@ -212,11 +200,19 @@ const checkSystemAccess = (req, res, next) => {
   next();
 };
 
+// Specific role checks
+const requireSuperAdmin = authorize(['super_admin']);
+const requireAdmin = authorize(['admin', 'super_admin']);
+const requireTeacher = authorize(['teacher', 'admin', 'super_admin']);
+
 module.exports = {
   authenticate,
   authorize,
   authorizeAny,
-  authorizeAll,
+  authorizeLevel,
+  requireSuperAdmin,
+  requireAdmin,
+  requireTeacher,
   checkSchoolAccess,
   checkSystemAccess
 };

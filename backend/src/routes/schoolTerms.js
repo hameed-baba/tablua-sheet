@@ -11,20 +11,21 @@ const router = express.Router();
 router.get(
   "/",
   authenticate,
-  authorize("term.read"),
+  authorize(["super_admin", "admin"]),
   schoolTermController.getAll
 );
 
 router.get(
   "/active-session",
   authenticate,
-  authorize("term.read"),
+  authorize(["super_admin", "admin"]),
   schoolTermController.getSessionTerm
 );
 
 router.get(
   "/:id",
   authenticate,
+  authorize(["super_admin", "admin"]),
   checkSchoolAccess,
   schoolTermController.getById
 );
@@ -32,14 +33,14 @@ router.get(
 router.put(
   "/:id",
   authenticate,
-  authorize("term.update"),
+  authorize(["super_admin", "admin"]),
   schoolTermController.updateTerm
 );
 
 router.put(
   "/:id/activate",
   authenticate,
-  authorize("term.update"),
+  authorize(["super_admin", "admin"]),
   schoolTermController.activateTerm
 );
 
@@ -49,9 +50,10 @@ router.post("/", authenticate, checkSchoolAccess, schoolTermController.create);
 router.patch(
   "/:id/toggle-status",
   authenticate,
+  authorize(["super_admin", "admin"]),
   schoolTermController.toggleStatus
 );
 
-router.delete("/:id", authenticate, schoolTermController.delete);
+router.delete("/:id", authenticate,authorize(["super_admin", "admin"]), schoolTermController.delete);
 
 module.exports = router;

@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { SchoolStaff, Role, Permission, StaffSession } = require("../models");
+const { SchoolStaff, Role, StaffSession } = require("../models");
 const { asyncHandler } = require("../middleware/errorHandler");
 
 /**
@@ -10,20 +10,13 @@ const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // First, find the staff member with role and permissions
+    // First, find the staff member with role
     const staff = await SchoolStaff.findOne({
       where: { email },
       include: [
         {
           model: Role,
           as: "Role",
-          include: [
-            {
-              model: Permission,
-              as: "permissions",
-              through: { attributes: [] },
-            },
-          ],
         },
       ],
     });
@@ -96,15 +89,14 @@ const login = asyncHandler(async (req, res) => {
       // Don't fail login if session recording fails
     }
 
-    // Extract permissions from the staff's role
-    const permissions = staff.Role?.permissions?.map((p) => p.permission_name) || [];
+    // No permissions needed anymore
+    const permissions = [];
     
     // Debug logging in development
     if (process.env.NODE_ENV === 'development') {
       console.log('Login Debug Info:');
       console.log('Staff ID:', staff.id);
       console.log('Role:', staff.Role?.role_name);
-      console.log('Permissions found:', permissions);
     }
 
     res.json({
@@ -211,13 +203,6 @@ const getProfile = asyncHandler(async (req, res) => {
       {
         model: Role,
         as: "Role",
-        include: [
-          {
-            model: Permission,
-            as: "permissions",
-            through: { attributes: [] },
-          },
-        ],
       },
     ],
     attributes: { exclude: ["password"] },
@@ -230,8 +215,8 @@ const getProfile = asyncHandler(async (req, res) => {
     });
   }
 
-  // Extract permissions
-  const permissions = staff.Role?.permissions?.map((p) => p.permission_name) || [];
+  // No permissions needed anymore
+  const permissions = [];
 
   res.json({
     status: "success",

@@ -12,7 +12,7 @@ const router = express.Router();
 router.get(
   "/",
   authenticate,
-  authorize("parent.read"),
+  authorize(["super_admin", "admin"]),
   validateQuery(schemas.pagination),
   parentController.getAll
 );
@@ -20,14 +20,14 @@ router.get(
 router.get(
   "/:id",
   authenticate,
-  authorize("parent.read"),
+  authorize(["super_admin", "admin"]),
   parentController.getById
 );
 
 router.post(
   "/",
   authenticate,
-  authorize("parent.create"),
+  authorize(["super_admin", "admin"]),
   validate(schemas.parentRegistration),
   parentController.createParent
 );
@@ -35,14 +35,14 @@ router.post(
 router.put(
   "/:id",
   authenticate,
-  authorize("parent.update"),
+  authorize(["super_admin", "admin"]),
   parentController.updateParent
 );
 
 router.delete(
   "/:id",
   authenticate,
-  authorize("parent.delete"),
+  authorize(["super_admin", "admin"]),
   parentController.delete
 );
 

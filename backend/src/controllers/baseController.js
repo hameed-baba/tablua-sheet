@@ -261,8 +261,6 @@ class BaseController {
     if (attributes.includes("class_name")) uniqueFields.push("class_name");
     if (attributes.includes("subject_name")) uniqueFields.push("subject_name");
     if (attributes.includes("role_name")) uniqueFields.push("role_name");
-    if (attributes.includes("permission_name"))
-      uniqueFields.push("permission_name");
     if (attributes.includes("session_name")) uniqueFields.push("session_name");
     if (attributes.includes("term_name")) uniqueFields.push("term_name");
     if (attributes.includes("grade_name")) uniqueFields.push("grade_name");

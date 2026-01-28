@@ -433,6 +433,7 @@ const toggleStatus = () => {
         // Update the local data with the response
         if (response.data?.data) {
           staffData.value.status = response.data.data.status;
+          staffData.value.has_school_access = response.data.data.has_school_access;
         }
       }
     })

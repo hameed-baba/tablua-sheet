@@ -1,15 +1,13 @@
 // Import routes
 const express = require("express");
 const authRoutes = require('./auth');
+const authTestRoutes = require('./authTest');
 const classMasterRoutes = require('./classMasters');
 const classSubjectAssignRoutes = require('./classSubjectAssigns');
 const studentSubjectAssignRoutes = require('./studentSubjectAssigns');
 const gradeListRoutes = require('./gradeLists');
-// const gradeSystemRoutes = require('./gradeSystems');
 const parentRoutes = require('./parents');
-const permissionRoutes = require('./permissions');
 const roleRoutes = require('./roles');
-const rolePermissionRoutes = require('./rolePermissions');
 const schoolClassRoutes = require('./schoolClasses');
 const schoolSectionRoutes = require('./schoolSections');
 const schoolStaffRoutes = require('./schoolStaffs');
@@ -38,15 +36,14 @@ router.get("/health", (req, res) => {
 
 // Routes
 router.use('/auth', authRoutes);
+router.use('/auth', authTestRoutes); // Test endpoints for authentication
 router.use('/class-masters', classMasterRoutes);
 router.use('/class-subject-assigns', classSubjectAssignRoutes);
 router.use('/student-subject-assigns', studentSubjectAssignRoutes);
 router.use('/grade-lists', gradeListRoutes);
 // router.use('/grade-systems', gradeSystemRoutes);
 router.use('/parents', parentRoutes);
-router.use('/permissions', permissionRoutes);
 router.use('/roles', roleRoutes);
-router.use('/role-permissions', rolePermissionRoutes);
 router.use('/school-classes', schoolClassRoutes);
 router.use('/school-sections', schoolSectionRoutes);
 router.use('/staff', schoolStaffRoutes);

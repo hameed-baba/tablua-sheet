@@ -82,7 +82,6 @@ app.get("/", (req, res) => {
       staff: "/api/staff",
       role: "/api/role",
       students: "/api/student",
-      permission: "/api/permission",
       section: "/api/section",
     },
   });
