@@ -89,15 +89,13 @@ const login = asyncHandler(async (req, res) => {
       // Don't fail login if session recording fails
     }
 
-    // No permissions needed anymore
-    const permissions = [];
     
-    // Debug logging in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Login Debug Info:');
-      console.log('Staff ID:', staff.id);
-      console.log('Role:', staff.Role?.role_name);
-    }
+    // // Debug logging in development
+    // if (process.env.NODE_ENV === 'development') {
+    //   console.log('Login Debug Info:');
+    //   console.log('Staff ID:', staff.id);
+    //   console.log('Role:', staff.Role?.role_name);
+    // }
 
     res.json({
       status: "success",
@@ -112,9 +110,8 @@ const login = asyncHandler(async (req, res) => {
           role: {
             id: staff.Role?.id,
             name: staff.Role?.role_name,
-            description: staff.Role?.description
+            slug: staff.Role?.slug
           },
-          permissions,
           is_default_password: staff.is_default_password,
           has_school_access: staff.has_school_access,
           has_system_access: staff.has_system_access,
@@ -215,9 +212,6 @@ const getProfile = asyncHandler(async (req, res) => {
     });
   }
 
-  // No permissions needed anymore
-  const permissions = [];
-
   res.json({
     status: "success",
     data: {
@@ -235,7 +229,6 @@ const getProfile = asyncHandler(async (req, res) => {
         name: staff.Role?.role_name,
         description: staff.Role?.description
       },
-      permissions,
       has_school_access: staff.has_school_access,
       has_system_access: staff.has_system_access,
       is_default_password: staff.is_default_password,
