@@ -1,4 +1,4 @@
-module.exports = function studentList(students, classSubjects) {
+module.exports = function studentList3(students, classSubjects) {
   // Header row 1
   const headerRow1 = [
     { text: "SN", bold: true, rowSpan: 2, alignment: "center" },
@@ -13,16 +13,16 @@ module.exports = function studentList(students, classSubjects) {
       {},
       {},
     ]),
-    { text: "Total", bold: true, rowSpan: 2, alignment: "center" },
-    { text: "Average", bold: true, rowSpan: 2, alignment: "center" },
-    { text: "Position", bold: true, rowSpan: 2, alignment: "center" },
+    { text: "TT", bold: true, rowSpan: 2, alignment: "center" },
+    { text: "AVR", bold: true, rowSpan: 2, alignment: "center" },
+    { text: "POS", bold: true, rowSpan: 2, alignment: "center" },
   ];
 
   // Header row 2
   const headerRow2 = [
     "",
     "",
-    ...classSubjects.flatMap(() => ["CA", "Exam", "Total"]),
+    ...classSubjects.flatMap(() => ["CA", "EX", "TT"]),
     "",
     "",
     "",
@@ -43,7 +43,7 @@ module.exports = function studentList(students, classSubjects) {
         return [
           { text: subject.ca_1_score?.toString() || "-", alignment: "center" },
           { text: subject.exam_score?.toString() || "-", alignment: "center" },
-          { text: subject.total?.toString() || "-", alignment: "center" },
+          { text: subject.total?.toString() || "-", alignment: "center",bold:true },
         ];
       } else {
         return [

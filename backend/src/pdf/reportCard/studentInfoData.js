@@ -37,7 +37,7 @@ module.exports = studentInfoData = (student) => {
           },
           { text: student.student.gender.toUpperCase(), fontSize: 9 },
           {
-            text: student.performance.position || "", // dynamically get position
+            text: student.performance.display_position || "", // dynamically get position
             bold: true,
             fontSize: 15,
             alignment: "center",

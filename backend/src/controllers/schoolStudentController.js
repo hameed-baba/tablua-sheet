@@ -334,12 +334,12 @@ const updateStudent = asyncHandler(async (req, res) => {
 
     // Subjects to remove (all 3 terms for each subject)
     const subjectsToRemove = existingSubjectIds.filter(
-      (id) => !newSubjectIds.includes(id)
+      (id) => !newSubjectIds.includes(id),
     );
 
     // Subjects to add (all 3 terms for each subject)
     const subjectsToAdd = subjects.filter(
-      (s) => !existingSubjectIds.includes(s.school_subject_id)
+      (s) => !existingSubjectIds.includes(s.school_subject_id),
     );
 
     // REMOVE entire subjects (all 3 terms)
@@ -518,6 +518,73 @@ const getStudents = asyncHandler(async (req, res) => {
  * @desc Get all students by class ID
  * @route GET /api/students/class/:classId
  */
+// const getStudentsByClassId = asyncHandler(async (req, res) => {
+//   const { classId } = req.params;
+//   const {
+//     page = 1,
+//     limit = 25,
+//     search = "",
+//     sortBy = "full_name",
+//     sortOrder = "ASC",
+//   } = req.query;
+
+//   if (!classId) {
+//     return res.status(400).json({
+//       status: "error",
+//       message: "Class ID is required",
+//     });
+//   }
+
+//   const pageNumber = parseInt(page, 10);
+//   const limitNumber = parseInt(limit, 10);
+//   const offset = (pageNumber - 1) * limitNumber;
+
+//   const whereClause = {
+//     current_class_id: classId,
+//   };
+
+//   // Add search filter if provided
+//   if (search) {
+//     whereClause[Op.or] = [
+//       { full_name: { [Op.like]: `%${search}%` } },
+//       { admission_number: { [Op.like]: `%${search}%` } },
+//     ];
+//   }
+
+//   const { count, rows } = await SchoolStudent.findAndCountAll({
+//     where: whereClause,
+//     include: [
+//       {
+//         model: SchoolClass,
+//         as: "Class",
+//         include: [{ model: SchoolSection, as: "Section" }],
+//       },
+//       { model: SchoolSession, as: "Session" },
+//       { model: Parent, as: "Parent" },
+//     ],
+//     limit: limitNumber,
+//     offset: offset,
+//     order: [[sortBy, sortOrder]],
+//   });
+
+//   const totalPages = Math.ceil(count / limitNumber);
+
+//   res.json({
+//     status: "success",
+//     data: {
+//       students: rows,
+//       pagination: {
+//         currentPage: pageNumber,
+//         totalPages,
+//         totalCount: count,
+//         limit: limitNumber,
+//         hasNextPage: pageNumber < totalPages,
+//         hasPrevPage: pageNumber > 1,
+//       },
+//     },
+//   });
+// });
+
 const getStudentsByClassId = asyncHandler(async (req, res) => {
   const { classId } = req.params;
   const {
@@ -543,7 +610,7 @@ const getStudentsByClassId = asyncHandler(async (req, res) => {
     current_class_id: classId,
   };
 
-  // Add search filter if provided
+  // Search filter
   if (search) {
     whereClause[Op.or] = [
       { full_name: { [Op.like]: `%${search}%` } },
@@ -551,19 +618,52 @@ const getStudentsByClassId = asyncHandler(async (req, res) => {
     ];
   }
 
+  /**
+   * =========================
+   * COUNTS (TOTAL / MALE / FEMALE)
+   * =========================
+   */
+  const [totalStudents, totalMale, totalFemale] = await Promise.all([
+    SchoolStudent.count({
+      where: { current_class_id: classId },
+    }),
+    SchoolStudent.count({
+      where: {
+        current_class_id: classId,
+        gender: "male", // adjust if your DB uses "M"
+      },
+    }),
+    SchoolStudent.count({
+      where: {
+        current_class_id: classId,
+        gender: "female", // adjust if your DB uses "F"
+      },
+    }),
+  ]);
+
+  /**
+   * =========================
+   * PAGINATED STUDENTS
+   * =========================
+   */
   const { count, rows } = await SchoolStudent.findAndCountAll({
     where: whereClause,
     include: [
       {
         model: SchoolClass,
         as: "Class",
-        include: [{ model: SchoolSection, as: "Section" }],
+        include: [
+          { model: SchoolSection, as: "Section" },
+          { model: SchoolStaff, as: "SchoolStaff" },
+          { model: GradeList, as: "GradeList" },
+        ],
       },
       { model: SchoolSession, as: "Session" },
       { model: Parent, as: "Parent" },
+      
     ],
     limit: limitNumber,
-    offset: offset,
+    offset,
     order: [[sortBy, sortOrder]],
   });
 
@@ -572,6 +672,11 @@ const getStudentsByClassId = asyncHandler(async (req, res) => {
   res.json({
     status: "success",
     data: {
+      summary: {
+        totalStudents,
+        totalMale,
+        totalFemale,
+      },
       students: rows,
       pagination: {
         currentPage: pageNumber,
@@ -632,7 +737,10 @@ const getStudentSubjects = asyncHandler(async (req, res) => {
     whereClause.current_class_id = parseInt(classId);
   }
 
-  console.log(`DEBUG getStudentSubjects: Fetching subjects for student ${id} with filters:`, whereClause);
+  console.log(
+    `DEBUG getStudentSubjects: Fetching subjects for student ${id} with filters:`,
+    whereClause,
+  );
 
   // Fetch subject assignments with related data
   const subjectAssignments = await StudentSubjectAssign.findAll({
@@ -665,7 +773,9 @@ const getStudentSubjects = asyncHandler(async (req, res) => {
     ],
   });
 
-  console.log(`DEBUG getStudentSubjects: Found ${subjectAssignments.length} subject assignments for student ${id}`);
+  console.log(
+    `DEBUG getStudentSubjects: Found ${subjectAssignments.length} subject assignments for student ${id}`,
+  );
 
   // Get class and session info (they should be the same for all records)
   let classInfo = null;
@@ -811,7 +921,7 @@ const updateStudentStatus = asyncHandler(async (req, res) => {
 /**
  * @desc Promote student to new class
  * @route PUT /api/students/:id/promote
- * @body { 
+ * @body {
  *   new_class_id: number,
  *   new_session_id?: number
  * }
@@ -835,11 +945,15 @@ const promoteStudent = asyncHandler(async (req, res) => {
     });
   }
 
-  console.log(`DEBUG promoteStudent: Student ${student.full_name} is currently in class ${student.current_class_id}, promoting to class ${new_class_id}`);
+  console.log(
+    `DEBUG promoteStudent: Student ${student.full_name} is currently in class ${student.current_class_id}, promoting to class ${new_class_id}`,
+  );
 
   // Check if student is being promoted to the same class
   if (student.current_class_id == new_class_id) {
-    console.log(`DEBUG promoteStudent: WARNING - Student is already in class ${new_class_id}!`);
+    console.log(
+      `DEBUG promoteStudent: WARNING - Student is already in class ${new_class_id}!`,
+    );
   }
 
   // Verify new class exists
@@ -891,12 +1005,13 @@ const promoteStudent = asyncHandler(async (req, res) => {
       transaction,
     });
 
-    console.log(`DEBUG promoteStudent: Found ${classSubjects.length} subjects for class ${new_class_id}:`,
-      classSubjects.map(cs => ({
+    console.log(
+      `DEBUG promoteStudent: Found ${classSubjects.length} subjects for class ${new_class_id}:`,
+      classSubjects.map((cs) => ({
         id: cs.id,
         subject_id: cs.school_subject_id,
-        subject_name: cs.Subject?.subject_name
-      }))
+        subject_name: cs.Subject?.subject_name,
+      })),
     );
 
     // Get existing subject assignments for this student for the NEW class only
@@ -904,27 +1019,32 @@ const promoteStudent = asyncHandler(async (req, res) => {
     const existingAssignments = await StudentSubjectAssign.findAll({
       where: {
         student_id: id,
-        current_class_id: new_class_id  // Only check for existing assignments in the NEW class
+        current_class_id: new_class_id, // Only check for existing assignments in the NEW class
       },
       attributes: ["school_subject_id", "current_term_id"],
       transaction,
     });
 
-    console.log(`DEBUG promoteStudent: Student has ${existingAssignments.length} existing assignments for class ${new_class_id}:`,
-      existingAssignments.map(ea => ({
+    console.log(
+      `DEBUG promoteStudent: Student has ${existingAssignments.length} existing assignments for class ${new_class_id}:`,
+      existingAssignments.map((ea) => ({
         subject_id: ea.school_subject_id,
-        term_id: ea.current_term_id
-      }))
+        term_id: ea.current_term_id,
+      })),
     );
 
     // Create a Set of existing subject-term combinations for the NEW class only
     const existingCombinations = new Set(
       existingAssignments.map(
-        (assignment) => `${assignment.school_subject_id}-${assignment.current_term_id}`
-      )
+        (assignment) =>
+          `${assignment.school_subject_id}-${assignment.current_term_id}`,
+      ),
     );
 
-    console.log(`DEBUG promoteStudent: Existing combinations for new class:`, Array.from(existingCombinations));
+    console.log(
+      `DEBUG promoteStudent: Existing combinations for new class:`,
+      Array.from(existingCombinations),
+    );
 
     // Create new subject assignments for all 3 terms (only if they don't already exist)
     let newAssignmentsCount = 0;
@@ -937,7 +1057,9 @@ const promoteStudent = asyncHandler(async (req, res) => {
 
           // Only add if this subject-term combination doesn't already exist for the NEW class
           if (!existingCombinations.has(combinationKey)) {
-            console.log(`DEBUG promoteStudent: Adding new assignment - Subject: ${classSubject.Subject?.subject_name} (${classSubject.school_subject_id}), Term: ${termId}, Class: ${new_class_id}`);
+            console.log(
+              `DEBUG promoteStudent: Adding new assignment - Subject: ${classSubject.Subject?.subject_name} (${classSubject.school_subject_id}), Term: ${termId}, Class: ${new_class_id}`,
+            );
             subjectAssignments.push({
               student_id: id,
               school_subject_id: classSubject.school_subject_id,
@@ -949,28 +1071,35 @@ const promoteStudent = asyncHandler(async (req, res) => {
               exam_score: null,
             });
           } else {
-            console.log(`DEBUG promoteStudent: Skipping existing assignment - Subject: ${classSubject.Subject?.subject_name} (${classSubject.school_subject_id}), Term: ${termId} (already exists for class ${new_class_id})`);
+            console.log(
+              `DEBUG promoteStudent: Skipping existing assignment - Subject: ${classSubject.Subject?.subject_name} (${classSubject.school_subject_id}), Term: ${termId} (already exists for class ${new_class_id})`,
+            );
           }
         }
       }
 
       // Bulk create only new subject assignments
       if (subjectAssignments.length > 0) {
-        console.log(`DEBUG promoteStudent: Creating ${subjectAssignments.length} new assignments:`,
-          subjectAssignments.map(sa => ({
+        console.log(
+          `DEBUG promoteStudent: Creating ${subjectAssignments.length} new assignments:`,
+          subjectAssignments.map((sa) => ({
             student_id: sa.student_id,
             subject_id: sa.school_subject_id,
             class_id: sa.current_class_id,
-            term_id: sa.current_term_id
-          }))
+            term_id: sa.current_term_id,
+          })),
         );
         await StudentSubjectAssign.bulkCreate(subjectAssignments, {
           transaction,
         });
         newAssignmentsCount = subjectAssignments.length;
-        console.log(`DEBUG promoteStudent: Successfully created ${newAssignmentsCount} assignments`);
+        console.log(
+          `DEBUG promoteStudent: Successfully created ${newAssignmentsCount} assignments`,
+        );
       } else {
-        console.log(`DEBUG promoteStudent: No new assignments to create (all subjects already exist)`);
+        console.log(
+          `DEBUG promoteStudent: No new assignments to create (all subjects already exist)`,
+        );
       }
     }
 
@@ -991,8 +1120,9 @@ const promoteStudent = asyncHandler(async (req, res) => {
 
     res.json({
       status: "success",
-      message: `Student promoted to ${newClass.class_name}${newSession ? ` for ${newSession.session_name}` : ""
-        }`,
+      message: `Student promoted to ${newClass.class_name}${
+        newSession ? ` for ${newSession.session_name}` : ""
+      }`,
       data: {
         student: updatedStudent,
         promotion_details: {
@@ -1014,7 +1144,7 @@ const promoteStudent = asyncHandler(async (req, res) => {
 /**
  * @desc Bulk promote students to new class
  * @route PUT /api/students/bulk-promote
- * @body { 
+ * @body {
  *   student_ids: number[],
  *   new_class_id: number,
  *   new_session_id?: number
@@ -1086,19 +1216,20 @@ const bulkPromoteStudents = asyncHandler(async (req, res) => {
       transaction,
     });
 
-    console.log(`DEBUG bulkPromoteStudents: Found ${classSubjects.length} subjects for class ${new_class_id}:`,
-      classSubjects.map(cs => ({
+    console.log(
+      `DEBUG bulkPromoteStudents: Found ${classSubjects.length} subjects for class ${new_class_id}:`,
+      classSubjects.map((cs) => ({
         id: cs.id,
         subject_id: cs.school_subject_id,
-        subject_name: cs.Subject?.subject_name
-      }))
+        subject_name: cs.Subject?.subject_name,
+      })),
     );
 
     // Get existing subject assignments for all students for the NEW class only
     const existingAssignments = await StudentSubjectAssign.findAll({
       where: {
         student_id: student_ids,
-        current_class_id: new_class_id  // Only check for existing assignments in the NEW class
+        current_class_id: new_class_id, // Only check for existing assignments in the NEW class
       },
       attributes: ["student_id", "school_subject_id", "current_term_id"],
       transaction,
@@ -1134,7 +1265,8 @@ const bulkPromoteStudents = asyncHandler(async (req, res) => {
       await student.update(updateData, { transaction });
 
       // Get existing combinations for this student
-      const existingCombinations = existingCombinationsMap.get(student.id) || new Set();
+      const existingCombinations =
+        existingCombinationsMap.get(student.id) || new Set();
 
       // Create new subject assignments for all 3 terms (only if they don't already exist)
       if (classSubjects.length > 0) {
@@ -1174,8 +1306,9 @@ const bulkPromoteStudents = asyncHandler(async (req, res) => {
 
     res.json({
       status: "success",
-      message: `${students.length} students promoted to ${newClass.class_name}${newSession ? ` for ${newSession.session_name}` : ""
-        }`,
+      message: `${students.length} students promoted to ${newClass.class_name}${
+        newSession ? ` for ${newSession.session_name}` : ""
+      }`,
       data: {
         promoted_count: students.length,
         new_class: newClass.class_name,
@@ -1219,19 +1352,19 @@ const debugClassSubjects = asyncHandler(async (req, res) => {
       data: {
         class_id: classId,
         subjects_count: classSubjects.length,
-        subjects: classSubjects.map(cs => ({
+        subjects: classSubjects.map((cs) => ({
           id: cs.id,
           subject_id: cs.school_subject_id,
           subject_name: cs.Subject?.subject_name,
           class_name: cs.Class?.class_name,
-        }))
-      }
+        })),
+      },
     });
   } catch (error) {
-    console.error('Debug error:', error);
+    console.error("Debug error:", error);
     res.status(500).json({
       status: "error",
-      message: error.message
+      message: error.message,
     });
   }
 });
@@ -1243,13 +1376,17 @@ const debugClassSubjects = asyncHandler(async (req, res) => {
 const createTestClassSubjects = asyncHandler(async (req, res) => {
   try {
     // Get all classes and subjects
-    const classes = await SchoolClass.findAll({ attributes: ['id', 'class_name'] });
-    const subjects = await SchoolSubject.findAll({ attributes: ['id', 'subject_name'] });
-    const staff = await SchoolStaff.findOne({ attributes: ['id'] });
+    const classes = await SchoolClass.findAll({
+      attributes: ["id", "class_name"],
+    });
+    const subjects = await SchoolSubject.findAll({
+      attributes: ["id", "subject_name"],
+    });
+    const staff = await SchoolStaff.findOne({ attributes: ["id"] });
 
-    console.log('DEBUG: Found classes:', classes.length);
-    console.log('DEBUG: Found subjects:', subjects.length);
-    console.log('DEBUG: Found staff:', staff ? 'Yes' : 'No');
+    console.log("DEBUG: Found classes:", classes.length);
+    console.log("DEBUG: Found subjects:", subjects.length);
+    console.log("DEBUG: Found staff:", staff ? "Yes" : "No");
 
     if (classes.length === 0 || subjects.length === 0 || !staff) {
       return res.status(400).json({
@@ -1258,8 +1395,8 @@ const createTestClassSubjects = asyncHandler(async (req, res) => {
         debug: {
           classes_count: classes.length,
           subjects_count: subjects.length,
-          staff_found: !!staff
-        }
+          staff_found: !!staff,
+        },
       });
     }
 
@@ -1279,7 +1416,9 @@ const createTestClassSubjects = asyncHandler(async (req, res) => {
 
     if (classSubjectAssigns.length > 0) {
       await ClassSubjectAssign.bulkCreate(classSubjectAssigns);
-      console.log(`DEBUG: Successfully created ${classSubjectAssigns.length} assignments`);
+      console.log(
+        `DEBUG: Successfully created ${classSubjectAssigns.length} assignments`,
+      );
     }
 
     res.json({
@@ -1289,16 +1428,16 @@ const createTestClassSubjects = asyncHandler(async (req, res) => {
         classes_count: classes.length,
         subjects_per_class: Math.min(3, subjects.length),
         total_assignments: classSubjectAssigns.length,
-        classes: classes.map(c => ({ id: c.id, name: c.class_name })),
-        subjects: subjects.map(s => ({ id: s.id, name: s.subject_name }))
-      }
+        classes: classes.map((c) => ({ id: c.id, name: c.class_name })),
+        subjects: subjects.map((s) => ({ id: s.id, name: s.subject_name })),
+      },
     });
   } catch (error) {
-    console.error('Create test data error:', error);
+    console.error("Create test data error:", error);
     res.status(500).json({
       status: "error",
       message: error.message,
-      stack: error.stack
+      stack: error.stack,
     });
   }
 });
@@ -1310,18 +1449,18 @@ const createTestClassSubjects = asyncHandler(async (req, res) => {
 const debugPromotionData = asyncHandler(async (req, res) => {
   try {
     const classes = await SchoolClass.findAll({
-      attributes: ['id', 'class_name'],
-      limit: 10
+      attributes: ["id", "class_name"],
+      limit: 10,
     });
 
     const subjects = await SchoolSubject.findAll({
-      attributes: ['id', 'subject_name'],
-      limit: 10
+      attributes: ["id", "subject_name"],
+      limit: 10,
     });
 
     const staff = await SchoolStaff.findAll({
-      attributes: ['id', 'full_name'],
-      limit: 5
+      attributes: ["id", "full_name"],
+      limit: 5,
     });
 
     const classSubjectAssigns = await ClassSubjectAssign.findAll({
@@ -1337,12 +1476,12 @@ const debugPromotionData = asyncHandler(async (req, res) => {
           attributes: ["id", "subject_name"],
         },
       ],
-      limit: 20
+      limit: 20,
     });
 
     const students = await SchoolStudent.findAll({
-      attributes: ['id', 'full_name', 'current_class_id'],
-      limit: 5
+      attributes: ["id", "full_name", "current_class_id"],
+      limit: 5,
     });
 
     res.json({
@@ -1350,39 +1489,39 @@ const debugPromotionData = asyncHandler(async (req, res) => {
       data: {
         classes: {
           count: classes.length,
-          data: classes
+          data: classes,
         },
         subjects: {
           count: subjects.length,
-          data: subjects
+          data: subjects,
         },
         staff: {
           count: staff.length,
-          data: staff
+          data: staff,
         },
         class_subject_assigns: {
           count: classSubjectAssigns.length,
-          data: classSubjectAssigns.map(csa => ({
+          data: classSubjectAssigns.map((csa) => ({
             id: csa.id,
             class_id: csa.school_class_id,
             class_name: csa.Class?.class_name,
             subject_id: csa.school_subject_id,
             subject_name: csa.Subject?.subject_name,
-            staff_id: csa.school_staff_id
-          }))
+            staff_id: csa.school_staff_id,
+          })),
         },
         students: {
           count: students.length,
-          data: students
-        }
-      }
+          data: students,
+        },
+      },
     });
   } catch (error) {
-    console.error('Debug promotion data error:', error);
+    console.error("Debug promotion data error:", error);
     res.status(500).json({
       status: "error",
       message: error.message,
-      stack: error.stack
+      stack: error.stack,
     });
   }
 });
@@ -1396,13 +1535,13 @@ const debugStudentAssignments = asyncHandler(async (req, res) => {
 
   try {
     const student = await SchoolStudent.findByPk(studentId, {
-      attributes: ['id', 'full_name', 'current_class_id', 'current_session_id']
+      attributes: ["id", "full_name", "current_class_id", "current_session_id"],
     });
 
     if (!student) {
       return res.status(404).json({
         status: "error",
-        message: "Student not found"
+        message: "Student not found",
       });
     }
 
@@ -1440,13 +1579,13 @@ const debugStudentAssignments = asyncHandler(async (req, res) => {
 
     // Group by class
     const assignmentsByClass = {};
-    allAssignments.forEach(assignment => {
+    allAssignments.forEach((assignment) => {
       const classId = assignment.current_class_id;
       if (!assignmentsByClass[classId]) {
         assignmentsByClass[classId] = {
           class_id: classId,
-          class_name: assignment.Class?.class_name || 'Unknown',
-          assignments: []
+          class_name: assignment.Class?.class_name || "Unknown",
+          assignments: [],
         };
       }
       assignmentsByClass[classId].assignments.push({
@@ -1470,19 +1609,18 @@ const debugStudentAssignments = asyncHandler(async (req, res) => {
           id: student.id,
           name: student.full_name,
           current_class_id: student.current_class_id,
-          current_session_id: student.current_session_id
+          current_session_id: student.current_session_id,
         },
         total_assignments: allAssignments.length,
-        assignments_by_class: assignmentsByClass
-      }
+        assignments_by_class: assignmentsByClass,
+      },
     });
-
   } catch (error) {
-    console.error('Debug student assignments error:', error);
+    console.error("Debug student assignments error:", error);
     res.status(500).json({
       status: "error",
       message: error.message,
-      stack: error.stack
+      stack: error.stack,
     });
   }
 });
@@ -1497,18 +1635,20 @@ const testPromote = asyncHandler(async (req, res) => {
   if (!student_id || !new_class_id) {
     return res.status(400).json({
       status: "error",
-      message: "student_id and new_class_id are required"
+      message: "student_id and new_class_id are required",
     });
   }
 
   try {
-    console.log(`DEBUG testPromote: Starting promotion for student ${student_id} to class ${new_class_id}`);
+    console.log(
+      `DEBUG testPromote: Starting promotion for student ${student_id} to class ${new_class_id}`,
+    );
 
     const student = await SchoolStudent.findByPk(student_id);
     if (!student) {
       return res.status(404).json({
         status: "error",
-        message: "Student not found"
+        message: "Student not found",
       });
     }
 
@@ -1516,11 +1656,13 @@ const testPromote = asyncHandler(async (req, res) => {
     if (!newClass) {
       return res.status(404).json({
         status: "error",
-        message: "New class not found"
+        message: "New class not found",
       });
     }
 
-    console.log(`DEBUG testPromote: Student found: ${student.full_name}, Class found: ${newClass.class_name}`);
+    console.log(
+      `DEBUG testPromote: Student found: ${student.full_name}, Class found: ${newClass.class_name}`,
+    );
 
     // Get all subjects assigned to the new class
     const classSubjects = await ClassSubjectAssign.findAll({
@@ -1534,23 +1676,25 @@ const testPromote = asyncHandler(async (req, res) => {
       ],
     });
 
-    console.log(`DEBUG testPromote: Found ${classSubjects.length} subjects for class ${new_class_id}:`,
-      classSubjects.map(cs => ({
+    console.log(
+      `DEBUG testPromote: Found ${classSubjects.length} subjects for class ${new_class_id}:`,
+      classSubjects.map((cs) => ({
         id: cs.id,
         subject_id: cs.school_subject_id,
-        subject_name: cs.Subject?.subject_name
-      }))
+        subject_name: cs.Subject?.subject_name,
+      })),
     );
 
     if (classSubjects.length === 0) {
       return res.json({
         status: "warning",
-        message: "No subjects found for this class. You need to assign subjects to the class first.",
+        message:
+          "No subjects found for this class. You need to assign subjects to the class first.",
         data: {
           student: { id: student.id, name: student.full_name },
           class: { id: newClass.id, name: newClass.class_name },
-          subjects_found: 0
-        }
+          subjects_found: 0,
+        },
       });
     }
 
@@ -1559,23 +1703,26 @@ const testPromote = asyncHandler(async (req, res) => {
       status: "success",
       message: "Test promotion data retrieved successfully",
       data: {
-        student: { id: student.id, name: student.full_name, current_class: student.current_class_id },
+        student: {
+          id: student.id,
+          name: student.full_name,
+          current_class: student.current_class_id,
+        },
         new_class: { id: newClass.id, name: newClass.class_name },
-        subjects_to_assign: classSubjects.map(cs => ({
+        subjects_to_assign: classSubjects.map((cs) => ({
           id: cs.id,
           subject_id: cs.school_subject_id,
-          subject_name: cs.Subject?.subject_name
+          subject_name: cs.Subject?.subject_name,
         })),
-        would_create_assignments: classSubjects.length * 3 // 3 terms
-      }
+        would_create_assignments: classSubjects.length * 3, // 3 terms
+      },
     });
-
   } catch (error) {
-    console.error('Test promote error:', error);
+    console.error("Test promote error:", error);
     res.status(500).json({
       status: "error",
       message: error.message,
-      stack: error.stack
+      stack: error.stack,
     });
   }
 });

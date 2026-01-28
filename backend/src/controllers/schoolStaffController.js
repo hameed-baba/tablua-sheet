@@ -291,6 +291,13 @@ const toggleStaffStatus = asyncHandler(async (req, res) => {
 
   // Toggle boolean
   staff.status = !staff.status;
+  if (staff.status === true) {
+    staff.has_school_access = true;
+  } else {
+    staff.has_school_access = false;
+  }
+  // staff.has_school_access = !staff.has_school_access;
+
   await staff.save();
 
   res.json({
@@ -302,84 +309,10 @@ const toggleStaffStatus = asyncHandler(async (req, res) => {
       id: staff.id,
       full_name: staff.full_name,
       status: staff.status,
+      has_school_access: staff.has_school_access,
     },
   });
 });
-
-// const getAllStaffBySection = asyncHandler(async (req, res) => {
-//     let section_ids = req.query.section_ids || "";
-//     // Example: "1,2,4,6,7"
-
-//     // Convert to array of integers
-//     const sectionsArray = section_ids
-//       .split(",")
-//       .map((id) => parseInt(id.trim()))
-//       .filter((id) => !isNaN(id));
-
-//     if (sectionsArray.length === 0) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "Invalid or missing section_ids. Example: ?section_ids=1,2,3",
-//       });
-//     }
-
-//     const staff = await SchoolStaff.findAll({
-//       where: {
-//         section_id: {
-//           [Op.in]: sectionsArray,
-//         },
-//       },
-//       include: [
-//         {
-//           model: Role,
-//           as: "Role",
-//         },
-//       ],
-//       attributes: { exclude: ["password"] },
-//     });
-
-//     res.json({
-//       status: "success",
-//       count: staff.length,
-//       data: staff,
-//     });
-//   });
-
-// const getAllStaffBySection = asyncHandler(async (req, res) => {
-//   const section_id = parseInt(req.params.id, 10);
-//   const staffs = await SchoolStaff.findAll();
-
-//   if (!staffs || staffs.length === 0) {
-//     return res.status(404).json({
-//       message: "Staff no found",
-//     });
-//   }
-
-//   const filteredStaffs = staffs.filter((staff) => {
-//     if (staff.section_id) {
-//       const sectionsArray = staff.section_id.split(",").map(Number);
-//       return sectionsArray.includes(section_id);
-//     }
-//     return false;
-//   });
-
-//   const formattedStaffs = filteredStaffs.map((staff) => ({
-//     id: staff.id,
-//     full_name: staff.full_name,
-//     section_id: staff.section_id,
-//   }));
-
-//   if (!formattedStaffs) {
-//     return res.status(404).json({
-//       message: "Cannot find the staff",
-//     });
-//   }
-
-//   return res.json({
-//     message: "Staff Information",
-//     data: formattedStaffs,
-//   });
-// });
 
 const getAllStaffBySection = asyncHandler(async (req, res) => {
   const section_id = parseInt(req.params.id, 10);
@@ -389,7 +322,7 @@ const getAllStaffBySection = asyncHandler(async (req, res) => {
   }
 
   const staffs = await SchoolStaff.findAll({
-    attributes: ["id", "full_name", "section_ids"] // fetch only what you need
+    attributes: ["id", "full_name", "section_ids"], // fetch only what you need
   });
 
   if (!staffs || staffs.length === 0) {
@@ -414,8 +347,6 @@ const getAllStaffBySection = asyncHandler(async (req, res) => {
     data: filteredStaffs,
   });
 });
-
-
 
 module.exports = {
   register,
