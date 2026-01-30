@@ -163,9 +163,9 @@
         <div class="search-results-info">
           <span v-if="searchQuery">
             Showing {{ filteredReportData.length }} of
-            {{ allReportData.length }} students
+            {{ freshData.length }} students
           </span>
-          <span v-else> Showing all {{ allReportData.length }} students </span>
+          <span v-else> Showing all {{ freshData.length }} students </span>
         </div>
       </div>
       <!-- <pre>{{ freshData }}</pre> -->
@@ -173,7 +173,7 @@
 
     <div
       class="result-card mb-2"
-      v-for="(student, index) in freshData"
+      v-for="(student, index) in filteredReportData"
       :key="index"
     >
       <!-- Top Section: Student Basic Info -->
@@ -300,7 +300,7 @@
 
     <div
       class="empty-state border"
-      v-if="!reportGenerated && freshData.length == 0"
+      v-if="!reportGenerated && filteredReportData.length == 0 && !searchQuery"
     >
       <svg
         width="64"
@@ -318,6 +318,32 @@
       </svg>
       <h3>No Report Card Generated</h3>
       <p>Select session, term, and class to generate report card</p>
+    </div>
+
+    <!-- No Search Results State -->
+    <div
+      class="empty-state border"
+      v-if="freshData.length > 0 && filteredReportData.length == 0 && searchQuery"
+    >
+      <svg
+        width="64"
+        height="64"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        />
+      </svg>
+      <h3>No Students Found</h3>
+      <p>No students match your search criteria "{{ searchQuery }}"</p>
+      <button @click="clearSearch" class="btn btn-primary mt-3">
+        Clear Search
+      </button>
     </div>
   </div>
 </template>
@@ -354,9 +380,9 @@ const filteredReportData = computed(() => {
   }
 
   const query = searchQuery.value.toLowerCase().trim();
-  return allReportData.value.filter((reportData) => {
-    const studentName = reportData.student.name.toLowerCase();
-    const admissionNo = reportData.student.admissionNo.toLowerCase();
+  return freshData.value.filter((student) => {
+    const studentName = student.student?.full_name?.toLowerCase() || '';
+    const admissionNo = student.student?.admission_number?.toLowerCase() || '';
 
     return studentName.includes(query) || admissionNo.includes(query);
   });
@@ -491,6 +517,7 @@ watch(
     reportGenerated.value = false;
     allReportData.value = [];
     searchQuery.value = "";
+    freshData.value = [];
   }
 );
 </script>

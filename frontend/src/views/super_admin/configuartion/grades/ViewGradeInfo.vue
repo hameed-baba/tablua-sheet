@@ -27,7 +27,7 @@
       <!-- Grade Ranges Grid -->
       <div class="ranges-grid">
         <div
-          v-for="(system, index) in gradeToView?.GradeSystems"
+          v-for="(system, index) in gradeToView?.gradeSystems"
           :key="index"
           class="range-card"
           :class="getRangeColorClass(index)"

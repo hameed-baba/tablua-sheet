@@ -60,7 +60,7 @@ const schemas = {
     gender: { type: "enum", values: ["male", "female"], required: true },
     date_of_birth: { type: "date", optional: true, convert: true },
     employee_id: { type: "string", optional: true },
-    salary: { type: "number", positive: true, optional: true },
+    salary: { type: "string", optional: true },
     employment_type: {
       type: "enum",
       values: [

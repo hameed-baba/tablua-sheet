@@ -71,11 +71,23 @@
               <input
                 type="checkbox"
                 :checked="formData.allow_grade"
+                :disabled="formData.grade_type === 'letter_grade'"
                 @change="toggleAllowGrade"
               />
-              <span class="checkmark"></span>
-              <span class="permission-label">
+              <span
+                class="checkmark"
+                :class="{ disabled: formData.grade_type === 'letter_grade' }"
+              ></span>
+              <span
+                class="permission-label"
+                :class="{ disabled: formData.grade_type === 'letter_grade' }"
+              >
                 Allow Grade <small>(A, B)</small>
+                <small
+                  v-if="formData.grade_type === 'letter_grade'"
+                  class="text-muted d-block"
+                  >Required for Letter Grade</small
+                >
               </span>
             </label>
 
@@ -228,8 +240,8 @@
 import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import * as yup from "yup";
-import { useToast } from "../../../composables/useToast";
-import apiServices from "../../../services/apiServices";
+import { useToast } from "../../../../composables/useToast";
+import apiServices from "../../../../services/apiServices";
 
 const router = useRouter();
 const toast = useToast();
@@ -261,12 +273,31 @@ const formData = ref({
 });
 
 const toggleAllowGrade = () => {
+  // If grade type is letter_grade, allow_grade must remain true
+  if (formData.value.grade_type === "letter_grade") {
+    formData.value.allow_grade = true;
+    toast.info(
+      "Grade Required",
+      "Letter Grade type requires the Grade option to be enabled."
+    );
+    return;
+  }
   formData.value.allow_grade = !formData.value.allow_grade;
 };
 
 const toggleAllowRemark = () => {
   formData.value.allow_remark = !formData.value.allow_remark;
 };
+
+// Watch for grade type changes and enforce allow_grade requirement
+watch(
+  () => formData.value.grade_type,
+  (newType) => {
+    if (newType === "letter_grade") {
+      formData.value.allow_grade = true;
+    }
+  }
+);
 
 const goBack = () => {
   router.push("/configuration");
@@ -609,5 +640,15 @@ const handleSubmit = async () => {
       width: 100%;
     }
   }
+}
+
+.checkmark.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.permission-label.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 </style>

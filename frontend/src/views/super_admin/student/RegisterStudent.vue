@@ -39,10 +39,12 @@
                 {{ searchingParent ? "Searching..." : "Search" }}
               </button>
             </div>
-            
+
             <!-- Alternative: Register New Parent -->
             <div class="alternative-action">
-              <span class="alternative-text">Don't have the parent's phone number?</span>
+              <span class="alternative-text"
+                >Don't have the parent's phone number?</span
+              >
               <button
                 type="button"
                 class="btn-link register-new-parent"
@@ -318,16 +320,37 @@
 
             <div class="form-group mb-4">
               <label class="form-label">Admission Number *</label>
-              <vee-form-field
-                type="text"
-                v-model="registrationData.student.admission_number"
-                name="admission_number"
-                :class="[
-                  'form-input',
-                  errors.admission_number ? 'is-invalid' : '',
-                ]"
-                placeholder="e.g., AGP/SS/2022/045"
-              />
+              <div class="admission-number-input-group">
+                <vee-form-field
+                  type="text"
+                  v-model="registrationData.student.admission_number"
+                  name="admission_number"
+                  :class="[
+                    'form-input',
+                    errors.admission_number ? 'is-invalid' : '',
+                  ]"
+                  placeholder="e.g., AGP/SS/2022/045"
+                />
+                <button
+                  type="button"
+                  class="generate-btn"
+                  @click="generateAddmissionNumber"
+                  :disabled="isGeneratingAdmissionNumber"
+                  title="Generate Admission Number"
+                >
+                  <i
+                    :class="[
+                      'fa',
+                      isGeneratingAdmissionNumber
+                        ? 'fa-refresh fa-spin'
+                        : 'fa-refresh',
+                    ]"
+                  ></i>
+                  {{
+                    isGeneratingAdmissionNumber ? "Generating..." : "Generate"
+                  }}
+                </button>
+              </div>
               <vee-form-error name="admission_number" class="error-message" />
             </div>
 
@@ -489,7 +512,9 @@
               v-for="subject in availableSubjects"
               :key="subject.id"
               class="subject-card"
-              :class="{ selected: isSubjectSelected(subject.school_subject_id) }"
+              :class="{
+                selected: isSubjectSelected(subject.school_subject_id),
+              }"
             >
               <input
                 type="checkbox"
@@ -684,7 +709,6 @@
                 >
                   {{ subject }}
                 </span>
-              
               </div>
             </div>
           </div>
@@ -808,6 +832,7 @@ const registrationData = ref({
 const selectedParent = ref(null);
 
 const registeredStudent = ref(null);
+const isGeneratingAdmissionNumber = ref(false);
 
 // Parent search
 const parentSearchPhone = ref("");
@@ -896,11 +921,11 @@ const onParentRegistered = (newParent) => {
   // Select the newly registered parent
   selectedParent.value = newParent;
   registrationData.value.student.parent_id = newParent.id;
-  
+
   // Clear search results and show success
   parentSearchResults.value = [];
   parentSearched.value = false;
-  
+
   toast.success(
     "Parent Registered Successfully",
     `${newParent.full_name} has been registered and selected.`
@@ -1056,7 +1081,6 @@ const getSessionName = (sessionId) => {
   return session?.session_name || "N/A";
 };
 
-
 const getSelectedSubjectNames = () => {
   return registrationData.value.subjects.map((subjectData) => {
     const subject = availableSubjects.value.find(
@@ -1189,12 +1213,38 @@ const getAllRowClases = () => {
     })
     .catch((error) => {
       console.error("Error fetching classes:", error);
+    })
+    .finally(() => {
+      // Optionally handle any final steps
+    });
+};
+
+const generateAddmissionNumber = () => {
+  isGeneratingAdmissionNumber.value = true;
+
+  apiServices
+    .generateAddmissionNumber()
+    .then((response) => {
+      registrationData.value.student.admission_number =
+        response.data.data.admission_number;
+      toast.success("Success", "New admission number generated successfully.");
+    })
+    .catch((error) => {
+      console.error("Error generating admission number:", error);
+      toast.error(
+        "Error",
+        "Failed to generate admission number. Please try again."
+      );
+    })
+    .finally(() => {
+      isGeneratingAdmissionNumber.value = false;
     });
 };
 
 onMounted(() => {
   getAllRowSessions();
   getAllRowClases();
+  generateAddmissionNumber();
 });
 </script>
 
@@ -1269,6 +1319,41 @@ onMounted(() => {
 
 .search-input-group {
   margin-bottom: 1.5rem;
+}
+
+.admission-number-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.admission-number-input-group .form-input {
+  flex: 1;
+}
+
+.generate-btn {
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.generate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.generate-btn:active {
+  transform: translateY(0);
 }
 
 .alternative-action {

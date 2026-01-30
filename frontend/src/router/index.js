@@ -21,7 +21,7 @@ const router = createRouter({
         description: "Sign in to access the school management system.",
       },
     },
-    
+
     // Super Admin Routes (existing dashboard routes)
     {
       path: "/dashboard",
@@ -33,6 +33,7 @@ const router = createRouter({
           component: () => import("../views/super_admin/Dashboard.vue"),
           meta: {
             requiresAuth: true,
+            roles: ["super_admin", "admin"],
             title: "Dashboard",
             description:
               "View an overview of key statistics, reports, and recent activities in the school system.",
@@ -44,6 +45,7 @@ const router = createRouter({
           component: () => import("../views/super_admin/Students.vue"),
           meta: {
             requiresAuth: true,
+            roles: ["super_admin", "admin"],
             title: "Students",
             description:
               "Manage student information, enrollment, and performance records.",
@@ -55,38 +57,52 @@ const router = createRouter({
           component: () => import("../views/super_admin/StudentSearch.vue"),
           meta: {
             requiresAuth: true,
+            roles: ["super_admin", "admin"],
             title: "Student Search",
             description: "Search and filter students across all sessions.",
           },
         },
         {
-          path: '/students/register',
-          component: () => import('../views/super_admin/student/RegisterStudent.vue'),
-          title: "Register Students",
-
-        },
-        {
-          path: '/students/update/:id',
-          component: () => import('../views/super_admin/student/UpdateStudent.vue'),
-          title: "Update Students",
-
-        },
-        {
-          path: '/students/:studentId/subjects',
-          name: 'student-subjects',
-          component: () => import('../views/super_admin/student/StudentSubjects.vue'),
+          path: "/students/register",
+          component: () =>
+            import("../views/super_admin/student/RegisterStudent.vue"),
           meta: {
             requiresAuth: true,
+            roles: ["super_admin", "admin"],
+            title: "Register Students",
+            description: "Register a new student.",
+          },
+        },
+        {
+          path: "/students/update/:id",
+          component: () =>
+            import("../views/super_admin/student/UpdateStudent.vue"),
+          meta: {
+            requiresAuth: true,
+            roles: ["super_admin", "admin"],
+            title: "Update Students",
+            description: "Update student information.",
+          },
+        },
+        {
+          path: "/students/:studentId/subjects",
+          name: "student-subjects",
+          component: () =>
+            import("../views/super_admin/student/StudentSubjects.vue"),
+          meta: {
+            requiresAuth: true,
+            roles: ["super_admin", "admin"],
             title: "Student Subjects",
             description: "Manage student subject enrollment by term.",
           },
         },
         {
-          path: '/students/management',
-          name: 'student-management',
-          component: () => import('../views/super_admin/StudentManagement.vue'),
+          path: "/students/management",
+          name: "student-management",
+          component: () => import("../views/super_admin/StudentManagement.vue"),
           meta: {
             requiresAuth: true,
+            roles: ["super_admin", "admin"],
             title: "Student Management",
             description: "Manage student status and class promotions.",
           },
@@ -97,6 +113,7 @@ const router = createRouter({
           component: () => import("../views/super_admin/Staff.vue"),
           meta: {
             requiresAuth: true,
+            roles: ["super_admin"],
             title: "Staff",
             description:
               "Manage teaching and administrative staff information.",
@@ -105,9 +122,11 @@ const router = createRouter({
         {
           path: "/staff/register",
           name: "staff-register",
-          component: () => import("../views/super_admin/staff/StaffRegister.vue"),
+          component: () =>
+            import("../views/super_admin/staff/StaffRegister.vue"),
           meta: {
             requiresAuth: true,
+            roles: ["super_admin"],
             title: "Register Staff",
             description: "Register a new staff member.",
           },
@@ -118,6 +137,7 @@ const router = createRouter({
           component: () => import("../views/super_admin/staff/StaffUpdate.vue"),
           meta: {
             requiresAuth: true,
+            roles: ["super_admin"],
             title: "Update Staff",
             description: "Update staff member information.",
           },
@@ -125,20 +145,24 @@ const router = createRouter({
         {
           path: "/staff/profile/:id",
           name: "staff-profile",
-          component: () => import("../views/super_admin/staff/StaffProfile.vue"),
+          component: () =>
+            import("../views/super_admin/staff/StaffProfile.vue"),
           meta: {
             requiresAuth: true,
             title: "Staff Profile",
+            roles: ["super_admin"],
             description: "Staff member information.",
           },
         },
         {
           path: "/staff/activity",
           name: "staff-activity",
-          component: () => import("../views/super_admin/staff/StaffActivity.vue"),
+          component: () =>
+            import("../views/super_admin/staff/StaffActivity.vue"),
           meta: {
             requiresAuth: true,
             title: "Staff Activity",
+            roles: ["super_admin"],
             description: "Monitor staff login sessions and activity.",
           },
         },
@@ -149,6 +173,7 @@ const router = createRouter({
           meta: {
             requiresAuth: true,
             title: "Parents",
+            roles: ["super_admin", "admin"],
             description: "Manage parent and guardian information.",
           },
         },
@@ -159,16 +184,19 @@ const router = createRouter({
           meta: {
             requiresAuth: true,
             title: "Classes",
+            roles: ["super_admin", "admin"],
             description: "Manage school classes and sections.",
           },
         },
         {
           path: "/classes/:id/students",
           name: "class-students",
-          component: () => import("../views/super_admin/class/ClassStudents.vue"),
+          component: () =>
+            import("../views/super_admin/class/ClassStudents.vue"),
           meta: {
             requiresAuth: true,
             title: "Class Students",
+            roles: ["super_admin", "admin"],
             description: "View all students in a class.",
           },
         },
@@ -179,29 +207,30 @@ const router = createRouter({
           meta: {
             requiresAuth: true,
             title: "Subjects",
+            roles: ["super_admin", "admin"],
             description: "Manage academic subjects and curriculum.",
           },
         },
-        {
-          path: "/attendance",
-          name: "attendance",
-          component: () => import("../views/super_admin/Attendance.vue"),
-          meta: {
-            requiresAuth: true,
-            title: "Attendance",
-            description: "Track and manage student attendance.",
-          },
-        },
-        {
-          path: "/grades",
-          name: "grades",
-          component: () => import("../views/super_admin/Grades.vue"),
-          meta: {
-            requiresAuth: true,
-            title: "Grades",
-            description: "Manage student grades and academic performance.",
-          },
-        },
+        // {
+        //   path: "/attendance",
+        //   name: "attendance",
+        //   component: () => import("../views/super_admin/Attendance.vue"),
+        //   meta: {
+        //     requiresAuth: true,
+        //     title: "Attendance",
+        //     description: "Track and manage student attendance.",
+        //   },
+        // },
+        // {
+        //   path: "/grades",
+        //   name: "grades",
+        //   component: () => import("../views/super_admin/Grades.vue"),
+        //   meta: {
+        //     requiresAuth: true,
+        //     title: "Grades",
+        //     description: "Manage student grades and academic performance.",
+        //   },
+        // },
         {
           path: "/add-marks",
           name: "add-marks",
@@ -209,6 +238,7 @@ const router = createRouter({
           meta: {
             requiresAuth: true,
             title: "Add Marks",
+            roles: ["super_admin", "admin"],
             description: "Enter examination marks for students.",
           },
         },
@@ -219,19 +249,22 @@ const router = createRouter({
           meta: {
             requiresAuth: true,
             title: "Broadsheet",
-            description: "View comprehensive class performance report with rankings.",
+            roles: ["super_admin", "admin"],
+            description:
+              "View comprehensive class performance report with rankings.",
           },
         },
-        {
-          path: "/scoresheet",
-          name: "scoresheet",
-          component: () => import("../views/super_admin/Scoresheet.vue"),
-          meta: {
-            requiresAuth: true,
-            title: "Scoresheet",
-            description: "View detailed student scores for all subjects.",
-          },
-        },
+        // {
+        //   path: "/scoresheet",
+        //   name: "scoresheet",
+        //   component: () => import("../views/super_admin/Scoresheet.vue"),
+        //   meta: {
+        //     requiresAuth: true,
+        //     title: "Scoresheet",
+        //     roles: ['super_admin', 'admin'],
+        //     description: "View detailed student scores for all subjects.",
+        //   },
+        // },
         {
           path: "/report-card",
           name: "report-card",
@@ -239,6 +272,7 @@ const router = createRouter({
           meta: {
             requiresAuth: true,
             title: "Report Card",
+            roles: ["super_admin", "admin"],
             description: "Generate individual student report card.",
           },
         },
@@ -249,26 +283,33 @@ const router = createRouter({
           meta: {
             requiresAuth: true,
             title: "Configuration",
+            roles: ["super_admin"],
             description: "Manage system settings and preferences.",
           },
         },
         {
           path: "/grades/register",
           name: "grades-register",
-          component: () => import("../views/super_admin/configuartion/grades/RegisterGradePage.vue"),
+          component: () =>
+            import("../views/super_admin/configuartion/grades/RegisterGradePage.vue"),
           meta: {
             requiresAuth: true,
             title: "Register Grade System",
+            roles: ["super_admin"],
+
             description: "Create a new grading system.",
           },
         },
         {
           path: "/grades/update/:id",
           name: "grades-update",
-          component: () => import("../views/super_admin/configuartion/grades/UpdateGradePage.vue"),
+          component: () =>
+            import("../views/super_admin/configuartion/grades/UpdateGradePage.vue"),
           meta: {
             requiresAuth: true,
             title: "Update Grade System",
+            roles: ["super_admin"],
+
             description: "Update grade system information.",
           },
         },
@@ -279,6 +320,8 @@ const router = createRouter({
           meta: {
             requiresAuth: true,
             title: "My Profile",
+            roles: ["super_admin", "admin"],
+
             description: "View and update your profile information.",
           },
         },
@@ -307,7 +350,7 @@ const router = createRouter({
           component: () => import("../views/admin/Students.vue"),
           meta: {
             requiresAuth: true,
-            roles: ['admin', 'super_admin'],
+            roles: ["admin", "super_admin"],
             title: "Student Management",
             description: "Manage student records and information.",
           },
@@ -329,7 +372,8 @@ const router = createRouter({
             requiresAuth: true,
             // roles: ['teacher', 'admin', 'super_admin'],
             title: "Teacher Dashboard",
-            description: "Manage your classes, students, and academic activities.",
+            description:
+              "Manage your classes, students, and academic activities.",
           },
         },
         {
@@ -338,7 +382,7 @@ const router = createRouter({
           component: () => import("../views/teacher/AddMarks.vue"),
           meta: {
             requiresAuth: true,
-            roles: ['teacher', 'admin', 'super_admin'],
+            roles: ["teacher", "admin", "super_admin"],
             title: "Enter Marks",
             description: "Record marks for your assigned classes.",
           },
@@ -378,9 +422,10 @@ const router = createRouter({
           component: () => import("../views/parent_role/Dashboard.vue"),
           meta: {
             requiresAuth: true,
-            roles: ['parent'],
+            roles: ["parent"],
             title: "Parent Portal",
-            description: "Monitor your children's academic progress and school activities.",
+            description:
+              "Monitor your children's academic progress and school activities.",
           },
         },
         // Add more parent routes as needed
@@ -434,7 +479,7 @@ router.beforeEach((to, from, next) => {
   // Handle role-based access control
   if (to.meta.roles && isAuthenticated.value) {
     const allowedRoles = to.meta.roles;
-    
+
     if (!hasRouteAccess(userRole.value, allowedRoles)) {
       // User doesn't have permission for this route
       next({ name: "forbidden" });
@@ -443,7 +488,7 @@ router.beforeEach((to, from, next) => {
   }
 
   // Handle root path redirect based on user role
-  if (to.path === '/' && isAuthenticated.value) {
+  if (to.path === "/" && isAuthenticated.value) {
     const dashboardRouteName = getDashboardRouteName(userRole.value);
     next({ name: dashboardRouteName });
     return;

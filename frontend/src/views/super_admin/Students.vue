@@ -124,27 +124,6 @@
               />
             </svg>
           </button>
-          <button
-            v-if="hasSearched"
-            class="btn-clear-filters"
-            @click="clearSearch"
-          >
-            <svg
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-            Clear Filters
-          </button>
         </div>
       </div>
       <div class="table-responsive">
@@ -345,6 +324,7 @@ const loadStudents = (page = 1) => {
   apiServices
     .getActivSessionStudents(params)
     .then((response) => handleStudentResponse(response))
+    .catch((error) => console.log(error))
     .finally(() => (loading.value = false));
 };
 
@@ -358,9 +338,9 @@ const searchStudents = (search = "") => {
     limit: pagination.value.limit,
   };
 
-  // Add search by admission number if search term exists
+  // Add search term if it exists (searches both full_name and admission_number)
   if (search) {
-    params.admission_number = search;
+    params.search = search.trim();
   }
 
   // Add filters if they exist

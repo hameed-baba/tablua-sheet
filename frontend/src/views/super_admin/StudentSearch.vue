@@ -418,7 +418,7 @@ function buildQueryParams() {
   const params = {};
 
 
-  if (filters.value.search) params.admission_number = filters.value.search;
+  if (filters.value.search) params.admission_number = filters.value.search.trim();
   if (filters.value.class) params.current_class_id = filters.value.class;
   if (filters.value.session) params.current_session_id = filters.value.session;
   if (filters.value.status) params.student_status = filters.value.status;

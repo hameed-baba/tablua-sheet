@@ -200,7 +200,7 @@
                 />
               </svg>
             </button>
-            <button
+            <!-- <button
               v-if="filters.search"
               class="btn-clear-filters ms-0"
               @click="clearSearch"
@@ -220,7 +220,7 @@
                 />
               </svg>
               Clear Filters
-            </button>
+            </button> -->
           </div>
         </div>
       </div>
@@ -229,7 +229,7 @@
       <div class="data-table-container">
         <div class="table-header">
           <h2 class="table-title">Students List</h2>
-          <button class="export-btn" @click="exportToExcel">
+          <!-- <button class="export-btn" @click="exportToExcel">
             <svg
               width="18"
               height="18"
@@ -245,7 +245,7 @@
               />
             </svg>
             Export
-          </button>
+          </button> -->
         </div>
         <div class="table-responsive">
           <table class="data-table">
@@ -648,7 +648,7 @@ const getClassStudents = (id, page = 1) => {
 
   // Add search parameter if provided
   if (filters.value.search) {
-    params.search = filters.value.search;
+    params.search = filters.value.search.trim();
   }
 
   // Add gender filter if provided

@@ -6,8 +6,12 @@
     </div>
     <div class="form-container" v-else>
       <!-- Stepper Indicator -->
-      <StepperIndicator :steps="stepLabels" :current-step="currentStep" :allow-click-navigation="true"
-        @step-click="goToStep" />
+      <StepperIndicator
+        :steps="stepLabels"
+        :current-step="currentStep"
+        :allow-click-navigation="true"
+        @step-click="goToStep"
+      />
 
       <!-- Step 1: Student Information -->
       <div v-if="currentStep === 1" class="step-content">
@@ -16,7 +20,11 @@
           Update the student's personal and academic details
         </p>
 
-        <vee-form :validation-schema="formValidation" @submit="nextStep" v-slot="{ errors }">
+        <vee-form
+          :validation-schema="formValidation"
+          @submit="nextStep"
+          v-slot="{ errors }"
+        >
           <!-- Personal Information -->
           <div class="form-section">
             <h3 class="section-title">Personal Information</h3>
@@ -24,14 +32,23 @@
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Full Name *</label>
-                <vee-form-field type="text" v-model="formData.full_name" name="full_name"
-                  :class="['form-input', errors.full_name ? 'is-invalid' : '']" placeholder="Enter full name" />
+                <vee-form-field
+                  type="text"
+                  v-model="formData.full_name"
+                  name="full_name"
+                  :class="['form-input', errors.full_name ? 'is-invalid' : '']"
+                  placeholder="Enter full name"
+                />
                 <vee-form-error name="full_name" class="error-message" />
               </div>
               <div class="form-group">
                 <label class="form-label">Date of Birth *</label>
-                <vee-form-field type="date" v-model="formData.dob" name="dob"
-                  :class="['form-input', errors.dob ? 'is-invalid' : '']" />
+                <vee-form-field
+                  type="date"
+                  v-model="formData.dob"
+                  name="dob"
+                  :class="['form-input', errors.dob ? 'is-invalid' : '']"
+                />
                 <vee-form-error name="dob" class="error-message" />
               </div>
             </div>
@@ -39,8 +56,12 @@
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Gender *</label>
-                <vee-form-field as="select" v-model="formData.gender" name="gender"
-                  :class="['form-input', errors.gender ? 'is-invalid' : '']">
+                <vee-form-field
+                  as="select"
+                  v-model="formData.gender"
+                  name="gender"
+                  :class="['form-input', errors.gender ? 'is-invalid' : '']"
+                >
                   <option value="">Select gender</option>
                   <option value="male">Male</option>
                   <option value="female">Female</option>
@@ -49,10 +70,15 @@
               </div>
               <div class="form-group">
                 <label class="form-label">Blood Group</label>
-                <vee-form-field as="select" v-model="formData.blood_group" name="blood_group" :class="[
-                  'form-input',
-                  errors.blood_group ? 'is-invalid' : '',
-                ]">
+                <vee-form-field
+                  as="select"
+                  v-model="formData.blood_group"
+                  name="blood_group"
+                  :class="[
+                    'form-input',
+                    errors.blood_group ? 'is-invalid' : '',
+                  ]"
+                >
                   <option value="">Select blood group</option>
                   <option value="A+">A+</option>
                   <option value="A-">A-</option>
@@ -69,8 +95,12 @@
 
             <div class="form-group">
               <label class="form-label">Religion *</label>
-              <vee-form-field as="select" v-model="formData.religion" name="religion"
-                :class="['form-input', errors.religion ? 'is-invalid' : '']">
+              <vee-form-field
+                as="select"
+                v-model="formData.religion"
+                name="religion"
+                :class="['form-input', errors.religion ? 'is-invalid' : '']"
+              >
                 <option value="">Select religion</option>
                 <option value="islam">Islam</option>
                 <option value="christianity">Christianity</option>
@@ -84,20 +114,34 @@
           <div class="form-section">
             <h3 class="section-title">Address Information</h3>
 
-            <div class="form-group mb-4">
+            <div class="form-group">
               <label class="form-label">Address *</label>
-              <vee-form-field type="text" v-model="formData.address" name="address"
-                :class="['form-input', errors.address ? 'is-invalid' : '']" placeholder="Enter full address" />
+              <vee-form-field
+                type="text"
+                v-model="formData.address"
+                name="address"
+                :class="['form-input', errors.address ? 'is-invalid' : '']"
+                placeholder="Enter full address"
+              />
               <vee-form-error name="address" class="error-message" />
             </div>
 
-            <div class="form-row">
+            <div class="form-row mt-4">
               <div class="form-group">
                 <label class="form-label">State *</label>
-                <vee-form-field as="select" v-model="formData.state" name="state"
-                  :class="['form-input', errors.state ? 'is-invalid' : '']" @change="onStateChange">
+                <vee-form-field
+                  as="select"
+                  v-model="formData.state"
+                  name="state"
+                  :class="['form-input', errors.state ? 'is-invalid' : '']"
+                  @change="onStateChange"
+                >
                   <option value="">Select state</option>
-                  <option v-for="(state, index) in states" :key="index" :value="state.value">
+                  <option
+                    v-for="(state, index) in states"
+                    :key="index"
+                    :value="state.value"
+                  >
                     {{ state.label }}
                   </option>
                 </vee-form-field>
@@ -105,10 +149,19 @@
               </div>
               <div class="form-group">
                 <label class="form-label">Local Government *</label>
-                <vee-form-field as="select" v-model="formData.local_gov" name="local_gov"
-                  :class="['form-input', errors.local_gov ? 'is-invalid' : '']" :disabled="!formData.state">
+                <vee-form-field
+                  as="select"
+                  v-model="formData.local_gov"
+                  name="local_gov"
+                  :class="['form-input', errors.local_gov ? 'is-invalid' : '']"
+                  :disabled="!formData.state"
+                >
                   <option value="">Select LGA</option>
-                  <option v-for="(lga, index) in localGovs" :key="index" :value="lga.value">
+                  <option
+                    v-for="(lga, index) in localGovs"
+                    :key="index"
+                    :value="lga.value"
+                  >
                     {{ lga.label }}
                   </option>
                 </vee-form-field>
@@ -121,22 +174,54 @@
           <div class="form-section">
             <h3 class="section-title">Academic Information</h3>
 
-            <div class="form-group mb-4">
+            <div class="form-group">
               <label class="form-label">Admission Number *</label>
-              <vee-form-field type="text" v-model="formData.admission_number" name="admission_number" :class="[
-                'form-input',
-                errors.admission_number ? 'is-invalid' : '',
-              ]" placeholder="e.g., AGP/SS/2022/045" />
+              <div class="admission-number-input-group">
+                <vee-form-field
+                  type="text"
+                  v-model="formData.admission_number"
+                  name="admission_number"
+                  :class="[
+                    'form-input',
+                    errors.admission_number ? 'is-invalid' : '',
+                  ]"
+                  placeholder="e.g., XXX/00/000"
+                />
+                <button
+                  type="button"
+                  class="generate-btn"
+                  @click="generateAddmissionNumber()"
+                  :disabled="isGeneratingAdmissionNumber"
+                  title="Generate Admission Number"
+                >
+                  <i
+                    :class="[
+                      'fa',
+                      isGeneratingAdmissionNumber
+                        ? 'fa-refresh fa-spin'
+                        : 'fa-refresh',
+                    ]"
+                  ></i>
+                  {{
+                    isGeneratingAdmissionNumber ? "Generating..." : "Generate"
+                  }}
+                </button>
+              </div>
               <vee-form-error name="admission_number" class="error-message" />
             </div>
 
-            <div class="form-row">
+            <div class="form-row mt-4">
               <div class="form-group">
                 <label class="form-label">Status *</label>
-                <vee-form-field as="select" v-model="formData.student_status" name="student_status" :class="[
-                  'form-input',
-                  errors.student_status ? 'is-invalid' : '',
-                ]">
+                <vee-form-field
+                  as="select"
+                  v-model="formData.student_status"
+                  name="student_status"
+                  :class="[
+                    'form-input',
+                    errors.student_status ? 'is-invalid' : '',
+                  ]"
+                >
                   <option value="active">Active</option>
                   <option value="graduated">Graduated</option>
                   <option value="transferred">Transferred</option>
@@ -151,14 +236,23 @@
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Admitted Class *</label>
-                <vee-form-field as="select" v-model="formData.admitted_class" name="admitted_class" :class="[
-                  'form-input',
-                  errors.admitted_class ? 'is-invalid' : '',
-                ]">
+                <vee-form-field
+                  as="select"
+                  v-model="formData.admitted_class"
+                  name="admitted_class"
+                  :class="[
+                    'form-input',
+                    errors.admitted_class ? 'is-invalid' : '',
+                  ]"
+                >
                   <option value="" selected disabled>
                     Select current class
                   </option>
-                  <option v-for="(sClass, index) in allRowClasses" :key="index" :value="sClass.id">
+                  <option
+                    v-for="(sClass, index) in allRowClasses"
+                    :key="index"
+                    :value="sClass.id"
+                  >
                     {{ sClass.class_name }}
                   </option>
                 </vee-form-field>
@@ -166,14 +260,24 @@
               </div>
               <div class="form-group">
                 <label class="form-label">Current Class *</label>
-                <vee-form-field as="select" v-model="formData.current_class_id" name="current_class_id" :class="[
-                  'form-input',
-                  errors.current_class_id ? 'is-invalid' : '',
-                ]" @change="onClassChange">
+                <vee-form-field
+                  as="select"
+                  v-model="formData.current_class_id"
+                  name="current_class_id"
+                  :class="[
+                    'form-input',
+                    errors.current_class_id ? 'is-invalid' : '',
+                  ]"
+                  @change="onClassChange"
+                >
                   <option value="" selected disabled>
                     Select current class
                   </option>
-                  <option v-for="(sClass, index) in allRowClasses" :key="index" :value="sClass.id">
+                  <option
+                    v-for="(sClass, index) in allRowClasses"
+                    :key="index"
+                    :value="sClass.id"
+                  >
                     {{ sClass.class_name }}
                   </option>
                 </vee-form-field>
@@ -184,12 +288,21 @@
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Admitted Session *</label>
-                <vee-form-field as="select" v-model="formData.admitted_session" name="admitted_session" :class="[
-                  'form-input',
-                  errors.admitted_session ? 'is-invalid' : '',
-                ]">
+                <vee-form-field
+                  as="select"
+                  v-model="formData.admitted_session"
+                  name="admitted_session"
+                  :class="[
+                    'form-input',
+                    errors.admitted_session ? 'is-invalid' : '',
+                  ]"
+                >
                   <option value="">Select session</option>
-                  <option v-for="(session, index) in allRowSessions" :key="index" :value="session.id">
+                  <option
+                    v-for="(session, index) in allRowSessions"
+                    :key="index"
+                    :value="session.id"
+                  >
                     {{ session.session_name }}
                   </option>
                 </vee-form-field>
@@ -197,16 +310,29 @@
               </div>
               <div class="form-group">
                 <label class="form-label">Current Session *</label>
-                <vee-form-field as="select" v-model="formData.current_session_id" name="current_session_id" :class="[
-                  'form-input',
-                  errors.current_session_id ? 'is-invalid' : '',
-                ]" @change="onSessionChange">
+                <vee-form-field
+                  as="select"
+                  v-model="formData.current_session_id"
+                  name="current_session_id"
+                  :class="[
+                    'form-input',
+                    errors.current_session_id ? 'is-invalid' : '',
+                  ]"
+                  @change="onSessionChange"
+                >
                   <option value="">Select session</option>
-                  <option v-for="(session, index) in allRowSessions" :key="index" :value="session.id">
+                  <option
+                    v-for="(session, index) in allRowSessions"
+                    :key="index"
+                    :value="session.id"
+                  >
                     {{ session.session_name }}
                   </option>
                 </vee-form-field>
-                <vee-form-error name="current_session_id" class="error-message" />
+                <vee-form-error
+                  name="current_session_id"
+                  class="error-message"
+                />
               </div>
             </div>
           </div>
@@ -241,12 +367,18 @@
           <!-- Check All Header -->
           <div class="subjects-header">
             <label class="check-all-subjects">
-              <input type="checkbox" :checked="areAllSubjectsSelected" @change="toggleAllSubjects" />
+              <input
+                type="checkbox"
+                :checked="areAllSubjectsSelected"
+                @change="toggleAllSubjects"
+              />
               <span class="checkmark"></span>
               <div class="check-label-container">
                 <span class="check-label">Select All Subjects</span>
-                <span class="check-count">{{ selectedSubjects.length }} of
-                  {{ availableSubjects.length }} selected</span>
+                <span class="check-count"
+                  >{{ selectedSubjects.length }} of
+                  {{ availableSubjects.length }} selected</span
+                >
                 <!-- <span>{{ termAndSession }}</span> -->
                 <!-- <span>{{ termAndSession.session }} </span> -->
               </div>
@@ -254,9 +386,19 @@
           </div>
 
           <div class="subjects-grid">
-            <label v-for="subject in availableSubjects" :key="subject.id" class="subject-card"
-              :class="{ selected: isSubjectSelected(subject.school_subject_id) }">
-              <input type="checkbox" :checked="isSubjectSelected(subject.school_subject_id)" @change="toggleSubject(subject)" />
+            <label
+              v-for="subject in availableSubjects"
+              :key="subject.id"
+              class="subject-card"
+              :class="{
+                selected: isSubjectSelected(subject.school_subject_id),
+              }"
+            >
+              <input
+                type="checkbox"
+                :checked="isSubjectSelected(subject.school_subject_id)"
+                @change="toggleSubject(subject)"
+              />
               <span class="subject-checkmark"></span>
               <div class="subject-info">
                 <h4>{{ subject.Subject.subject_name }}</h4>
@@ -350,7 +492,10 @@
               </div>
               <div class="review-item">
                 <span class="review-label">Status:</span>
-                <span class="review-value badge" :class="getStatusClass(formData.student_status)">
+                <span
+                  class="review-value badge"
+                  :class="getStatusClass(formData.student_status)"
+                >
                   {{ formData.student_status }}
                 </span>
               </div>
@@ -384,7 +529,10 @@
           <!-- Subjects Review -->
           <div class="review-card">
             <h3 class="review-title">Assigned Subjects</h3>
-            <div v-if="selectedSubjects.length === 0" class="no-subjects-review">
+            <div
+              v-if="selectedSubjects.length === 0"
+              class="no-subjects-review"
+            >
               <i class="fa fa-exclamation-circle"></i>
               <p>No subjects selected</p>
             </div>
@@ -394,7 +542,11 @@
                 <span class="count-value">{{ selectedSubjects.length }}</span>
               </div>
               <div class="subjects-list">
-                <span v-for="subject in selectedSubjects" :key="subject.id" class="subject-badge">
+                <span
+                  v-for="subject in selectedSubjects"
+                  :key="subject.id"
+                  class="subject-badge"
+                >
                   {{ subject.subject_name }}
                 </span>
               </div>
@@ -406,7 +558,12 @@
           <button type="button" class="btn btn-secondary" @click="previousStep">
             <i class="fa fa-arrow-left"></i> Back
           </button>
-          <button type="button" class="btn btn-success" @click="handleSubmit" :disabled="loading">
+          <button
+            type="button"
+            class="btn btn-success"
+            @click="handleSubmit"
+            :disabled="loading"
+          >
             <span v-if="loading" class="spinner"></span>
             {{ loading ? "Updating..." : "Update Student" }}
           </button>
@@ -440,7 +597,10 @@
           </div>
           <div class="summary-item">
             <span class="summary-label">Status:</span>
-            <span class="summary-value badge" :class="getStatusClass(formData.student_status)">
+            <span
+              class="summary-value badge"
+              :class="getStatusClass(formData.student_status)"
+            >
               {{ formData.student_status }}
             </span>
           </div>
@@ -491,6 +651,7 @@ const allRowSessions = ref([]);
 const allRowClasses = ref([]);
 const availableSubjects = ref([]);
 const selectedSubjects = ref([]);
+const isGeneratingAdmissionNumber = ref(false)
 
 // Form data
 const formData = ref({
@@ -560,38 +721,38 @@ const goToStep = (step) => {
 };
 
 // Navigation context from query parameters
-const navigationOrigin = ref(route.query.from || 'students');
+const navigationOrigin = ref(route.query.from || "students");
 const classIdParam = ref(route.query.classId || null);
 
 // Computed property for back button label
 const backButtonLabel = computed(() => {
   switch (navigationOrigin.value) {
-    case 'search':
-      return 'Back to Search';
-    case 'class':
-      return 'Back to Class';
-    case 'students':
+    case "search":
+      return "Back to Search";
+    case "class":
+      return "Back to Class";
+    case "students":
     default:
-      return 'Back to Students';
+      return "Back to Students";
   }
 });
 
 // Context-aware back navigation
 const goBack = () => {
   switch (navigationOrigin.value) {
-    case 'search':
-      router.push('/students/search');
+    case "search":
+      router.push("/students/search");
       break;
-    case 'class':
+    case "class":
       if (classIdParam.value) {
         router.push(`/classes/${classIdParam.value}/students`);
       } else {
-        router.push('/students');
+        router.push("/students");
       }
       break;
-    case 'students':
+    case "students":
     default:
-      router.push('/students');
+      router.push("/students");
       break;
   }
 };
@@ -631,7 +792,9 @@ const loadClassSubjects = async (classId) => {
 
   try {
     // First, get available subjects for the class
-    const response = await apiServices.getClassAssignedSubjectByClassId(classId);
+    const response = await apiServices.getClassAssignedSubjectByClassId(
+      classId
+    );
     availableSubjects.value = response.data.data || [];
 
     // Then, load the student's current subjects
@@ -654,18 +817,20 @@ const isSubjectSelected = (subjectId) => {
 const toggleSubject = (subject) => {
   // Use school_subject_id for consistency with how selectedSubjects are stored
   const subjectId = subject.school_subject_id || subject.id;
+  
   const index = selectedSubjects.value.findIndex((s) => s.id === subjectId);
+  
   if (index > -1) {
     selectedSubjects.value.splice(index, 1);
   } else {
-    selectedSubjects.value.push({
+    const newSubject = {
       id: subjectId,
       subject_name: subject.Subject?.subject_name || subject.subject_name,
       subject_code: subject.Subject?.subject_code || subject.subject_code,
-    });
+    };
+    selectedSubjects.value.push(newSubject);
   }
 };
-
 
 const loadStudentCurrentSubjects = async () => {
   const studentId = route.params.id;
@@ -686,6 +851,7 @@ const loadStudentCurrentSubjects = async () => {
       ...secondTermSubjects,
       ...thirdTermSubjects,
     ];
+
 
     // Create a Map to store unique subjects by school_subject_id
     const uniqueSubjects = new Map();
@@ -824,7 +990,6 @@ const handleSubmit = () => {
     })),
   };
 
-
   apiServices
     .updateStudent(studentId, payload)
     .then((response) => {
@@ -869,6 +1034,26 @@ const handleSubmit = () => {
 
 const editAnother = () => {
   router.push("/students");
+};
+
+const generateAddmissionNumber = () => {
+  isGeneratingAdmissionNumber.value = true;
+  apiServices
+    .generateAddmissionNumber()
+    .then((response) => {
+      formData.value.admission_number = response.data.data.admission_number;
+      toast.success("Success", "New admission number generated successfully.");
+    })
+    .catch((error) => {
+      console.error("Error generating admission number:", error);
+      toast.error(
+        "Error",
+        "Failed to generate admission number. Please try again."
+      );
+    })
+    .finally(() => {
+      isGeneratingAdmissionNumber.value = false;
+    });
 };
 
 onMounted(() => {
@@ -945,12 +1130,12 @@ onMounted(() => {
     background: white;
   }
 
-  input[type="checkbox"]:checked+.checkmark {
+  input[type="checkbox"]:checked + .checkmark {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-color: #667eea;
   }
 
-  input[type="checkbox"]:checked+.checkmark::after {
+  input[type="checkbox"]:checked + .checkmark::after {
     content: "";
     position: absolute;
     left: 6px;
@@ -1037,12 +1222,12 @@ onMounted(() => {
     border-color: #667eea;
   }
 
-  input[type="checkbox"]:checked+.subject-checkmark {
+  input[type="checkbox"]:checked + .subject-checkmark {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-color: #667eea;
   }
 
-  input[type="checkbox"]:checked+.subject-checkmark::after {
+  input[type="checkbox"]:checked + .subject-checkmark::after {
     content: "";
     position: absolute;
     left: 5px;
@@ -1527,5 +1712,43 @@ onMounted(() => {
   .subjects-grid {
     grid-template-columns: 1fr;
   }
+}
+.form-group {
+  margin-bottom: 0rem !important;
+}
+
+.admission-number-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.admission-number-input-group .form-input {
+  flex: 1;
+}
+
+.generate-btn {
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.generate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.generate-btn:active {
+  transform: translateY(0);
 }
 </style>

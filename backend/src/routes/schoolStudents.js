@@ -31,6 +31,14 @@ router.get(
   schoolStudentController.getAll,
 );
 
+// Generate admission number
+router.get(
+  "/generate-admission-number",
+  authenticate,
+  authorize(["super_admin","admin"]),
+  schoolStudentController.generateAdmissionNumber,
+);
+
 router.get(
   "/session",
   authenticate,

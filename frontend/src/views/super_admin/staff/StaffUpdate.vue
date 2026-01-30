@@ -121,14 +121,14 @@
 
             <div class="form-group">
               <label class="form-label">Role *</label>
-              <vee-form-field v-model="staffMember.roleId" name="roleId" :class="['form-select', errors.roleId]"
+              <vee-form-field v-model="staffMember.role_id" name="role_id" :class="['form-select', errors.role_id]"
                 as="select">
                 <option value="">Select Role</option>
                 <option v-for="(role, index) in roles" :key="index" :value="role.id">
                   {{ role.role_name }}
                 </option>
               </vee-form-field>
-              <vee-form-error name="roleId" class="text-danger error-message" />
+              <vee-form-error name="role_id" class="text-danger error-message" />
             </div>
           </div>
 
@@ -142,8 +142,15 @@
 
             <div class="form-group">
               <label class="form-label">Salary</label>
-              <vee-form-field type="number" v-model="staffMember.salary" name="salary"
-                :class="['form-input', errors.salary]" placeholder="Enter salary" />
+              <vee-form-field
+                type="text"
+                v-model="displaySalary"
+                name="salary"
+                :class="['form-input', errors.salary]"
+                placeholder="Enter salary"
+                @input="handleSalaryInput"
+                @blur="handleSalaryBlur"
+              />
               <vee-form-error name="salary" class="text-danger error-message" />
             </div>
           </div>
@@ -299,8 +306,10 @@ import { getStateName } from "../../../data/nigerianLGs"; // function returns LG
 import nigerianStates from "../../../data/nigerianStates"; // array of state names
 import apiServices from "../../../services/apiServices";
 import { useToast } from "../../../composables/useToast";
+import { useCurrency } from "../../../composables/useCurrency";
 
 const toast = useToast();
+const { formatNumber, parseCurrency } = useCurrency();
 const states = nigerianStates;
 const localGovs = ref([]);
 const isLoadingRoles = ref(false);
@@ -316,6 +325,9 @@ const route = useRoute();
 const staffMember = ref({});
 const loading = ref(false);
 const submitting = ref(false);
+
+// Salary formatting
+const displaySalary = ref('');
 
 const qualifications = [
   { value: "SSCE", label: "Senior Secondary Certificate (SSCE)" },
@@ -343,7 +355,7 @@ const formValidation = yup.object({
   state: yup.string().required("State is required"),
   local_gov: yup.string().required("Local government is required"),
   date_of_employment: yup.string().required("Employment date is required"),
-  roleId: yup.string().required("Role ID is required"),
+  role_id: yup.string().required("Role ID is required"),
   gender: yup.string().required("Gender is required"),
   employee_id: yup.string().required("Employee ID is required"),
   date_of_birth: yup
@@ -372,6 +384,33 @@ const formValidation = yup.object({
   specializations: yup.string().required(),
   year_of_experience: yup.string().notRequired(),
 });
+
+const handleSalaryInput = (event) => {
+  const value = event.target.value;
+  // Remove any non-numeric characters except decimal point
+  const numericValue = value.replace(/[^\d.]/g, '');
+  
+  // Prevent multiple decimal points
+  const parts = numericValue.split('.');
+  const cleanValue = parts.length > 2 
+    ? parts[0] + '.' + parts.slice(1).join('') 
+    : numericValue;
+  
+  // Format with commas
+  displaySalary.value = formatNumber(cleanValue);
+  
+  // Update the actual form value (without formatting)
+  staffMember.value.salary = parseCurrency(displaySalary.value);
+};
+
+const handleSalaryBlur = () => {
+  // Ensure proper formatting on blur
+  if (displaySalary.value) {
+    const numericValue = parseCurrency(displaySalary.value);
+    displaySalary.value = formatNumber(numericValue);
+    staffMember.value.salary = numericValue;
+  }
+};
 
 const handleSubmit = async () => {
   submitting.value = true;
@@ -402,7 +441,7 @@ const handleSubmit = async () => {
 
 const getAllRoles = () => {
   isLoadingRoles.value = true;
-  apiServices
+  return apiServices
     .getAllRoles()
     .then((response) => {
       // The array of roles is inside response.data.data
@@ -418,11 +457,21 @@ const getAllRoles = () => {
 
 const getStaffById = () => {
   loading.value = true;
-  apiServices
+  return apiServices
     .getStaffById(route.params.id)
     .then((response) => {
       // The array of roles is inside response.data.data
       staffMember.value = response.data.data || {};
+
+      // Format salary for display
+      if (staffMember.value.salary) {
+        displaySalary.value = formatNumber(staffMember.value.salary.toString());
+      }
+
+      // Load local governments based on staff's state
+      if (staffMember.value.state) {
+        localGovs.value = getStateName(staffMember.value.state);
+      }
 
       // Parse section_ids and populate selectedSections
       if (staffMember.value.section_ids) {
@@ -433,7 +482,7 @@ const getStaffById = () => {
       }
     })
     .catch((error) => {
-      console.error("Error fetching roles:", error);
+      console.error("Error fetching staff:", error);
       toast.error(
         "Failed to get the Staff",
         error.response?.data?.message ||
@@ -450,7 +499,7 @@ const getStaffById = () => {
 
 const getAllSection = (page = 1) => {
   isLoadingSections.value = true;
-  apiServices
+  return apiServices
     .getAllSections(page)
     .then((response) => {
       sections.value = response.data.data?.schoolsections || [];
@@ -481,20 +530,29 @@ const handleClickOutside = (event) => {
 
 watch(
   () => staffMember.value.state,
-  (newState) => {
-    if (newState) {
+  (newState, oldState) => {
+    if (newState && newState !== oldState) {
       localGovs.value = getStateName(newState); // returns array of LGAs
-      staffMember.value.local_gov = ""; // reset previously selected LGA
-    } else {
+      // Only reset local_gov if the state actually changed (not during initial load)
+      if (oldState) {
+        staffMember.value.local_gov = ""; // reset previously selected LGA only if state changed
+      }
+    } else if (!newState) {
       localGovs.value = [];
     }
   }
 );
 
-onMounted(() => {
-  getAllRoles();
-  getAllSection();
-  getStaffById();
+onMounted(async () => {
+  // Load roles and sections first
+  await Promise.all([
+    getAllRoles(),
+    getAllSection()
+  ]);
+  
+  // Then load staff data (which will set the correct role and local government)
+  await getStaffById();
+  
   document.addEventListener('click', handleClickOutside);
 });
 

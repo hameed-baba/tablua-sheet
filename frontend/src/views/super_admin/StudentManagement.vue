@@ -554,9 +554,10 @@ const loadStudents = (page = 1) => {
     page,
     limit: pagination.value.limit,
     current_class_id: quickFilters.value.class, // Always include class filter
+    student_status: "active", // Only fetch active students
   };
 
-  // Add status filter if selected
+  // Override with custom status filter if selected
   if (quickFilters.value.status) {
     params.student_status = quickFilters.value.status;
   }
@@ -580,6 +581,7 @@ const searchStudents = (search = "") => {
     page: 1,
     limit: pagination.value.limit,
     current_class_id: quickFilters.value.class, // Always include class filter
+    student_status: "active", // Only fetch active students
   };
 
   // Add search by admission number if search term exists
@@ -587,7 +589,7 @@ const searchStudents = (search = "") => {
     params.admission_number = search;
   }
 
-  // Add status filter if selected
+  // Override with custom status filter if selected
   if (quickFilters.value.status) {
     params.student_status = quickFilters.value.status;
   }
@@ -756,9 +758,10 @@ const updateStatus = async () => {
 
   try {
     loading.value = true;
-    await apiServices.updateStudentStatus(selectedStudent.value.id, {
-      student_status: newStatus.value,
-    });
+    await apiServices.updateStudentStatus(
+      selectedStudent.value.id,
+      newStatus.value
+    );
 
     toast.success(
       "Status Updated",
@@ -840,9 +843,7 @@ const bulkUpdateStatus = async () => {
 
     // Update each student individually since we don't have a bulk status endpoint
     const promises = selectedStudents.value.map((studentId) =>
-      apiServices.updateStudentStatus(studentId, {
-        student_status: bulkStatus.value,
-      })
+      apiServices.updateStudentStatus(studentId, bulkStatus.value)
     );
 
     await Promise.all(promises);

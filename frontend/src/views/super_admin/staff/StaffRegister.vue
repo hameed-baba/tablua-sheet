@@ -206,11 +206,13 @@
             <div class="form-group">
               <label class="form-label">Salary</label>
               <vee-form-field
-                type="number"
-                v-model="form.salary"
+                type="text"
+                v-model="displaySalary"
                 name="salary"
                 :class="['form-input', errors.salary]"
                 placeholder="Enter salary"
+                @input="handleSalaryInput"
+                @blur="handleSalaryBlur"
               />
               <vee-form-error name="salary" class="text-danger error-message" />
             </div>
@@ -464,15 +466,17 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch, onUnmounted } from "vue";
+import { onMounted, ref, watch, onUnmounted, computed } from "vue";
 import * as yup from "yup";
 import { getStateName } from "../../../data/nigerianLGs"; // function returns LGAs by state
 import nigerianStates from "../../../data/nigerianStates"; // array of state names
 import apiServices from "../../../services/apiServices";
 import { useToast } from "../../../composables/useToast";
+import { useCurrency } from "../../../composables/useCurrency";
 import { useRouter } from "vue-router";
 
 const toast = useToast();
+const { formatNumber, parseCurrency } = useCurrency();
 const states = nigerianStates;
 const localGovs = ref([]);
 const isLoadingRoles = ref(false);
@@ -483,6 +487,9 @@ const router = useRouter();
 const loading = ref(false);
 const showSectionDropdown = ref(false);
 const selectedSections = ref([]);
+
+// Salary formatting
+const displaySalary = ref('');
 
 const form = ref({
   full_name: "",
@@ -570,6 +577,33 @@ const formValidation = yup.object({
   specializations: yup.string().required(),
   year_of_experience: yup.string().notRequired(),
 });
+
+const handleSalaryInput = (event) => {
+  const value = event.target.value;
+  // Remove any non-numeric characters except decimal point
+  const numericValue = value.replace(/[^\d.]/g, '');
+  
+  // Prevent multiple decimal points
+  const parts = numericValue.split('.');
+  const cleanValue = parts.length > 2 
+    ? parts[0] + '.' + parts.slice(1).join('') 
+    : numericValue;
+  
+  // Format with commas
+  displaySalary.value = formatNumber(cleanValue);
+  
+  // Update the actual form value (without formatting)
+  form.value.salary = parseCurrency(displaySalary.value);
+};
+
+const handleSalaryBlur = () => {
+  // Ensure proper formatting on blur
+  if (displaySalary.value) {
+    const numericValue = parseCurrency(displaySalary.value);
+    displaySalary.value = formatNumber(numericValue);
+    form.value.salary = numericValue;
+  }
+};
 
 const handleSubmit = async () => {
   loading.value = true;

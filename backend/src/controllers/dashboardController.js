@@ -66,47 +66,59 @@ const getDashboardSummary = asyncHandler(async (req, res) => {
       where: { status: "active" },
     });
 
-    // Total active students
-    const totalStudents = await SchoolStudent.count({
+    // Total active students (regardless of session)
+    const totalActiveStudents = await SchoolStudent.count({
       where: { student_status: "active" },
     });
 
+    // Total students registered in active session
+    let totalStudentsInActiveSession = 0;
+    if (currentSession) {
+      totalStudentsInActiveSession = await SchoolStudent.count({
+        where: {
+          current_session_id: currentSession.id,
+        },
+      });
+    }
+
     // Total active staff
-    const totalStaff = await SchoolStaff.count({
+    const totalActiveStaff = await SchoolStaff.count({
       where: {
         status: true,
         has_school_access: true,
       },
     });
 
-    // Total active classes
+    // Total classes
     const totalClasses = await SchoolClass.count({});
+
     res.json({
       status: "success",
       message: "Dashboard summary retrieved successfully",
       data: {
         totals: {
-          students: totalStudents,
-          staff: totalStaff,
-          classes: totalClasses,
+          activeStudents: totalActiveStudents,
+          studentsInActiveSession: totalStudentsInActiveSession,
+          activeStaff: totalActiveStaff,
+          totalClasses: totalClasses,
         },
         session: currentSession
           ? {
-              id: currentSession.id,
-              name: currentSession.session_name,
-              startDate: currentSession.start_date,
-              endDate: currentSession.end_date,
-              isActive: currentSession.is_active,
-            }
+            id: currentSession.id,
+            name: currentSession.session_name,
+            startDate: currentSession.start_date,
+            endDate: currentSession.end_date,
+            status: currentSession.status,
+          }
           : null,
         term: currentTerm
           ? {
-              id: currentTerm.id,
-              name: currentTerm.term_name,
-              startDate: currentTerm.start_date,
-              endDate: currentTerm.end_date,
-              isActive: currentTerm.is_active,
-            }
+            id: currentTerm.id,
+            name: currentTerm.term_name,
+            startDate: currentTerm.start_date,
+            endDate: currentTerm.end_date,
+            status: currentTerm.status,
+          }
           : null,
       },
     });

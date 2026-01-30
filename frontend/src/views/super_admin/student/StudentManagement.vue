@@ -28,8 +28,9 @@
           <option value="">All Students</option>
           <option value="active">Active</option>
           <option value="graduated">Graduated</option>
-          <option value="transfer">Transfer</option>
-          <option value="expell">Expelled</option>
+          <option value="transferred">Transfer</option>
+          <option value="suspended">Suspended</option>
+          <option value="withdrawn">Expelled</option>
           <option value="leave">Leave</option>
         </select>
       </div>
@@ -286,7 +287,7 @@ const isPromoting = ref(false);
 const isBulkPromoting = ref(false);
 
 // Filters
-const selectedStatus = ref('');
+const selectedStatus = ref('active');
 const selectedClass = ref('');
 const searchQuery = ref('');
 
@@ -494,10 +495,7 @@ onMounted(() => {
 });
 
 // Watchers
-watch([selectedStatus, selectedClass], () => {
-  currentPage.value = 1;
-  selectedStudents.value = [];
-});
+
 </script>
 
 <style scoped>

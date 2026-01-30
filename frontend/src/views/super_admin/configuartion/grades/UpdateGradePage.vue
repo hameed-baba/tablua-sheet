@@ -74,11 +74,13 @@
               <input
                 type="checkbox"
                 :checked="gradeData.allow_grade"
+                :disabled="gradeData.grade_type === 'letter_grade'"
                 @change="toggleAllowGrade"
               />
-              <span class="checkmark"></span>
-              <span class="permission-label">
+              <span class="checkmark" :class="{ disabled: gradeData.grade_type === 'letter_grade' }"></span>
+              <span class="permission-label" :class="{ disabled: gradeData.grade_type === 'letter_grade' }">
                 Allow Grade <small>(A, B)</small>
+                <small v-if="gradeData.grade_type === 'letter_grade'" class="text-muted d-block">Required for Letter Grade</small>
               </span>
             </label>
 
@@ -225,11 +227,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import * as yup from "yup";
-import { useToast } from "../../../composables/useToast";
-import apiServices from "../../../services/apiServices";
+import { useToast } from "../../../../composables/useToast";
+import apiServices from "../../../../services/apiServices";
 
 const router = useRouter();
 const route = useRoute();
@@ -255,12 +257,31 @@ const gradeData = ref({
 });
 
 const toggleAllowGrade = () => {
+  // If grade type is letter_grade, allow_grade must remain true
+  if (gradeData.value.grade_type === "letter_grade") {
+    gradeData.value.allow_grade = true;
+    toast.info(
+      "Grade Required",
+      "Letter Grade type requires the Grade option to be enabled."
+    );
+    return;
+  }
   gradeData.value.allow_grade = !gradeData.value.allow_grade;
 };
 
 const toggleAllowRemark = () => {
   gradeData.value.allow_remark = !gradeData.value.allow_remark;
 };
+
+// Watch for grade type changes and enforce allow_grade requirement
+watch(
+  () => gradeData.value.grade_type,
+  (newType) => {
+    if (newType === "letter_grade") {
+      gradeData.value.allow_grade = true;
+    }
+  }
+);
 
 const goBack = () => {
   router.push("/configuration");
@@ -644,5 +665,15 @@ onMounted(() => {
       width: 100%;
     }
   }
+}
+
+.checkmark.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.permission-label.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 </style>

@@ -64,7 +64,7 @@
     </div>
 
     <!-- Current Activity -->
-    <div class="data-table-container">
+    <div class="data-table-container mb-4">
       <div class="table-header">
         <h2 class="table-title">Current Staff Activity</h2>
       </div>

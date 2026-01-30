@@ -12,6 +12,7 @@
           class="btn btn-secondary btn-sm"
           @click="refreshDashboard"
           :disabled="isGettingSummary"
+          v-if="getUserRole() === 'super_admin'"
         >
           <svg
             width="16"
@@ -73,6 +74,37 @@
       </div>
 
       <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title"
+            >Total Students By Session <b>({{ sessionInfo.session }})</b></span
+          >
+          <div
+            class="stat-card-icon"
+            style="background: rgba(59, 130, 246, 0.1); color: #3b82f6"
+          >
+            <svg
+              width="24"
+              height="24"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 14l9-5-9-5-9 5 9 5z M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
+              />
+            </svg>
+          </div>
+        </div>
+        <i class="fa fa-spinner fa-spin" v-if="isGettingSummary"></i>
+        <div class="stat-card-value" v-else>
+          {{ stats.studentsInActiveSession || 0 }}
+        </div>
+      </div>
+
+      <div class="stat-card" v-if="getUserRole() === 'super_admin'">
         <div class="stat-card-header">
           <span class="stat-card-title">Active Teaching Staff</span>
           <div
@@ -165,7 +197,11 @@
           </div>
         </router-link>
 
-        <router-link to="/staff/register" class="quick-action-card">
+        <router-link
+          to="/staff/register"
+          class="quick-action-card"
+          v-if="getUserRole() === 'super_admin'"
+        >
           <div
             class="action-icon"
             style="
@@ -252,7 +288,7 @@
     </div>
 
     <!-- Staff Activity Status -->
-    <div class="data-table-container">
+    <div class="data-table-container" v-if="getUserRole() === 'super_admin'">
       <div class="table-header">
         <h2 class="table-title">Staff Activity Status</h2>
         <div class="table-actions">
@@ -460,10 +496,13 @@
 import { ref, onMounted } from "vue";
 import apiServices from "../../services/apiServices";
 import { gsap } from "gsap";
+import { getUserRole } from "../../utils/userRole";
+
 const stats = ref({
   totalStudents: 0,
   totalStaff: 0,
   totalClasses: 0,
+  studentsInActiveSession: 0,
 });
 
 const sessionInfo = ref({
@@ -570,9 +609,11 @@ const getDashboardSummary = () => {
     .getDashboardSummary()
     .then((response) => {
       const data = response.data.data;
-      stats.value.totalStudents = data.totals?.students;
-      stats.value.totalStaff = data.totals?.staff;
-      stats.value.totalClasses = data.totals?.classes;
+      stats.value.totalStudents = data.totals?.activeStudents;
+      stats.value.studentsInActiveSession =
+        data.totals?.studentsInActiveSession;
+      stats.value.totalStaff = data.totals?.activeStaff;
+      stats.value.totalClasses = data.totals?.totalClasses;
       sessionInfo.value.session = data.session?.name;
       sessionInfo.value.term = data.term?.name;
     })

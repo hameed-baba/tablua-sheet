@@ -28,30 +28,32 @@
       <div class="table-header">
         <h2 class="table-title">All Parents</h2>
         <div class="search-container">
-          <input
-            type="text"
-            class="search-box"
-            placeholder="Search parents..."
-            v-model="searchTerm"
-            @keyup.enter="handleSearch"
-          />
-          <button class="search-btn" @click="handleSearch">
-            <svg
-              width="18"
-              height="18"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </button>
-          <button
+          <!-- <div class="d-flex gap-2"> -->
+            <input
+              type="text"
+              class="search-box"
+              placeholder="Search parents..."
+              v-model="searchTerm"
+              @keyup.enter="handleSearch"
+            />
+            <button class="search-btn" @click="handleSearch">
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </button>
+          <!-- </div> -->
+          <!-- <button
             v-if="hasQuickFilters"
             class="btn-clear-filters"
             @click="clearQuickFilters"
@@ -71,7 +73,7 @@
               />
             </svg>
             Clear Filters
-          </button>
+          </button> -->
         </div>
       </div>
       <div class="table-responsive">
@@ -285,7 +287,7 @@ const confirmDelete = () => {
 
 const handleSearch = () => {
   hasQuickFilters.value = true;
-  searchParents(searchTerm.value);
+  searchParents(searchTerm.value.trim());
 };
 const clearQuickFilters = () => {
   loadParents();
@@ -295,3 +297,15 @@ onMounted(() => {
   loadParents();
 });
 </script>
+
+<style lang="css" scoped>
+
+
+@media (max-width: 540px) {
+  /* Hide clear filters button on larger screens when not needed */
+  .search-container {
+    display: flex;
+    flex-direction: column;
+  }
+}
+</style>

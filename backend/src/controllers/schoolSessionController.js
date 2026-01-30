@@ -67,6 +67,61 @@ class SchoolSessionController extends BaseController {
     });
   });
 
+  // Override the update method to handle date fields properly
+  update = asyncHandler(async (req, res) => {
+    const record = await SchoolSession.findByPk(req.params.id);
+
+    if (!record) {
+      return res.status(404).json({
+        status: "error",
+        message: "SchoolSession not found",
+      });
+    }
+
+    // Validate required fields
+    if (!req.body.session_name) {
+      return res.status(400).json({
+        status: "error",
+        message: "Session name is required",
+      });
+    }
+
+    // Check for duplicates (excluding current record)
+    const duplicateCheck = await this.checkDuplicate(req.body, req.params.id);
+    if (duplicateCheck) {
+      return res.status(409).json({
+        status: "error",
+        message: "SchoolSession already exists",
+        details: duplicateCheck,
+      });
+    }
+
+    // Prepare update data with cleaned dates
+    const updateData = {
+      session_name: req.body.session_name,
+      status: req.body.status || record.status,
+      payment_status: req.body.payment_status || record.payment_status,
+      first_term_start: this.cleanDate(req.body.first_term_start),
+      first_term_end: this.cleanDate(req.body.first_term_end),
+      second_term_start: this.cleanDate(req.body.second_term_start),
+      second_term_end: this.cleanDate(req.body.second_term_end),
+      third_term_start: this.cleanDate(req.body.third_term_start),
+      third_term_end: this.cleanDate(req.body.third_term_end),
+    };
+
+    await record.update(updateData);
+
+    const updatedRecord = await SchoolSession.findByPk(record.id, {
+      include: this.includes,
+    });
+
+    res.json({
+      status: "success",
+      message: "SchoolSession updated successfully",
+      data: updatedRecord,
+    });
+  });
+
   activateSession = asyncHandler(async (req, res) => {
     const { id } = req.params;
 

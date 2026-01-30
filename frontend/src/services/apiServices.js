@@ -300,6 +300,9 @@ export default {
   getStudentAssignedSubjects(studentId, params = {}) {
     return apiClient.get(`/students/${studentId}/subjects`, { params });
   },
+  generateAddmissionNumber(){
+    return apiClient.get("/students/generate-admission-number");
+  },
 
   // ===================CA CONFIG MANAGEMENT ===================
   getLatestCaConfig() {

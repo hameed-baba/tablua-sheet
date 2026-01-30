@@ -179,6 +179,7 @@ const getAllStudentByActiveSession = asyncHandler(async (req, res) => {
     search = "",
     current_class_id,
     gender,
+    // admission_number,
     sortBy = "createdAt",
     sortOrder = "DESC",
   } = req.query;
@@ -218,6 +219,7 @@ const getAllStudentByActiveSession = asyncHandler(async (req, res) => {
   }
 
   whereClause.current_session_id = activeSession.id;
+  whereClause.student_status = "active";
 
   const { count, rows } = await SchoolStudent.findAndCountAll({
     where: whereClause,
@@ -514,77 +516,6 @@ const getStudents = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc Get all students by class ID
- * @route GET /api/students/class/:classId
- */
-// const getStudentsByClassId = asyncHandler(async (req, res) => {
-//   const { classId } = req.params;
-//   const {
-//     page = 1,
-//     limit = 25,
-//     search = "",
-//     sortBy = "full_name",
-//     sortOrder = "ASC",
-//   } = req.query;
-
-//   if (!classId) {
-//     return res.status(400).json({
-//       status: "error",
-//       message: "Class ID is required",
-//     });
-//   }
-
-//   const pageNumber = parseInt(page, 10);
-//   const limitNumber = parseInt(limit, 10);
-//   const offset = (pageNumber - 1) * limitNumber;
-
-//   const whereClause = {
-//     current_class_id: classId,
-//   };
-
-//   // Add search filter if provided
-//   if (search) {
-//     whereClause[Op.or] = [
-//       { full_name: { [Op.like]: `%${search}%` } },
-//       { admission_number: { [Op.like]: `%${search}%` } },
-//     ];
-//   }
-
-//   const { count, rows } = await SchoolStudent.findAndCountAll({
-//     where: whereClause,
-//     include: [
-//       {
-//         model: SchoolClass,
-//         as: "Class",
-//         include: [{ model: SchoolSection, as: "Section" }],
-//       },
-//       { model: SchoolSession, as: "Session" },
-//       { model: Parent, as: "Parent" },
-//     ],
-//     limit: limitNumber,
-//     offset: offset,
-//     order: [[sortBy, sortOrder]],
-//   });
-
-//   const totalPages = Math.ceil(count / limitNumber);
-
-//   res.json({
-//     status: "success",
-//     data: {
-//       students: rows,
-//       pagination: {
-//         currentPage: pageNumber,
-//         totalPages,
-//         totalCount: count,
-//         limit: limitNumber,
-//         hasNextPage: pageNumber < totalPages,
-//         hasPrevPage: pageNumber > 1,
-//       },
-//     },
-//   });
-// });
-
 const getStudentsByClassId = asyncHandler(async (req, res) => {
   const { classId } = req.params;
   const {
@@ -660,7 +591,6 @@ const getStudentsByClassId = asyncHandler(async (req, res) => {
       },
       { model: SchoolSession, as: "Session" },
       { model: Parent, as: "Parent" },
-      
     ],
     limit: limitNumber,
     offset,
@@ -670,8 +600,8 @@ const getStudentsByClassId = asyncHandler(async (req, res) => {
   const totalPages = Math.ceil(count / limitNumber);
 
   if (count === 0) {
-  return res.status(204).send(); // no body
-}
+    return res.status(204).send(); // no body
+  }
 
   res.json({
     status: "success",
@@ -713,6 +643,16 @@ const getStudentSubjects = asyncHandler(async (req, res) => {
     });
   }
 
+  // If no sessionId provided, use student's current session
+  if (!sessionId) {
+    sessionId = student.current_session_id;
+  }
+
+  // If no classId provided, use student's current class
+  if (!classId) {
+    classId = student.current_class_id;
+  }
+
   // If termId is not provided, get the active term
   if (!termId) {
     const activeTerm = await SchoolTerm.findOne({
@@ -724,7 +664,7 @@ const getStudentSubjects = asyncHandler(async (req, res) => {
     }
   }
 
-  // Build where clause for filtering
+  // Build where clause for filtering - now defaults to current session and class
   const whereClause = {
     student_id: id,
   };
@@ -740,11 +680,6 @@ const getStudentSubjects = asyncHandler(async (req, res) => {
   if (classId) {
     whereClause.current_class_id = parseInt(classId);
   }
-
-  console.log(
-    `DEBUG getStudentSubjects: Fetching subjects for student ${id} with filters:`,
-    whereClause,
-  );
 
   // Fetch subject assignments with related data
   const subjectAssignments = await StudentSubjectAssign.findAll({
@@ -777,10 +712,6 @@ const getStudentSubjects = asyncHandler(async (req, res) => {
     ],
   });
 
-  console.log(
-    `DEBUG getStudentSubjects: Found ${subjectAssignments.length} subject assignments for student ${id}`,
-  );
-
   // Get class and session info (they should be the same for all records)
   let classInfo = null;
   let sessionInfo = null;
@@ -794,6 +725,20 @@ const getStudentSubjects = asyncHandler(async (req, res) => {
       id: subjectAssignments[0].Session?.id,
       session_name: subjectAssignments[0].Session?.session_name,
     };
+  } else {
+    // If no assignments found, use student's current class and session info
+    const currentClass = await SchoolClass.findByPk(student.current_class_id);
+    const currentSession = await SchoolSession.findByPk(student.current_session_id);
+    
+    classInfo = currentClass ? {
+      id: currentClass.id,
+      class_name: currentClass.class_name,
+    } : null;
+    
+    sessionInfo = currentSession ? {
+      id: currentSession.id,
+      session_name: currentSession.session_name,
+    } : null;
   }
 
   // Group subjects by term
@@ -808,7 +753,6 @@ const getStudentSubjects = asyncHandler(async (req, res) => {
       id: assignment.id,
       school_subject_id: assignment.school_subject_id,
       subject_name: assignment.Subject?.subject_name,
-      subject_code: assignment.Subject?.subject_code,
       ca_1_score: assignment.ca_1_score,
       ca_2_score: assignment.ca_2_score,
       exam_score: assignment.exam_score,
@@ -883,7 +827,14 @@ const updateStudentStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   // Validate status
-  const validStatuses = ["active", "graduated", "transfer", "expell", "leave"];
+  const validStatuses = [
+    "active",
+    "graduated",
+    "transferred",
+    "suspended",
+    "withdrawn",
+    "leave",
+  ];
   if (!validStatuses.includes(student_status)) {
     return res.status(400).json({
       status: "error",
@@ -1009,15 +960,6 @@ const promoteStudent = asyncHandler(async (req, res) => {
       transaction,
     });
 
-    console.log(
-      `DEBUG promoteStudent: Found ${classSubjects.length} subjects for class ${new_class_id}:`,
-      classSubjects.map((cs) => ({
-        id: cs.id,
-        subject_id: cs.school_subject_id,
-        subject_name: cs.Subject?.subject_name,
-      })),
-    );
-
     // Get existing subject assignments for this student for the NEW class only
     // We only want to avoid duplicates for the same subject in the same class and term
     const existingAssignments = await StudentSubjectAssign.findAll({
@@ -1029,25 +971,12 @@ const promoteStudent = asyncHandler(async (req, res) => {
       transaction,
     });
 
-    console.log(
-      `DEBUG promoteStudent: Student has ${existingAssignments.length} existing assignments for class ${new_class_id}:`,
-      existingAssignments.map((ea) => ({
-        subject_id: ea.school_subject_id,
-        term_id: ea.current_term_id,
-      })),
-    );
-
     // Create a Set of existing subject-term combinations for the NEW class only
     const existingCombinations = new Set(
       existingAssignments.map(
         (assignment) =>
           `${assignment.school_subject_id}-${assignment.current_term_id}`,
       ),
-    );
-
-    console.log(
-      `DEBUG promoteStudent: Existing combinations for new class:`,
-      Array.from(existingCombinations),
     );
 
     // Create new subject assignments for all 3 terms (only if they don't already exist)
@@ -1388,10 +1317,6 @@ const createTestClassSubjects = asyncHandler(async (req, res) => {
     });
     const staff = await SchoolStaff.findOne({ attributes: ["id"] });
 
-    console.log("DEBUG: Found classes:", classes.length);
-    console.log("DEBUG: Found subjects:", subjects.length);
-    console.log("DEBUG: Found staff:", staff ? "Yes" : "No");
-
     if (classes.length === 0 || subjects.length === 0 || !staff) {
       return res.status(400).json({
         status: "error",
@@ -1644,10 +1569,6 @@ const testPromote = asyncHandler(async (req, res) => {
   }
 
   try {
-    console.log(
-      `DEBUG testPromote: Starting promotion for student ${student_id} to class ${new_class_id}`,
-    );
-
     const student = await SchoolStudent.findByPk(student_id);
     if (!student) {
       return res.status(404).json({
@@ -1664,10 +1585,6 @@ const testPromote = asyncHandler(async (req, res) => {
       });
     }
 
-    console.log(
-      `DEBUG testPromote: Student found: ${student.full_name}, Class found: ${newClass.class_name}`,
-    );
-
     // Get all subjects assigned to the new class
     const classSubjects = await ClassSubjectAssign.findAll({
       where: { school_class_id: new_class_id },
@@ -1679,15 +1596,6 @@ const testPromote = asyncHandler(async (req, res) => {
         },
       ],
     });
-
-    console.log(
-      `DEBUG testPromote: Found ${classSubjects.length} subjects for class ${new_class_id}:`,
-      classSubjects.map((cs) => ({
-        id: cs.id,
-        subject_id: cs.school_subject_id,
-        subject_name: cs.Subject?.subject_name,
-      })),
-    );
 
     if (classSubjects.length === 0) {
       return res.json({
@@ -1745,7 +1653,14 @@ const getStudentsByStatus = asyncHandler(async (req, res) => {
     sortOrder = "ASC",
   } = req.query;
 
-  const validStatuses = ["active", "graduated", "transfer", "expell", "leave"];
+  const validStatuses = [
+    "active",
+    "graduated",
+    "transferred",
+    "suspended",
+    "withdrawn",
+    "leave",
+  ];
   if (!validStatuses.includes(status)) {
     return res.status(400).json({
       status: "error",
@@ -1803,6 +1718,65 @@ const getStudentsByStatus = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc Generate admission number for new student
+ * @route GET /api/students/generate-admission-number
+ */
+const generateAdmissionNumber = asyncHandler(async (req, res) => {
+  try {
+    // Fetch active session
+    const activeSession = await SchoolSession.findOne({
+      where: { status: "active" },
+    });
+
+    if (!activeSession) {
+      return res.status(404).json({
+        status: "error",
+        message: "No active session found",
+      });
+    }
+
+    // school code
+    const schoolCode = process.env.SCHOOL_CODE;
+
+    // Get the total number of students registered for the active session
+    const totalStudents = await SchoolStudent.findAll({
+      where: { current_session_id: activeSession.id },
+    });
+
+    // Extract the 3rd and 4th digits of the session year
+    const sessionYear = activeSession.session_name.split("/")[0]; // "2024" from "2024/2025"
+    const yearCode = sessionYear.slice(2, 4); // "24"
+
+    // Calculate the new admission number by adding 1 to total students
+    const studentCount = totalStudents.length + 1; // Increment by 1
+    const paddedStudentCount = studentCount.toString().padStart(3, "0"); // Ensure 3 digits (e.g., "001")
+
+    // Combine to generate the admission number
+    const admissionNumber = `${schoolCode}/${yearCode}/${paddedStudentCount}`;
+
+    return res.status(200).json({
+      status: "success",
+      message: "Admission number generated successfully",
+      data: {
+        admission_number: admissionNumber,
+        // session: {
+        //   id: activeSession.id,
+        //   name: activeSession.session_name,
+        // },
+        // student_count: studentCount,
+      },
+    });
+  } catch (error) {
+    console.error("Error occurred when generating admission number:", error.message);
+    return res.status(500).json({
+      status: "error",
+      message: "Error occurred when generating admission number",
+      error: error.message,
+    });
+  }
+});
+
 module.exports = {
   register,
   getAll,
@@ -1822,4 +1796,5 @@ module.exports = {
   debugPromotionData,
   debugStudentAssignments,
   testPromote,
+  generateAdmissionNumber,
 };

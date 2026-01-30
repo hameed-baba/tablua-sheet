@@ -89,13 +89,6 @@ const login = asyncHandler(async (req, res) => {
       // Don't fail login if session recording fails
     }
 
-    
-    // // Debug logging in development
-    // if (process.env.NODE_ENV === 'development') {
-    //   console.log('Login Debug Info:');
-    //   console.log('Staff ID:', staff.id);
-    //   console.log('Role:', staff.Role?.role_name);
-    // }
 
     res.json({
       status: "success",
