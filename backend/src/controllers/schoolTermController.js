@@ -50,6 +50,28 @@ class SchoolTermController extends BaseController {
     });
   });
 
+  getTermAndSession = asyncHandler(async (req, res) => {
+    const session = await SchoolSession.findOne({
+      where: { status: "active" },
+    });
+    if (!session) {
+      return res.status(404).json({
+        message: "School Session not found",
+      });
+    }
+
+    const terms = await SchoolTerm.findOne({
+      where: { status: "active" },
+      attributes: { exclude: ["updatedAt", "createdAt"] },
+    });
+
+    res.json({
+      success: true,
+      message: "Terms retrieved successfully",
+      data: { term: terms, session: session},
+    });
+  });
+
   getSearchableFields() {
     return ["term_name"];
   }

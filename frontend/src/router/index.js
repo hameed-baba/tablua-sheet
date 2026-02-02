@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Layout from "../components/layout/Layout.vue";
+import MiniLayout from "../components/mini_layout/MiniLayout.vue";
 import { useLoginStore } from "../store/loginStore"; // ✅ Import your Pinia store
 import { storeToRefs } from "pinia";
 import { getDashboardRouteName, hasRouteAccess } from "../utils/roleNavigation";
@@ -328,41 +329,11 @@ const router = createRouter({
       ],
     },
 
-    // Admin Routes
-    {
-      path: "/admin",
-      component: Layout,
-      children: [
-        {
-          path: "",
-          name: "admin-dashboard",
-          component: () => import("../views/admin/Dashboard.vue"),
-          meta: {
-            requiresAuth: true,
-            // roles: ['admin', 'super_admin'],
-            title: "Admin Dashboard",
-            description: "School management overview and quick actions.",
-          },
-        },
-        {
-          path: "students",
-          name: "admin-students",
-          component: () => import("../views/admin/Students.vue"),
-          meta: {
-            requiresAuth: true,
-            roles: ["admin", "super_admin"],
-            title: "Student Management",
-            description: "Manage student records and information.",
-          },
-        },
-        // Add more admin routes as needed
-      ],
-    },
 
     // Teacher Routes
     {
       path: "/teacher",
-      component: Layout,
+      component: MiniLayout,
       children: [
         {
           path: "",
@@ -370,7 +341,7 @@ const router = createRouter({
           component: () => import("../views/teacher/Dashboard.vue"),
           meta: {
             requiresAuth: true,
-            // roles: ['teacher', 'admin', 'super_admin'],
+            roles: ['teacher'],
             title: "Teacher Dashboard",
             description:
               "Manage your classes, students, and academic activities.",
@@ -382,7 +353,7 @@ const router = createRouter({
           component: () => import("../views/teacher/AddMarks.vue"),
           meta: {
             requiresAuth: true,
-            roles: ["teacher", "admin", "super_admin"],
+            roles: ["teacher"],
             title: "Enter Marks",
             description: "Record marks for your assigned classes.",
           },

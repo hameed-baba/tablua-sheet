@@ -1,292 +1,290 @@
 <template>
-  <div class="page">
-    <div class="page-header">
-      <div>
-        <h1>Teacher Dashboard</h1>
-        <p>Welcome back, {{ teacherName }}</p>
-      </div>
-    </div>
+  <!-- Main Content Area -->
+  <div class="">
+    <!-- Page Header -->
 
-    <!-- Teacher Stats -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon classes">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-          </svg>
-        </div>
-        <div class="stat-content">
-          <h3>{{ mockData.myClasses.length }}</h3>
-          <p>My Classes</p>
-        </div>
+    <!-- Dashboard Content -->
+    <div class="content-section">
+      <!-- Welcome Section -->
+      <div class="welcome-card">
+        <h3>Welcome {{ teacherName }}</h3>
+        <p>Have a great day teaching!</p>
       </div>
 
-      <div class="stat-card">
-        <div class="stat-icon students">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-          </svg>
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon dashboard-icon">
+            <svg
+              width="24"
+              height="24"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+              />
+            </svg>
+          </div>
+          <div class="stat-content">
+            <h3>{{ assignedSubjects.summary?.myClasses }}</h3>
+            <p>My Classes</p>
+          </div>
         </div>
-        <div class="stat-content">
-          <h3>{{ mockData.totalStudents }}</h3>
-          <p>Total Students</p>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon subjects">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-          </svg>
-        </div>
-        <div class="stat-content">
-          <h3>{{ mockData.mySubjects.length }}</h3>
-          <p>Subjects Teaching</p>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon assignments">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-          </svg>
-        </div>
-        <div class="stat-content">
-          <h3>{{ mockData.pendingAssignments }}</h3>
-          <p>Pending Marks</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- My Classes -->
-    <div class="dashboard-grid">
-      <div class="dashboard-card">
-        <div class="card-header">
-          <h3>My Classes</h3>
-          <router-link to="/teacher/classes" class="view-all">View All</router-link>
-        </div>
-        <div class="classes-list">
-          <div v-for="classItem in mockData.myClasses" :key="classItem.id" class="class-item">
-            <div class="class-info">
-              <h4>{{ classItem.name }}</h4>
-              <p>{{ classItem.students }} students • {{ classItem.subject }}</p>
-            </div>
-            <div class="class-actions">
-              <router-link :to="`/teacher/marks/add?class=${classItem.id}`" class="btn-small">
-                Add Marks
-              </router-link>
-            </div>
+        <div class="stat-card">
+          <div class="stat-icon exams-icon">
+            <i class="fa fa-book"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ assignedSubjects.summary?.myTotalSubjects }}</h3>
+            <p>My Subjects</p>
           </div>
         </div>
       </div>
 
-      <div class="dashboard-card">
-        <div class="card-header">
-          <h3>Recent Activities</h3>
+      <!-- Assigned Classes & Subjects -->
+      <div class="table-section">
+        <div class="section-header">
+          <h3>My Assigned Classes & Subjects</h3>
         </div>
-        <div class="activity-list">
-          <div v-for="activity in mockData.recentActivities" :key="activity.id" class="activity-item">
-            <div class="activity-icon">
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
+
+        <div class="assigned-classes-grid">
+          <div
+            v-for="classData in assignedSubjects.assignments"
+            :key="classData.class_id"
+            class="class-card"
+          >
+            <div class="class-header">
+              <h4>{{ classData.class_name }}</h4>
+              <span class="subject-count"
+                >{{ classData.subjects.length }} subjects</span
+              >
             </div>
-            <div class="activity-content">
-              <p>{{ activity.description }}</p>
-              <span class="activity-time">{{ activity.time }}</span>
+
+            <div class="subjects-list">
+              <div
+                v-for="subject in classData.subjects"
+                :key="subject.id"
+                class="subject-item"
+              >
+                <div class="subject-info">
+                  <span class="subject-name">{{ subject.subject_name }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Today's Schedule -->
-    <div class="schedule-card">
-      <div class="card-header">
-        <h3>Today's Schedule</h3>
-        <span class="date">{{ currentDate }}</span>
-      </div>
-      <div class="schedule-grid">
-        <div v-for="period in mockData.todaySchedule" :key="period.id" class="period-card">
-          <div class="period-time">{{ period.time }}</div>
-          <div class="period-info">
-            <h4>{{ period.subject }}</h4>
-            <p>{{ period.class }} • {{ period.room }}</p>
+        <!-- Empty state when no assignments -->
+        <div
+          v-if="
+            !assignedSubjects.assignments ||
+            assignedSubjects.assignments.length === 0
+          "
+          class="empty-state"
+        >
+          <div class="empty-icon">
+            <svg
+              width="48"
+              height="48"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+              />
+            </svg>
           </div>
-          <div class="period-status" :class="period.status">
-            {{ period.status }}
-          </div>
+          <h4>No Classes Assigned</h4>
+          <p>
+            You don't have any classes or subjects assigned yet. Please contact
+            the administrator.
+          </p>
         </div>
-      </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="quick-actions">
-      <h3>Quick Actions</h3>
-      <div class="actions-grid">
-        <router-link to="/teacher/marks/add" class="action-card">
-          <div class="action-icon">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-            </svg>
-          </div>
-          <h4>Enter Marks</h4>
-          <p>Record student marks</p>
-        </router-link>
-
-        <router-link to="/teacher/attendance" class="action-card">
-          <div class="action-icon">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </div>
-          <h4>Take Attendance</h4>
-          <p>Mark student attendance</p>
-        </router-link>
-
-        <router-link to="/teacher/reports" class="action-card">
-          <div class="action-icon">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-            </svg>
-          </div>
-          <h4>View Reports</h4>
-          <p>Class performance reports</p>
-        </router-link>
-
-        <router-link to="/teacher/profile" class="action-card">
-          <div class="action-icon">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-            </svg>
-          </div>
-          <h4>My Profile</h4>
-          <p>Update profile information</p>
-        </router-link>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from "vue";
+import apiServices from "../../services/apiServices";
+import { useLoginStore } from "../../store/loginStore";
 
-const teacherName = ref('Mrs. Sarah Johnson')
+const teacherName = ref("Mrs. Sarah Johnson");
+const loginStore = useLoginStore();
+const assignedSubjects = ref([]);
 
-const currentDate = computed(() => {
-  return new Date().toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  })
-})
+// Handle tab change from BottomNav component
 
-// Mock data for teacher dashboard
-const mockData = ref({
-  myClasses: [
-    { id: 1, name: 'JSS 2A', students: 35, subject: 'Mathematics' },
-    { id: 2, name: 'JSS 2B', students: 32, subject: 'Mathematics' },
-    { id: 3, name: 'JSS 3A', students: 28, subject: 'Mathematics' },
-    { id: 4, name: 'JSS 1A', students: 40, subject: 'Basic Science' }
-  ],
-  totalStudents: 135,
-  mySubjects: ['Mathematics', 'Basic Science'],
-  pendingAssignments: 8,
-  recentActivities: [
-    {
-      id: 1,
-      description: "Entered Mathematics marks for JSS 2A",
-      time: "1 hour ago"
-    },
-    {
-      id: 2,
-      description: "Took attendance for JSS 3A",
-      time: "3 hours ago"
-    },
-    {
-      id: 3,
-      description: "Generated report card for JSS 2B",
-      time: "5 hours ago"
-    },
-    {
-      id: 4,
-      description: "Updated lesson plan for Basic Science",
-      time: "1 day ago"
-    }
-  ],
-  todaySchedule: [
-    {
-      id: 1,
-      time: '8:00 - 8:40',
-      subject: 'Mathematics',
-      class: 'JSS 2A',
-      room: 'Room 12',
-      status: 'completed'
-    },
-    {
-      id: 2,
-      time: '8:40 - 9:20',
-      subject: 'Mathematics',
-      class: 'JSS 2B',
-      room: 'Room 12',
-      status: 'completed'
-    },
-    {
-      id: 3,
-      time: '10:00 - 10:40',
-      subject: 'Basic Science',
-      class: 'JSS 1A',
-      room: 'Lab 1',
-      status: 'current'
-    },
-    {
-      id: 4,
-      time: '11:20 - 12:00',
-      subject: 'Mathematics',
-      class: 'JSS 3A',
-      room: 'Room 12',
-      status: 'upcoming'
-    }
-  ]
-})
+// Mock data for the new dashboard layout
+const getStaffAssigned = () => {
+  apiServices
+    .getStaffAssigned(loginStore.user?.id)
+    .then((response) => {
+      assignedSubjects.value = response.data.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching staff assigned subjects:", error);
+    });
+};
+
+onMounted(() => {
+  getStaffAssigned();
+});
 </script>
 
 <style scoped>
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f8fafc;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 90px 20px 100px 20px; /* Top padding for header, bottom padding for nav */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Content wrapper to maintain proper width */
+.page-header,
+.content-section {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Page Header (below top header) */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.page-header-left h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.date-text {
+  color: #64748b;
+  margin: 0;
+  font-size: 14px;
+}
+
+.role-select {
+  padding: 8px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  color: #374151;
+  min-width: 120px;
+}
+
+.role-select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* Content Sections */
+.content-section {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Welcome Card */
+.welcome-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.welcome-card h3 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.welcome-card p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 16px;
+}
+
+/* Stats Grid */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
 }
 
 .stat-card {
   background: white;
   border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
 .stat-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
 }
 
-.stat-icon.classes { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.stat-icon.students { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-.stat-icon.subjects { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-.stat-icon.assignments { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+.dashboard-icon {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.exams-icon {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
 
 .stat-content h3 {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   color: #1e293b;
   margin: 0 0 4px 0;
@@ -298,270 +296,529 @@ const mockData = ref({
   font-size: 14px;
 }
 
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-bottom: 30px;
-}
-
-.dashboard-card {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-}
-
-.card-header {
+/* Section Headers */
+.section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.card-header h3 {
+.section-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* Search Bar */
+.search-bar {
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* Buttons */
+.add-btn {
+  padding: 10px 16px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.add-btn:hover {
+  background: #059669;
+}
+
+/* Table Styles */
+.table-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.data-table {
+  border: 2px solid #f1f5f9;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.data-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  background: #f8fafc;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.data-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #374151;
+}
+
+.data-table tr:hover {
+  background: #f8fafc;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: 8px;
+  transition: all 0.2s;
+}
+
+.action-btn.edit {
+  background: #3b82f6;
+  color: white;
+}
+
+.action-btn.edit:hover {
+  background: #2563eb;
+}
+
+.action-btn.delete {
+  background: #ef4444;
+  color: white;
+}
+
+.action-btn.delete:hover {
+  background: #dc2626;
+}
+
+/* Assigned Classes & Subjects Styles */
+.assigned-classes-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.class-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+}
+
+.class-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.class-header h4 {
   font-size: 18px;
   font-weight: 600;
   color: #1e293b;
   margin: 0;
 }
 
-.view-all {
-  color: #667eea;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.classes-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.class-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
-  border: 1px solid #f1f5f9;
-  border-radius: 8px;
-}
-
-.class-info h4 {
-  margin: 0 0 4px 0;
-  color: #1e293b;
-  font-size: 16px;
-}
-
-.class-info p {
-  margin: 0;
-  color: #64748b;
-  font-size: 14px;
-}
-
-.btn-small {
-  padding: 6px 12px;
+.subject-count {
   background: #667eea;
   color: white;
-  text-decoration: none;
-  border-radius: 6px;
+  padding: 4px 12px;
+  border-radius: 12px;
   font-size: 12px;
   font-weight: 500;
 }
 
-.activity-list {
+.subjects-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-}
-
-.activity-item {
-  display: flex;
-  align-items: flex-start;
   gap: 12px;
 }
 
-.activity-icon {
-  width: 32px;
-  height: 32px;
-  background: rgba(102, 126, 234, 0.1);
+.subject-item {
+  padding: 12px 16px;
+  background: #f8fafc;
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #667eea;
-  flex-shrink: 0;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s;
 }
 
-.activity-content p {
-  margin: 0 0 4px 0;
-  color: #1e293b;
-  font-size: 14px;
+.subject-item:hover {
+  background: #f1f5f9;
+  border-color: #667eea;
 }
 
-.activity-time {
-  color: #64748b;
-  font-size: 12px;
-}
-
-.schedule-card {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  margin-bottom: 30px;
-}
-
-.schedule-card .card-header {
-  margin-bottom: 20px;
-}
-
-.date {
-  color: #64748b;
-  font-size: 14px;
-}
-
-.schedule-grid {
-  display: grid;
-  gap: 12px;
-}
-
-.period-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px;
-  border: 1px solid #f1f5f9;
-  border-radius: 8px;
-}
-
-.period-time {
-  min-width: 100px;
-  font-weight: 600;
-  color: #1e293b;
-  font-size: 14px;
-}
-
-.period-info {
+.subject-info {
   flex: 1;
 }
 
-.period-info h4 {
-  margin: 0 0 4px 0;
+.subject-name {
+  font-size: 14px;
+  font-weight: 500;
   color: #1e293b;
-  font-size: 16px;
 }
 
-.period-info p {
-  margin: 0;
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
   color: #64748b;
+}
+
+.empty-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: #9ca3af;
+}
+
+.empty-state h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 8px 0;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
+}
+.students-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.student-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.student-avatar {
+  width: 50px;
+  height: 50px;
+  background: #667eea;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.student-info {
+  flex: 1;
+}
+
+.student-info h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.student-info p {
+  color: #64748b;
+  margin: 0;
   font-size: 14px;
 }
 
-.period-status {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
+.student-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Exam Styles */
+.exam-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.exam-btn {
+  padding: 10px 16px;
+  border: 2px solid #e5e7eb;
+  background: white;
+  color: #374151;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 500;
-  text-transform: capitalize;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.period-status.completed {
-  background: rgba(16, 185, 129, 0.1);
-  color: #059669;
-}
-
-.period-status.current {
-  background: rgba(245, 158, 11, 0.1);
-  color: #d97706;
-}
-
-.period-status.upcoming {
-  background: rgba(102, 126, 234, 0.1);
+.exam-btn:hover {
+  border-color: #667eea;
   color: #667eea;
 }
 
-.quick-actions {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+.exam-btn.active {
+  background: #667eea;
+  border-color: #667eea;
+  color: white;
 }
 
-.quick-actions h3 {
-  font-size: 18px;
+.exam-section h3 {
+  font-size: 20px;
   font-weight: 600;
   color: #1e293b;
   margin: 0 0 20px 0;
 }
 
-.actions-grid {
+.exam-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
 }
 
-.action-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 20px;
-  border: 2px solid #f1f5f9;
+.exam-card {
+  background: white;
+  border: 2px solid #e5e7eb;
   border-radius: 12px;
-  text-decoration: none;
-  transition: all 0.3s ease;
+  padding: 20px;
+  transition: all 0.2s;
 }
 
-.action-card:hover {
+.exam-card:hover {
   border-color: #667eea;
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
 }
 
-.action-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.exam-card h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 8px 0;
+}
+
+.exam-card p {
+  color: #64748b;
+  margin: 0 0 4px 0;
+  font-size: 14px;
+}
+
+.exam-date {
+  color: #667eea !important;
+  font-weight: 500;
+  margin-bottom: 16px !important;
+}
+
+.exam-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-primary {
+  padding: 8px 12px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #5a67d8;
+}
+
+.btn-secondary {
+  padding: 8px 12px;
+  background: transparent;
+  color: #667eea;
+  border: 2px solid #667eea;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #667eea;
+  color: white;
+}
+
+/* Reports Grid */
+.reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.report-card {
+  background: white;
   border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.report-card h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 12px 0;
+}
+
+.report-card p {
+  color: #64748b;
+  margin: 0 0 20px 0;
+  font-size: 14px;
+}
+
+/* Profile Section */
+.profile-section {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  max-width: 500px;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  background: #667eea;
+  color: white;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 32px;
 }
 
-.action-card h4 {
-  font-size: 16px;
+.profile-info h3 {
+  font-size: 24px;
   font-weight: 600;
   color: #1e293b;
   margin: 0 0 4px 0;
 }
 
-.action-card p {
+.profile-info p {
   color: #64748b;
   margin: 0;
+  font-size: 16px;
+}
+
+.profile-details {
+  margin-bottom: 32px;
+}
+
+.detail-item {
+  margin-bottom: 20px;
+}
+
+.detail-item label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 4px;
   font-size: 14px;
 }
 
+.detail-item p {
+  color: #64748b;
+  margin: 0;
+  font-size: 16px;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .dashboard-grid {
+  .main-content {
+    padding: 90px 16px 100px 16px;
+    max-width: 100%;
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .page-header-left {
+    text-align: center;
+  }
+
+  .stats-grid {
     grid-template-columns: 1fr;
   }
-  
-  .stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+  .students-grid {
+    grid-template-columns: 1fr;
   }
-  
-  .actions-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+
+  .exam-grid {
+    grid-template-columns: 1fr;
   }
-  
-  .period-card {
+
+  .reports-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .data-table {
+    overflow-x: auto;
+  }
+
+  .exam-buttons {
+    justify-content: center;
+  }
+
+  .student-card {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+    text-align: center;
+  }
+
+  .student-actions {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 1200px) {
+  .main-content {
+    max-width: 95%;
   }
 }
 </style>

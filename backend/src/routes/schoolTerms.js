@@ -9,17 +9,24 @@ const { schoolTermController } = require("../controllers");
 const router = express.Router();
 
 router.get(
+  "/active-terms-session",
+  authenticate,
+  authorize(["super_admin", "admin", "teacher"]),
+  schoolTermController.getTermAndSession,
+);
+
+router.get(
   "/",
   authenticate,
   authorize(["super_admin", "admin"]),
-  schoolTermController.getAll
+  schoolTermController.getAll,
 );
 
 router.get(
   "/active-session",
   authenticate,
   authorize(["super_admin", "admin"]),
-  schoolTermController.getSessionTerm
+  schoolTermController.getSessionTerm,
 );
 
 router.get(
@@ -27,22 +34,26 @@ router.get(
   authenticate,
   authorize(["super_admin", "admin"]),
   checkSchoolAccess,
-  schoolTermController.getById
+  schoolTermController.getById,
 );
+
+
 
 router.put(
   "/:id",
   authenticate,
   authorize(["super_admin", "admin"]),
-  schoolTermController.updateTerm
+  schoolTermController.updateTerm,
 );
 
 router.put(
   "/:id/activate",
   authenticate,
   authorize(["super_admin", "admin"]),
-  schoolTermController.activateTerm
+  schoolTermController.activateTerm,
 );
+
+
 
 router.post("/", authenticate, checkSchoolAccess, schoolTermController.create);
 
@@ -51,9 +62,14 @@ router.patch(
   "/:id/toggle-status",
   authenticate,
   authorize(["super_admin", "admin"]),
-  schoolTermController.toggleStatus
+  schoolTermController.toggleStatus,
 );
 
-router.delete("/:id", authenticate,authorize(["super_admin", "admin"]), schoolTermController.delete);
+router.delete(
+  "/:id",
+  authenticate,
+  authorize(["super_admin", "admin"]),
+  schoolTermController.delete,
+);
 
 module.exports = router;

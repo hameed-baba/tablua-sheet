@@ -5,7 +5,7 @@
         <div class="logo p-2">
           <h4>
             Daylight Academy <br />
-           <small> Talata Mafara</small>
+            <small> Talata Mafara</small>
           </h4>
         </div>
         <h1>Sign in to Dashboard</h1>
@@ -182,7 +182,7 @@ const handleSubmit = async () => {
 
   try {
     const response = await apiServices.login(form.value);
-    
+
     if (!response || !response.data) {
       errorMessage.value = "No response from server.";
       return;
@@ -191,24 +191,34 @@ const handleSubmit = async () => {
     const data = response.data.data;
     const user = data.user;
     const role = user.role;
-    const permissions = user.permissions;
     const accessToken = data.token;
 
     // Save to localStorage
     localStorage.setItem(
       "tebulasheet_active_user",
-      JSON.stringify({ user, role, permissions, accessToken })
+      JSON.stringify({ user, role, accessToken })
     );
 
     await useLoginStore().login({
-      user: { ...user, role, permissions },
+      user: { ...user, role },
       accessToken,
     });
 
-    router.push({ name: "dashboard" });
+    const roleSlug = role.slug;
+    let adminAccess = ["admin", "super_admin"];
+
+    if (adminAccess.includes(roleSlug)) {
+      router.push({ name: "dashboard" });
+    } else if (roleSlug === "teacher") {
+      router.push({ name: "teacher-dashboard" });
+    } else {
+      errorMessage.value = "Unauthorized User.";
+    }
+
+    // router.push({ name: "dashboard" });
   } catch (error) {
     console.error("Login failed:", error);
-    errorMessage.value =  error.response.data.message;
+    errorMessage.value = error.response.data.message;
   } finally {
     isLoading.value = false;
   }
@@ -256,9 +266,8 @@ const handleSubmit = async () => {
   background: #ffffff;
   border-radius: 12px;
   padding: 48px 40px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 
-              0 10px 25px rgba(0, 0, 0, 0.1), 
-              0 20px 40px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 10px 25px rgba(0, 0, 0, 0.1),
+    0 20px 40px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.08);
   position: relative;
   width: 100%;

@@ -7,16 +7,60 @@
       </div>
     </div>
 
+    <!-- Current Term & Session -->
+    <div class="term-session-card">
+      <div class="term-session-header">
+        <h3>Current Academic Period</h3>
+      </div>
+      <div class="term-session-content">
+        <div class="term-info">
+          <div class="info-item">
+            <span class="info-label">Session:</span>
+            <span class="info-value">{{
+              termSession.session?.session_name || "Loading..."
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Term:</span>
+            <span class="info-value">{{
+              termSession.term?.term_name || "Loading..."
+            }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Class Selection -->
     <div class="selection-card">
       <h3>Select Class & Subject</h3>
       <div class="selection-grid">
         <div class="form-group">
           <label>My Classes</label>
-          <select v-model="selectedClass" class="form-select" @change="loadStudents">
+          <select
+            v-model="formData.classId"
+            class="form-select"
+            @change="getSubjectsToDisplay"
+          >
             <option value="">Select Class</option>
-            <option v-for="cls in mockData.myClasses" :key="cls.id" :value="cls.id">
-              {{ cls.name }} - {{ cls.subject }}
+            <option
+              v-for="cls in assignedSubjects.assignments"
+              :key="cls.class_id"
+              :value="cls.class_id"
+            >
+              {{ cls.class_name }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Subjects</label>
+          <select v-model="formData.subjectId" class="form-select">
+            <option value="">Select Subject</option>
+            <option
+              v-for="subject in subjectToDisplay"
+              :key="subject.id"
+              :value="subject.id"
+            >
+              {{ subject.subject_name }}
             </option>
           </select>
         </div>
@@ -28,19 +72,11 @@
             <option value="EXAM">Examination</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Term</label>
-          <select v-model="selectedTerm" class="form-select">
-            <option value="">Select Term</option>
-            <option value="1">First Term</option>
-            <option value="2">Second Term</option>
-            <option value="3">Third Term</option>
-          </select>
-        </div>
+        
       </div>
       <div class="selection-actions">
-        <button 
-          class="btn btn-primary" 
+        <button
+          class="btn btn-primary"
           @click="loadStudents"
           :disabled="!canLoadStudents"
         >
@@ -91,29 +127,35 @@
               </td>
               <td>{{ student.admissionNumber }}</td>
               <td>
-                <div v-if="assessmentType === 'CA'" class="marks-input-container">
+                <div
+                  v-if="assessmentType === 'CA'"
+                  class="marks-input-container"
+                >
                   <input
                     v-model="student.caMarks"
                     type="text"
                     class="marks-input"
                     :class="{
-                      'valid': isValidCAMark(student.caMarks),
-                      'invalid': isInvalidCAMark(student.caMarks)
+                      valid: isValidCAMark(student.caMarks),
+                      invalid: isInvalidCAMark(student.caMarks),
                     }"
                     placeholder="0-40 or ABS"
                     @input="formatMarksInput(student, 'caMarks')"
                   />
                 </div>
-                <div v-else-if="assessmentType === 'EXAM'" class="exam-marks-container">
-                  <div class="ca-score">{{ student.existingCA || '--' }}</div>
+                <div
+                  v-else-if="assessmentType === 'EXAM'"
+                  class="exam-marks-container"
+                >
+                  <div class="ca-score">{{ student.existingCA || "--" }}</div>
                   <div class="exam-input-container">
                     <input
                       v-model="student.examMarks"
                       type="text"
                       class="marks-input exam-input"
                       :class="{
-                        'valid': isValidExamMark(student.examMarks),
-                        'invalid': isInvalidExamMark(student.examMarks)
+                        valid: isValidExamMark(student.examMarks),
+                        invalid: isInvalidExamMark(student.examMarks),
                       }"
                       placeholder="0-60 or ABS"
                       @input="formatMarksInput(student, 'examMarks')"
@@ -138,8 +180,8 @@
         <button class="btn btn-secondary" @click="clearAllMarks">
           Clear All
         </button>
-        <button 
-          class="btn btn-primary" 
+        <button
+          class="btn btn-primary"
           @click="submitMarks"
           :disabled="!canSubmit"
         >
@@ -150,8 +192,19 @@
 
     <!-- Empty State -->
     <div v-else class="empty-state">
-      <svg width="80" height="80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+      <svg
+        width="80"
+        height="80"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+        />
       </svg>
       <h3>No Students Loaded</h3>
       <p>Select a class and assessment type to begin entering marks</p>
@@ -160,150 +213,292 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from "vue";
+import apiServices from "../../services/apiServices";
+import { useLoginStore } from "../../store/loginStore";
 
-const selectedClass = ref('')
-const assessmentType = ref('')
-const selectedTerm = ref('')
-const studentsLoaded = ref(false)
-const students = ref([])
+const loginStore = useLoginStore();
+const selectedClass = ref("");
+const assessmentType = ref("");
+const selectedTerm = ref("");
+const studentsLoaded = ref(false);
+const students = ref([]);
+const termSession = ref({});
+const assignedSubjects = ref([]);
+// const assignedSubjects = ref({
+//   assignments: [],
+// });
+const subjectToDisplay = ref([]);
 
-const mockData = ref({
-  myClasses: [
-    { id: 1, name: 'JSS 2A', subject: 'Mathematics', students: 35 },
-    { id: 2, name: 'JSS 2B', subject: 'Mathematics', students: 32 },
-    { id: 3, name: 'JSS 3A', subject: 'Mathematics', students: 28 },
-    { id: 4, name: 'JSS 1A', subject: 'Basic Science', students: 40 }
-  ]
-})
+const formData = ref({
+  classId: "",
+  subjectId: "",
+  assessmentType: "",
+  term: "",
+}); 
+
 
 const canLoadStudents = computed(() => {
-  return selectedClass.value && assessmentType.value && selectedTerm.value
-})
+  return selectedClass.value && assessmentType.value && selectedTerm.value;
+});
 
 const completedCount = computed(() => {
-  return students.value.filter(student => {
-    if (assessmentType.value === 'CA') {
-      return isValidCAMark(student.caMarks)
+  return students.value.filter((student) => {
+    if (assessmentType.value === "CA") {
+      return isValidCAMark(student.caMarks);
     } else {
-      return isValidExamMark(student.examMarks)
+      return isValidExamMark(student.examMarks);
     }
-  }).length
-})
+  }).length;
+});
 
 const canSubmit = computed(() => {
-  return students.value.length > 0 && completedCount.value === students.value.length
-})
+  return (
+    students.value.length > 0 && completedCount.value === students.value.length
+  );
+});
 
 const getInitials = (name) => {
-  return name.split(' ').map(n => n[0]).join('').toUpperCase()
-}
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
+};
 
-const getSelectedClassInfo = () => {
-  const cls = mockData.value.myClasses.find(c => c.id == selectedClass.value)
-  return cls ? `${cls.name} - ${cls.subject}` : ''
-}
 
 const loadStudents = () => {
-  if (!canLoadStudents.value) return
+  if (!canLoadStudents.value) return;
 
   // Mock student data
   const mockStudents = [
-    { id: 1, name: 'John Doe', admissionNumber: 'AGP/SS/2022/001', caMarks: '', examMarks: '', existingCA: 35 },
-    { id: 2, name: 'Jane Smith', admissionNumber: 'AGP/SS/2022/002', caMarks: '', examMarks: '', existingCA: 32 },
-    { id: 3, name: 'Mike Johnson', admissionNumber: 'AGP/SS/2022/003', caMarks: '', examMarks: '', existingCA: 28 },
-    { id: 4, name: 'Sarah Wilson', admissionNumber: 'AGP/SS/2022/004', caMarks: '', examMarks: '', existingCA: 30 },
-    { id: 5, name: 'David Brown', admissionNumber: 'AGP/SS/2022/005', caMarks: '', examMarks: '', existingCA: 25 }
-  ]
+    {
+      id: 1,
+      name: "John Doe",
+      admissionNumber: "AGP/SS/2022/001",
+      caMarks: "",
+      examMarks: "",
+      existingCA: 35,
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      admissionNumber: "AGP/SS/2022/002",
+      caMarks: "",
+      examMarks: "",
+      existingCA: 32,
+    },
+    {
+      id: 3,
+      name: "Mike Johnson",
+      admissionNumber: "AGP/SS/2022/003",
+      caMarks: "",
+      examMarks: "",
+      existingCA: 28,
+    },
+    {
+      id: 4,
+      name: "Sarah Wilson",
+      admissionNumber: "AGP/SS/2022/004",
+      caMarks: "",
+      examMarks: "",
+      existingCA: 30,
+    },
+    {
+      id: 5,
+      name: "David Brown",
+      admissionNumber: "AGP/SS/2022/005",
+      caMarks: "",
+      examMarks: "",
+      existingCA: 25,
+    },
+  ];
 
-  students.value = mockStudents
-  studentsLoaded.value = true
-}
+  students.value = mockStudents;
+  studentsLoaded.value = true;
+};
 
 const isValidCAMark = (mark) => {
-  if (!mark) return false
-  if (mark === 'ABS') return true
-  const num = parseFloat(mark)
-  return !isNaN(num) && num >= 0 && num <= 40
-}
+  if (!mark) return false;
+  if (mark === "ABS") return true;
+  const num = parseFloat(mark);
+  return !isNaN(num) && num >= 0 && num <= 40;
+};
 
 const isValidExamMark = (mark) => {
-  if (!mark) return false
-  if (mark === 'ABS') return true
-  const num = parseFloat(mark)
-  return !isNaN(num) && num >= 0 && num <= 60
-}
+  if (!mark) return false;
+  if (mark === "ABS") return true;
+  const num = parseFloat(mark);
+  return !isNaN(num) && num >= 0 && num <= 60;
+};
 
 const isInvalidCAMark = (mark) => {
-  if (!mark) return false
-  if (mark === 'ABS') return false
-  const num = parseFloat(mark)
-  return isNaN(num) || num < 0 || num > 40
-}
+  if (!mark) return false;
+  if (mark === "ABS") return false;
+  const num = parseFloat(mark);
+  return isNaN(num) || num < 0 || num > 40;
+};
 
 const isInvalidExamMark = (mark) => {
-  if (!mark) return false
-  if (mark === 'ABS') return false
-  const num = parseFloat(mark)
-  return isNaN(num) || num < 0 || num > 60
-}
+  if (!mark) return false;
+  if (mark === "ABS") return false;
+  const num = parseFloat(mark);
+  return isNaN(num) || num < 0 || num > 60;
+};
 
 const formatMarksInput = (student, field) => {
-  const value = student[field]
-  if (value && value !== 'ABS' && !isNaN(parseFloat(value))) {
-    student[field] = parseFloat(value).toString()
+  const value = student[field];
+  if (value && value !== "ABS" && !isNaN(parseFloat(value))) {
+    student[field] = parseFloat(value).toString();
   }
-}
+};
 
 const calculateTotal = (student) => {
-  if (student.examMarks === 'ABS') return 'ABS'
-  const ca = parseFloat(student.existingCA || 0)
-  const exam = parseFloat(student.examMarks || 0)
+  if (student.examMarks === "ABS") return "ABS";
+  const ca = parseFloat(student.existingCA || 0);
+  const exam = parseFloat(student.examMarks || 0);
   if (student.examMarks && !isNaN(exam)) {
-    return ca + exam
+    return ca + exam;
   }
-  return '--'
-}
+  return "--";
+};
 
 const getStudentStatus = (student) => {
-  if (assessmentType.value === 'CA') {
-    if (student.caMarks === 'ABS') return 'absent'
-    if (isValidCAMark(student.caMarks)) return 'completed'
-    if (isInvalidCAMark(student.caMarks)) return 'invalid'
+  if (assessmentType.value === "CA") {
+    if (student.caMarks === "ABS") return "absent";
+    if (isValidCAMark(student.caMarks)) return "completed";
+    if (isInvalidCAMark(student.caMarks)) return "invalid";
   } else {
-    if (student.examMarks === 'ABS') return 'absent'
-    if (isValidExamMark(student.examMarks)) return 'completed'
-    if (isInvalidExamMark(student.examMarks)) return 'invalid'
+    if (student.examMarks === "ABS") return "absent";
+    if (isValidExamMark(student.examMarks)) return "completed";
+    if (isInvalidExamMark(student.examMarks)) return "invalid";
   }
-  return 'pending'
-}
+  return "pending";
+};
 
 const getStudentStatusText = (student) => {
-  const status = getStudentStatus(student)
-  return status.charAt(0).toUpperCase() + status.slice(1)
-}
+  const status = getStudentStatus(student);
+  return status.charAt(0).toUpperCase() + status.slice(1);
+};
 
 const clearAllMarks = () => {
-  if (confirm('Are you sure you want to clear all marks?')) {
-    students.value.forEach(student => {
-      if (assessmentType.value === 'CA') {
-        student.caMarks = ''
+  if (confirm("Are you sure you want to clear all marks?")) {
+    students.value.forEach((student) => {
+      if (assessmentType.value === "CA") {
+        student.caMarks = "";
       } else {
-        student.examMarks = ''
+        student.examMarks = "";
       }
-    })
+    });
   }
-}
+};
 
 const submitMarks = () => {
-  if (!canSubmit.value) return
-  
-  console.log('Submitting marks:', students.value)
-  alert('Marks submitted successfully!')
-}
+  if (!canSubmit.value) return;
+
+  console.log("Submitting marks:", students.value);
+  alert("Marks submitted successfully!");
+};
+
+const getTermAndSession = () => {
+  apiServices
+    .getTermAndSession()
+    .then((response) => {
+      termSession.value = response.data.data;
+      console.log("Term and Session Data:", response.data);
+    })
+    .catch((error) => {
+      console.error("Error fetching staff assigned subjects:", error);
+    });
+};
+
+const getStaffAssigned = () => {
+  apiServices
+    .getStaffAssigned(loginStore.user?.id)
+    .then((response) => {
+      assignedSubjects.value = response.data.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching staff assigned subjects:", error);
+    });
+};
+
+const getSubjectsToDisplay = () => {
+  const selected = assignedSubjects.value.assignments.find(
+    cls => cls.class_id === formData.value.classId
+  );
+
+  subjectToDisplay.value = selected ? selected.subjects : [];
+};
+
+onMounted(() => {
+  getTermAndSession();
+  getStaffAssigned();
+});
 </script>
 
 <style scoped>
+/* Term & Session Card */
+.term-session-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.term-session-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: white;
+}
+
+.term-session-content {
+  display: flex;
+  justify-content: center;
+}
+
+.term-info {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.info-label {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.9;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+}
+
+/* Responsive Design for Term Session Card */
+@media (max-width: 768px) {
+  .term-info {
+    gap: 20px;
+  }
+
+  .info-value {
+    font-size: 14px;
+  }
+}
+
 .selection-card {
   background: white;
   border-radius: 12px;
@@ -529,18 +724,18 @@ const submitMarks = () => {
   .selection-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .marks-header {
     flex-direction: column;
     gap: 12px;
     align-items: flex-start;
   }
-  
+
   .exam-marks-container {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .marks-actions {
     flex-direction: column;
   }

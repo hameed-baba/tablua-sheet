@@ -119,6 +119,9 @@ export default {
   getAllTerm() {
     return apiClient.get("/school-terms");
   },
+  getTermAndSession(){
+    return apiClient.get("/school-terms/active-terms-session");
+  },
   // =================== SUBJECT MANAGEMENT ===================
   getAllSubject(page) {
     return apiClient.get(`/school-subjects/?page=${page}`);
@@ -446,6 +449,9 @@ export default {
   },
   cleanupStaleSessions() {
     return apiClient.post("/staff-activity/cleanup");
+  },
+  getStaffAssigned(id){
+    return apiClient.get(`/staff/assigned-subjects/${id}`);
   },
 
   // =================== DASHBOARD ===================

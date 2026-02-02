@@ -55,6 +55,13 @@ router.get(
   schoolStaffController.getAllStaffBySection,
 );
 
+router.get(
+  "/assigned-subjects/:id",
+  authenticate,
+  authorize(["teacher", "admin", "super_admin"]),
+  schoolStaffController.getStaffAssigned,
+);
+
 // Update staff - Only admins can update
 router.put(
   "/:id",

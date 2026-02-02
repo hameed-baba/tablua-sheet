@@ -1,6 +1,13 @@
 const { Op } = require("sequelize");
 const { asyncHandler } = require("../middleware/errorHandler");
-const { SchoolStaff, Role, SchoolSection } = require("../models");
+const {
+  SchoolStaff,
+  Role,
+  SchoolSection,
+  ClassSubjectAssign,
+  SchoolSubject,
+  SchoolClass,
+} = require("../models");
 
 /**
  * @desc Register new staff
@@ -348,6 +355,88 @@ const getAllStaffBySection = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc Get staff assigned classes & subjects
+ * @route GET /api/staff/:id/assignments
+ */
+const getStaffAssigned = asyncHandler(async (req, res) => {
+  const staffId = parseInt(req.params.id, 10);
+
+  if (isNaN(staffId)) {
+    return res.status(400).json({
+      status: "error",
+      message: "Invalid staff ID",
+    });
+  }
+
+  const staff = await SchoolStaff.findByPk(staffId, {
+    attributes: ["id", "full_name", "email"],
+  });
+
+  if (!staff) {
+    return res.status(404).json({
+      status: "error",
+      message: "Staff not found",
+    });
+  }
+
+  const assignments = await ClassSubjectAssign.findAll({
+    where: { school_staff_id: staffId },
+    include: [
+      {
+        model: SchoolClass,
+        as: "Class",
+        attributes: ["id", "class_name"],
+      },
+      {
+        model: SchoolSubject,
+        as: "Subject",
+        attributes: ["id", "subject_name"],
+      },
+    ],
+  });
+
+  // ✅ GROUP BY CLASS
+  const groupedAssignments = assignments.reduce((acc, item) => {
+    const classId = item.school_class_id;
+
+    if (!acc[classId]) {
+      acc[classId] = {
+        class_id: item.Class.id,
+        class_name: item.Class.class_name,
+        subjects: [],
+      };
+    }
+
+    acc[classId].subjects.push({
+      id: item.Subject.id,
+      subject_name: item.Subject.subject_name,
+    });
+
+    return acc;
+  }, {});
+
+  const groupedArray = Object.values(groupedAssignments);
+
+  // ✅ SUMMARY
+  const summary = {
+    myClasses: groupedArray.length,
+    myTotalSubjects: groupedArray.reduce(
+      (total, cls) => total + cls.subjects.length,
+      0,
+    ),
+  };
+
+  return res.json({
+    status: "success",
+    data: {
+      staff,
+      summary,
+      assignments: Object.values(groupedAssignments),
+    },
+  });
+});
+
 module.exports = {
   register,
   getAll,
@@ -358,4 +447,5 @@ module.exports = {
   toggleSchoolAccess,
   toggleStaffStatus,
   getAllStaffBySection,
+  getStaffAssigned,
 };

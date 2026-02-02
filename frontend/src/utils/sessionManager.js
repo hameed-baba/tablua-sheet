@@ -10,7 +10,7 @@ class SessionManager {
     window.addEventListener('beforeunload', this.handleBeforeUnload.bind(this))
     
     // Handle page visibility changes (tab switching, minimizing)
-    document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this))
+    // document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this))
     
     // Handle browser back/forward navigation
     window.addEventListener('pagehide', this.handlePageHide.bind(this))
@@ -26,16 +26,16 @@ class SessionManager {
     this.sendLogoutRequest()
   }
 
-  handleVisibilityChange() {
-    if (document.visibilityState === 'hidden') {
-      // Page is hidden (tab switched, browser minimized, etc.)
-      // We don't logout here as user might come back
-      console.log('Page hidden - user might be switching tabs')
-    } else if (document.visibilityState === 'visible') {
-      // Page is visible again
-      console.log('Page visible - user is back')
-    }
-  }
+  // handleVisibilityChange() {
+  //   if (document.visibilityState === 'hidden') {
+  //     // Page is hidden (tab switched, browser minimized, etc.)
+  //     // We don't logout here as user might come back
+  //     console.log('Page hidden - user might be switching tabs')
+  //   } else if (document.visibilityState === 'visible') {
+  //     // Page is visible again
+  //     console.log('Page visible - user is back')
+  //   }
+  // }
 
   sendLogoutRequest() {
     try {
@@ -74,7 +74,7 @@ class SessionManager {
   // Clean up event listeners
   destroy() {
     window.removeEventListener('beforeunload', this.handleBeforeUnload)
-    document.removeEventListener('visibilitychange', this.handleVisibilityChange)
+    // document.removeEventListener('visibilitychange', this.handleVisibilityChange)
     window.removeEventListener('pagehide', this.handlePageHide)
   }
 }
