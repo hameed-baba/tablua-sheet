@@ -1,6 +1,6 @@
 import CryptoJS from "crypto-js";
 
-const SECRET_KEY = "my-secret-key";
+const SECRET_KEY = "b@5M@ll@h737&$";
 
 export function safeEncryptParam(value) {
   try {
