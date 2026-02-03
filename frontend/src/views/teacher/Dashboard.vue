@@ -7,7 +7,7 @@
     <div class="content-section">
       <!-- Welcome Section -->
       <div class="welcome-card">
-        <h3>Welcome {{ teacherName }}</h3>
+        <h3>Welcome {{ getStaff?.full_name }}</h3>
         <p>Have a great day teaching!</p>
       </div>
 
@@ -31,7 +31,7 @@
             </svg>
           </div>
           <div class="stat-content">
-            <h3>{{ assignedSubjects.summary?.myClasses }}</h3>
+            <h3>{{ getSummary?.myClasses }}</h3>
             <p>My Classes</p>
           </div>
         </div>
@@ -40,7 +40,7 @@
             <i class="fa fa-book"></i>
           </div>
           <div class="stat-content">
-            <h3>{{ assignedSubjects.summary?.myTotalSubjects }}</h3>
+            <h3>{{ getSummary?.myTotalSubjects }}</h3>
             <p>My Subjects</p>
           </div>
         </div>
@@ -54,7 +54,7 @@
 
         <div class="assigned-classes-grid">
           <div
-            v-for="classData in assignedSubjects.assignments"
+            v-for="classData in getAssignments"
             :key="classData.class_id"
             class="class-card"
           >
@@ -118,6 +118,12 @@
 import { ref, computed, onMounted } from "vue";
 import apiServices from "../../services/apiServices";
 import { useLoginStore } from "../../store/loginStore";
+import { useTeacherAssignedSubjectStore } from "../../store/teacherAssignedSubjectStore";
+import { storeToRefs } from "pinia";
+
+const teacherAssignedSubjectStore = useTeacherAssignedSubjectStore();
+const { getStaff, getSummary, getAssignments, isSubjectLoaded } =
+  storeToRefs(teacherAssignedSubjectStore);
 
 const teacherName = ref("Mrs. Sarah Johnson");
 const loginStore = useLoginStore();
@@ -127,10 +133,12 @@ const assignedSubjects = ref([]);
 
 // Mock data for the new dashboard layout
 const getStaffAssigned = () => {
+  teacherAssignedSubjectStore.CLEAR_TEACHER_DATA();
   apiServices
     .getStaffAssigned(loginStore.user?.id)
     .then((response) => {
       assignedSubjects.value = response.data.data;
+      teacherAssignedSubjectStore.SET_TEACHER_DATA(response.data.data);
     })
     .catch((error) => {
       console.error("Error fetching staff assigned subjects:", error);
@@ -138,7 +146,10 @@ const getStaffAssigned = () => {
 };
 
 onMounted(() => {
-  getStaffAssigned();
+  if (!isSubjectLoaded.value) {
+    getStaffAssigned();
+  }
+  // getStaffAssigned();
 });
 </script>
 

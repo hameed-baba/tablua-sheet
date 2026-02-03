@@ -8,7 +8,7 @@ const {
   SchoolTerm,
   SchoolClass,
   SchoolStudent,
-  sequelize
+  sequelize,
 } = require("../models");
 const { asyncHandler } = require("../middleware/errorHandler");
 const { Op, Sequelize } = require("sequelize");
@@ -281,248 +281,271 @@ class ClassSubjectAssignController extends BaseController {
   });
 
   assignSubjectToClassStudents = asyncHandler(async (req, res) => {
-  const { subject_id, current_class_id, current_session_id } = req.body;
+    const { subject_id, current_class_id, current_session_id } = req.body;
 
-  // Validate required fields
-  if (!subject_id) {
-    return res.status(400).json({
-      status: "error",
-      message: "Please provide subject_id",
-    });
-  }
-
-  if (!current_class_id) {
-    return res.status(400).json({
-      status: "error",
-      message: "Please provide current_class_id",
-    });
-  }
-
-  if (!current_session_id) {
-    return res.status(400).json({
-      status: "error",
-      message: "Please provide current_session_id",
-    });
-  }
-
-  // Use transaction to ensure atomicity
-  const transaction = await sequelize.transaction();
-
-  try {
-    // 1. Verify the class exists
-    const schoolClass = await SchoolClass.findByPk(current_class_id, {
-      transaction,
-    });
-
-    if (!schoolClass) {
-      await transaction.rollback();
-      return res.status(404).json({
+    // Validate required fields
+    if (!subject_id) {
+      return res.status(400).json({
         status: "error",
-        message: "Class not found",
+        message: "Please provide subject_id",
       });
     }
 
-    // 2. Verify the session exists
-    const schoolSession = await SchoolSession.findByPk(current_session_id, {
-      transaction,
-    });
-
-    if (!schoolSession) {
-      await transaction.rollback();
-      return res.status(404).json({
+    if (!current_class_id) {
+      return res.status(400).json({
         status: "error",
-        message: "Session not found",
+        message: "Please provide current_class_id",
       });
     }
 
-    // 3. Verify the subject exists
-    const subject = await SchoolSubject.findByPk(subject_id, {
-      attributes: ['id', 'subject_name'],
-      transaction,
-    });
-
-    if (!subject) {
-      await transaction.rollback();
-      return res.status(404).json({
+    if (!current_session_id) {
+      return res.status(400).json({
         status: "error",
-        message: "Subject not found",
+        message: "Please provide current_session_id",
       });
     }
 
-    // 4. Get all students in this class and session
-    const allStudents = await SchoolStudent.findAll({
-      where: {
-        current_class_id: current_class_id,
-        current_session_id: current_session_id,
-      },
-      attributes: ['id', 'admission_number', 'full_name'],
-      transaction,
-    });
+    // Use transaction to ensure atomicity
+    const transaction = await sequelize.transaction();
 
-    if (allStudents.length === 0) {
-      await transaction.rollback();
-      return res.status(404).json({
-        status: "error",
-        message: "No students found in this class for the given session",
+    try {
+      // 1. Verify the class exists
+      const schoolClass = await SchoolClass.findByPk(current_class_id, {
+        transaction,
       });
-    }
 
-    const allStudentIds = allStudents.map(student => student.id);
+      if (!schoolClass) {
+        await transaction.rollback();
+        return res.status(404).json({
+          status: "error",
+          message: "Class not found",
+        });
+      }
 
-    // 5. Find students who already have this subject assigned (for any of the 3 terms)
-    const existingAssignments = await StudentSubjectAssign.findAll({
-      where: {
-        student_id: allStudentIds,
-        school_subject_id: subject_id,
-        current_session_id: current_session_id,
-        current_class_id: current_class_id,
-        current_term_id: [1, 2, 3]
-      },
-      attributes: ['student_id'],
-      group: ['student_id'], // Group by student to get unique students
-      transaction,
-    });
+      // 2. Verify the session exists
+      const schoolSession = await SchoolSession.findByPk(current_session_id, {
+        transaction,
+      });
 
-    const alreadyAssignedStudentIds = existingAssignments.map(assignment => assignment.student_id);
-    
-    // 6. Filter students to only those who don't have the subject assigned
-    const studentsToAssign = allStudents.filter(student => 
-      !alreadyAssignedStudentIds.includes(student.id)
-    );
+      if (!schoolSession) {
+        await transaction.rollback();
+        return res.status(404).json({
+          status: "error",
+          message: "Session not found",
+        });
+      }
 
-    if (studentsToAssign.length === 0) {
+      // 3. Verify the subject exists
+      const subject = await SchoolSubject.findByPk(subject_id, {
+        attributes: ["id", "subject_name"],
+        transaction,
+      });
+
+      if (!subject) {
+        await transaction.rollback();
+        return res.status(404).json({
+          status: "error",
+          message: "Subject not found",
+        });
+      }
+
+      // 4. Get all students in this class and session
+      const allStudents = await SchoolStudent.findAll({
+        where: {
+          current_class_id: current_class_id,
+          current_session_id: current_session_id,
+        },
+        attributes: ["id", "admission_number", "full_name"],
+        transaction,
+      });
+
+      if (allStudents.length === 0) {
+        await transaction.rollback();
+        return res.status(404).json({
+          status: "error",
+          message: "No students found in this class for the given session",
+        });
+      }
+
+      const allStudentIds = allStudents.map((student) => student.id);
+
+      // 5. Find students who already have this subject assigned (for any of the 3 terms)
+      const existingAssignments = await StudentSubjectAssign.findAll({
+        where: {
+          student_id: allStudentIds,
+          school_subject_id: subject_id,
+          current_session_id: current_session_id,
+          current_class_id: current_class_id,
+          current_term_id: [1, 2, 3]
+        },
+        attributes: ['student_id'],
+        group: ['student_id'], // Group by student to get unique students
+        transaction,
+      });
+
+      // const existingAssignments = await StudentSubjectAssign.findAll({
+      //   where: {
+      //     student_id: {
+      //       [Op.in]: allStudentIds,
+      //     },
+      //     school_subject_id: subject_id,
+      //     current_session_id: current_session_id,
+      //     current_class_id: current_class_id,
+      //     current_term_id: {
+      //       [Op.in]: [1, 2, 3],
+      //     },
+      //   },
+      //   attributes: ["student_id"],
+      //   group: ["student_id"],
+      //   transaction,
+      // });
+
+      const alreadyAssignedStudentIds = existingAssignments.map(
+        (assignment) => assignment.student_id,
+      );
+
+      // 6. Filter students to only those who don't have the subject assigned
+      const studentsToAssign = allStudents.filter(
+        (student) => !alreadyAssignedStudentIds.includes(student.id),
+      );
+
+      if (studentsToAssign.length === 0) {
+        await transaction.commit();
+        return res.status(500).json({
+          status: "info",
+          message: `Subject ${subject.subject_name} is already assigned to all ${allStudents.length} students in this class`,
+          data: {
+            totalStudents: allStudents.length,
+            alreadyAssignedStudents: alreadyAssignedStudentIds.length,
+            newAssignmentsCreated: 0,
+            subject: {
+              id: subject.id,
+              name: subject.subject_name,
+            },
+          },
+        });
+      }
+
+      const studentIdsToAssign = studentsToAssign.map((student) => student.id);
+
+      // 7. Prepare subject assignments for students who don't have it yet (all 3 terms)
+      const subjectAssignments = [];
+
+      for (const student of studentsToAssign) {
+        for (let termId = 1; termId <= 3; termId++) {
+          subjectAssignments.push({
+            student_id: student.id,
+            school_subject_id: subject_id,
+            current_class_id: current_class_id,
+            current_session_id: current_session_id,
+            current_term_id: termId,
+            ca_1_score: null,
+            ca_2_score: null,
+            exam_score: null,
+            created_at: new Date(),
+            updated_at: new Date(),
+            // Include any additional fields from request body
+            ...(req.body.teacher_id && { teacher_id: req.body.teacher_id }),
+            ...(req.body.elective !== undefined && {
+              elective: req.body.elective,
+            }),
+            ...(req.body.section_id && { section_id: req.body.section_id }),
+          });
+        }
+      }
+
+      // 8. Bulk create all subject assignments
+      await StudentSubjectAssign.bulkCreate(subjectAssignments, {
+        transaction,
+        validate: true,
+      });
+
+      // 9. Commit transaction
       await transaction.commit();
-      return res.status(500).json({
-        status: "info",
-        message: `Subject ${subject.subject_name} is already assigned to all ${allStudents.length} students in this class`,
+
+      // 10. Prepare response
+      res.status(200).json({
+        status: "success",
+        message: `Subject ${subject.subject_name} assigned successfully to ${studentsToAssign.length} student(s) in class ${schoolClass.class_name} for 3 terms`,
         data: {
-          totalStudents: allStudents.length,
-          alreadyAssignedStudents: alreadyAssignedStudentIds.length,
-          newAssignmentsCreated: 0,
+          class: {
+            id: schoolClass.id,
+            name: schoolClass.class_name,
+            code: schoolClass.class_code,
+          },
+          session: {
+            id: schoolSession.id,
+            name: schoolSession.session_name,
+          },
           subject: {
             id: subject.id,
             name: subject.subject_name,
-          }
-        }
-      });
-    }
-
-    const studentIdsToAssign = studentsToAssign.map(student => student.id);
-
-    // 7. Prepare subject assignments for students who don't have it yet (all 3 terms)
-    const subjectAssignments = [];
-
-    for (const student of studentsToAssign) {
-      for (let termId = 1; termId <= 3; termId++) {
-        subjectAssignments.push({
-          student_id: student.id,
-          school_subject_id: subject_id,
-          current_class_id: current_class_id,
-          current_session_id: current_session_id,
-          current_term_id: termId,
-          ca_1_score: null,
-          ca_2_score: null,
-          exam_score: null,
-          created_at: new Date(),
-          updated_at: new Date(),
-          // Include any additional fields from request body
-          ...(req.body.teacher_id && { teacher_id: req.body.teacher_id }),
-          ...(req.body.elective !== undefined && { elective: req.body.elective }),
-          ...(req.body.section_id && { section_id: req.body.section_id }),
-        });
-      }
-    }
-
-    // 8. Bulk create all subject assignments
-    await StudentSubjectAssign.bulkCreate(subjectAssignments, {
-      transaction,
-      validate: true,
-    });
-
-    // 9. Commit transaction
-    await transaction.commit();
-
-    // 10. Prepare response
-    res.status(200).json({
-      status: "success",
-      message: `Subject ${subject.subject_name} assigned successfully to ${studentsToAssign.length} student(s) in class ${schoolClass.class_name} for 3 terms`,
-      data: {
-        class: {
-          id: schoolClass.id,
-          name: schoolClass.class_name,
-          code: schoolClass.class_code,
-        },
-        session: {
-          id: schoolSession.id,
-          name: schoolSession.session_name,
-        },
-        subject: {
-          id: subject.id,
-          name: subject.subject_name,
-        },
-        summary: {
-          totalStudentsInClass: allStudents.length,
-          alreadyAssignedStudents: alreadyAssignedStudentIds.length,
-          newlyAssignedStudents: studentsToAssign.length,
-          assignmentsCreated: subjectAssignments.length,
-          assignmentsPerStudent: 3,
-          breakdownByTerm: {
-            term1: studentsToAssign.length,
-            term2: studentsToAssign.length,
-            term3: studentsToAssign.length,
-          }
-        },
-        newlyAssignedStudents: studentsToAssign.map(s => ({
-          id: s.id,
-          admission_number: s.admission_number,
-          name: s.full_name,
-        })),
-        alreadyAssignedStudents: allStudents
-          .filter(s => alreadyAssignedStudentIds.includes(s.id))
-          .map(s => ({
+          },
+          summary: {
+            totalStudentsInClass: allStudents.length,
+            alreadyAssignedStudents: alreadyAssignedStudentIds.length,
+            newlyAssignedStudents: studentsToAssign.length,
+            assignmentsCreated: subjectAssignments.length,
+            assignmentsPerStudent: 3,
+            breakdownByTerm: {
+              term1: studentsToAssign.length,
+              term2: studentsToAssign.length,
+              term3: studentsToAssign.length,
+            },
+          },
+          newlyAssignedStudents: studentsToAssign.map((s) => ({
             id: s.id,
             admission_number: s.admission_number,
-            name: `${s.full_name} `,
+            name: s.full_name,
           })),
-      },
-    });
-  } catch (error) {
-    // Rollback transaction on error
-    await transaction.rollback();
-    
-    // Handle specific errors
-    if (error.name === 'SequelizeValidationError') {
-      return res.status(400).json({
-        status: "error",
-        message: "Validation error",
-        details: error.errors.map(e => ({
-          field: e.path,
-          message: e.message
-        }))
+          alreadyAssignedStudents: allStudents
+            .filter((s) => alreadyAssignedStudentIds.includes(s.id))
+            .map((s) => ({
+              id: s.id,
+              admission_number: s.admission_number,
+              name: `${s.full_name} `,
+            })),
+        },
       });
+    } catch (error) {
+      // Rollback transaction on error
+      await transaction.rollback();
+
+      // Handle specific errors
+      if (error.name === "SequelizeValidationError") {
+        return res.status(400).json({
+          status: "error",
+          message: "Validation error",
+          details: error.errors.map((e) => ({
+            field: e.path,
+            message: e.message,
+          })),
+        });
+      }
+
+      if (error.name === "SequelizeForeignKeyConstraintError") {
+        return res.status(400).json({
+          status: "error",
+          message:
+            "Foreign key constraint failed. Please check if referenced IDs exist.",
+          details: error.message,
+        });
+      }
+
+      if (error.name === "SequelizeUniqueConstraintError") {
+        return res.status(409).json({
+          status: "error",
+          message:
+            "Duplicate assignment detected. Some students may already have this subject assigned.",
+          details: error.errors,
+        });
+      }
+
+      // Handle other errors
+      console.error("Error in assignSubjectToClassStudents:", error);
+      throw error;
     }
-    
-    if (error.name === 'SequelizeForeignKeyConstraintError') {
-      return res.status(400).json({
-        status: "error",
-        message: "Foreign key constraint failed. Please check if referenced IDs exist.",
-        details: error.message
-      });
-    }
-    
-    if (error.name === 'SequelizeUniqueConstraintError') {
-      return res.status(409).json({
-        status: "error",
-        message: "Duplicate assignment detected. Some students may already have this subject assigned.",
-        details: error.errors,
-      });
-    }
-    
-    // Handle other errors
-    console.error('Error in assignSubjectToClassStudents:', error);
-    throw error;
-  }
-});
+  });
 
   // getClassAssignedSubject = asyncHandler(async (req, res) => {
   //   const { classId } = req.params;
@@ -548,8 +571,6 @@ class ClassSubjectAssignController extends BaseController {
   //     data: assignments,
   //   });
   // });
-
-
 
   // getClassAssignedSubject = asyncHandler(async (req, res) => {
   //   const { classId } = req.params;
@@ -611,97 +632,91 @@ class ClassSubjectAssignController extends BaseController {
   //   });
   // });
 
-getClassAssignedSubject = asyncHandler(async (req, res) => {
-  const { classId } = req.params;
+  getClassAssignedSubject = asyncHandler(async (req, res) => {
+    const { classId } = req.params;
 
-  // 1️⃣ Active session
-  const activeSession = await SchoolSession.findOne({
-    where: { status: "active" },
-    attributes: ["id"],
-  });
-
-  if (!activeSession) {
-    return res.status(404).json({
-      success: false,
-      message: "No active session found",
+    // 1️⃣ Active session
+    const activeSession = await SchoolSession.findOne({
+      where: { status: "active" },
+      attributes: ["id"],
     });
-  }
 
-  // 2️⃣ Active term
-  const activeTerm = await SchoolTerm.findOne({
-    where: { status: "active" },
-    attributes: ["id"],
-  });
+    if (!activeSession) {
+      return res.status(404).json({
+        success: false,
+        message: "No active session found",
+      });
+    }
 
-  if (!activeTerm) {
-    return res.status(404).json({
-      success: false,
-      message: "No active term found",
+    // 2️⃣ Active term
+    const activeTerm = await SchoolTerm.findOne({
+      where: { status: "active" },
+      attributes: ["id"],
     });
-  }
 
-  // 3️⃣ Query
-  const assignments = await ClassSubjectAssign.findAll({
-    where: {
-      school_class_id: classId,
-    },
-    attributes: [
-      "id",
-      "school_subject_id",
-      "school_staff_id",
-      [
-        Sequelize.fn(
-          "COUNT",
+    if (!activeTerm) {
+      return res.status(404).json({
+        success: false,
+        message: "No active term found",
+      });
+    }
+
+    // 3️⃣ Query
+    const assignments = await ClassSubjectAssign.findAll({
+      where: {
+        school_class_id: classId,
+      },
+      attributes: [
+        "id",
+        "school_subject_id",
+        "school_staff_id",
+        [
           Sequelize.fn(
-            "DISTINCT",
-            Sequelize.col("StudentAssignments.student_id")
-          )
-        ),
-        "total_students",
-      ],
-    ],
-    include: [
-      {
-        model: SchoolSubject,
-        as: "Subject",
-        attributes: ["id", "subject_name"],
-      },
-      {
-        model: SchoolStaff,
-        as: "Staff",
-        attributes: ["id", "full_name"],
-      },
-      {
-        model: StudentSubjectAssign,
-        as: "StudentAssignments",
-        attributes: [],
-        required: false,
-        where: {
-          current_class_id: classId,
-          current_session_id: activeSession.id,
-          current_term_id: activeTerm.id, // 🔥 TERM FILTER
-          school_subject_id: Sequelize.col(
-            "ClassSubjectAssign.school_subject_id"
+            "COUNT",
+            Sequelize.fn(
+              "DISTINCT",
+              Sequelize.col("StudentAssignments.student_id"),
+            ),
           ),
+          "total_students",
+        ],
+      ],
+      include: [
+        {
+          model: SchoolSubject,
+          as: "Subject",
+          attributes: ["id", "subject_name"],
         },
-      },
-    ],
-    group: [
-      "ClassSubjectAssign.id",
-      "Subject.id",
-      "Staff.id",
-    ],
+        {
+          model: SchoolStaff,
+          as: "Staff",
+          attributes: ["id", "full_name"],
+        },
+        {
+          model: StudentSubjectAssign,
+          as: "StudentAssignments",
+          attributes: [],
+          required: false,
+          where: {
+            current_class_id: classId,
+            current_session_id: activeSession.id,
+            current_term_id: activeTerm.id, // 🔥 TERM FILTER
+            school_subject_id: Sequelize.col(
+              "ClassSubjectAssign.school_subject_id",
+            ),
+          },
+        },
+      ],
+      group: ["ClassSubjectAssign.id", "Subject.id", "Staff.id"],
+    });
+
+    res.status(200).json({
+      success: true,
+      activeSessionId: activeSession.id,
+      activeTermId: activeTerm.id,
+      data: assignments,
+    });
   });
-
-  res.status(200).json({
-    success: true,
-    activeSessionId: activeSession.id,
-    activeTermId: activeTerm.id,
-    data: assignments,
-  });
-});
-
-
 }
 
 module.exports = new ClassSubjectAssignController();

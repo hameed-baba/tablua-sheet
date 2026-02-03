@@ -37,13 +37,13 @@
         <div class="form-group">
           <label>My Classes</label>
           <select
-            v-model="formData.classId"
+            v-model="formData.current_class_id"
             class="form-select"
-            @change="getSubjectsToDisplay"
+            @change="handleClassChange"
           >
             <option value="">Select Class</option>
             <option
-              v-for="cls in assignedSubjects.assignments"
+              v-for="cls in getAssignments"
               :key="cls.class_id"
               :value="cls.class_id"
             >
@@ -53,7 +53,7 @@
         </div>
         <div class="form-group">
           <label>Subjects</label>
-          <select v-model="formData.subjectId" class="form-select">
+          <select v-model="formData.school_subject_id" class="form-select" @change="handleSubjectChange">
             <option value="">Select Subject</option>
             <option
               v-for="subject in subjectToDisplay"
@@ -66,129 +66,36 @@
         </div>
         <div class="form-group">
           <label>Assessment Type</label>
-          <select v-model="assessmentType" class="form-select">
+          <select v-model="formData.assessmentType" class="form-select" @change="handleAssessmentTypeChange">
             <option value="">Select Type</option>
             <option value="CA">Continuous Assessment</option>
             <option value="EXAM">Examination</option>
           </select>
         </div>
-        
       </div>
       <div class="selection-actions">
         <button
           class="btn btn-primary"
-          @click="loadStudents"
-          :disabled="!canLoadStudents"
+          @click="getClassStudents"
+          :disabled="!canLoadStudents || loading"
         >
-          Load Students
+          {{ loading ? "Loading..." : "Load Students" }}
         </button>
       </div>
     </div>
 
     <!-- Students Marks Entry -->
-    <div v-if="studentsLoaded" class="marks-card">
-      <div class="marks-header">
-        <h3>Enter Marks - {{ getSelectedClassInfo() }}</h3>
-        <div class="marks-summary">
-          <span class="summary-badge">
-            {{ completedCount }}/{{ students.length }} Completed
-          </span>
-        </div>
-      </div>
-
-      <div class="marks-table-container">
-        <table class="marks-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Student Name</th>
-              <th>Admission No.</th>
-              <th v-if="assessmentType === 'CA'">CA Marks (0-40)</th>
-              <th v-else-if="assessmentType === 'EXAM'">
-                <div class="exam-header">
-                  <span>CA Score</span>
-                  <span>Exam (0-60)</span>
-                  <span>Total</span>
-                </div>
-              </th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(student, index) in students" :key="student.id">
-              <td>{{ index + 1 }}</td>
-              <td>
-                <div class="student-info">
-                  <div class="student-avatar">
-                    <span>{{ getInitials(student.name) }}</span>
-                  </div>
-                  <span>{{ student.name }}</span>
-                </div>
-              </td>
-              <td>{{ student.admissionNumber }}</td>
-              <td>
-                <div
-                  v-if="assessmentType === 'CA'"
-                  class="marks-input-container"
-                >
-                  <input
-                    v-model="student.caMarks"
-                    type="text"
-                    class="marks-input"
-                    :class="{
-                      valid: isValidCAMark(student.caMarks),
-                      invalid: isInvalidCAMark(student.caMarks),
-                    }"
-                    placeholder="0-40 or ABS"
-                    @input="formatMarksInput(student, 'caMarks')"
-                  />
-                </div>
-                <div
-                  v-else-if="assessmentType === 'EXAM'"
-                  class="exam-marks-container"
-                >
-                  <div class="ca-score">{{ student.existingCA || "--" }}</div>
-                  <div class="exam-input-container">
-                    <input
-                      v-model="student.examMarks"
-                      type="text"
-                      class="marks-input exam-input"
-                      :class="{
-                        valid: isValidExamMark(student.examMarks),
-                        invalid: isInvalidExamMark(student.examMarks),
-                      }"
-                      placeholder="0-60 or ABS"
-                      @input="formatMarksInput(student, 'examMarks')"
-                    />
-                  </div>
-                  <div class="total-score">
-                    {{ calculateTotal(student) }}
-                  </div>
-                </div>
-              </td>
-              <td>
-                <span class="status-badge" :class="getStudentStatus(student)">
-                  {{ getStudentStatusText(student) }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="marks-actions">
-        <button class="btn btn-secondary" @click="clearAllMarks">
-          Clear All
-        </button>
-        <button
-          class="btn btn-primary"
-          @click="submitMarks"
-          :disabled="!canSubmit"
-        >
-          Submit Marks
-        </button>
-      </div>
-    </div>
+    <MarksEntryTable
+      v-if="studentsLoaded"
+      v-model:students="students"
+      :assessment-type="formData.assessmentType"
+      :class-name="getSelectedClassInfo()"
+      :subject-name="getSelectedSubjectName()"
+      :submitting="submitting"
+      @submit="submitMarks"
+      @cancel="cancelEntry"
+      @clear-marks="clearAllMarks"
+    />
 
     <!-- Empty State -->
     <div v-else class="empty-state">
@@ -216,6 +123,15 @@
 import { ref, computed, onMounted } from "vue";
 import apiServices from "../../services/apiServices";
 import { useLoginStore } from "../../store/loginStore";
+import { useTeacherAssignedSubjectStore } from "../../store/teacherAssignedSubjectStore";
+import { storeToRefs } from "pinia";
+import { useToast } from "../../composables/useToast";
+import MarksEntryTable from "../../components/add-marks/MarksEntryTable.vue";
+// import MarksEntryTable from "../super_admin/eaxm/components/MarksEntryTable.vue";
+
+const toast = useToast();
+const store = useTeacherAssignedSubjectStore();
+const { getAssignments, isSubjectLoaded } = storeToRefs(store);
 
 const loginStore = useLoginStore();
 const selectedClass = ref("");
@@ -224,27 +140,28 @@ const selectedTerm = ref("");
 const studentsLoaded = ref(false);
 const students = ref([]);
 const termSession = ref({});
-const assignedSubjects = ref([]);
-// const assignedSubjects = ref({
-//   assignments: [],
-// });
+const loading = ref(false);
+const submitting = ref(false);
+
 const subjectToDisplay = ref([]);
 
 const formData = ref({
-  classId: "",
-  subjectId: "",
+  current_class_id: "",
+  school_subject_id: "",
   assessmentType: "",
-  term: "",
-}); 
-
+});
 
 const canLoadStudents = computed(() => {
-  return selectedClass.value && assessmentType.value && selectedTerm.value;
+  return (
+    formData.value.current_class_id &&
+    formData.value.school_subject_id &&
+    formData.value.assessmentType
+  );
 });
 
 const completedCount = computed(() => {
   return students.value.filter((student) => {
-    if (assessmentType.value === "CA") {
+    if (formData.value.assessmentType === "CA") {
       return isValidCAMark(student.caMarks);
     } else {
       return isValidExamMark(student.examMarks);
@@ -258,146 +175,250 @@ const canSubmit = computed(() => {
   );
 });
 
-const getInitials = (name) => {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
-};
-
-
-const loadStudents = () => {
-  if (!canLoadStudents.value) return;
-
-  // Mock student data
-  const mockStudents = [
-    {
-      id: 1,
-      name: "John Doe",
-      admissionNumber: "AGP/SS/2022/001",
-      caMarks: "",
-      examMarks: "",
-      existingCA: 35,
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      admissionNumber: "AGP/SS/2022/002",
-      caMarks: "",
-      examMarks: "",
-      existingCA: 32,
-    },
-    {
-      id: 3,
-      name: "Mike Johnson",
-      admissionNumber: "AGP/SS/2022/003",
-      caMarks: "",
-      examMarks: "",
-      existingCA: 28,
-    },
-    {
-      id: 4,
-      name: "Sarah Wilson",
-      admissionNumber: "AGP/SS/2022/004",
-      caMarks: "",
-      examMarks: "",
-      existingCA: 30,
-    },
-    {
-      id: 5,
-      name: "David Brown",
-      admissionNumber: "AGP/SS/2022/005",
-      caMarks: "",
-      examMarks: "",
-      existingCA: 25,
-    },
-  ];
-
-  students.value = mockStudents;
-  studentsLoaded.value = true;
-};
-
+// Validation functions needed for submitMarks
 const isValidCAMark = (mark) => {
-  if (!mark) return false;
+  if (mark === null || mark === "") return false;
   if (mark === "ABS") return true;
-  const num = parseFloat(mark);
-  return !isNaN(num) && num >= 0 && num <= 40;
+  const numMark = parseFloat(mark);
+  return !isNaN(numMark) && numMark >= 0 && numMark <= 40;
 };
 
 const isValidExamMark = (mark) => {
-  if (!mark) return false;
+  if (mark === null || mark === "") return false;
   if (mark === "ABS") return true;
-  const num = parseFloat(mark);
-  return !isNaN(num) && num >= 0 && num <= 60;
+  const numMark = parseFloat(mark);
+  return !isNaN(numMark) && numMark >= 0 && numMark <= 60;
 };
 
-const isInvalidCAMark = (mark) => {
-  if (!mark) return false;
-  if (mark === "ABS") return false;
-  const num = parseFloat(mark);
-  return isNaN(num) || num < 0 || num > 40;
+const getSelectedClassInfo = () => {
+  const selected = getAssignments.value.find(
+    (cls) => cls.class_id === formData.value.current_class_id
+  );
+  return selected ? selected.class_name : "";
 };
 
-const isInvalidExamMark = (mark) => {
-  if (!mark) return false;
-  if (mark === "ABS") return false;
-  const num = parseFloat(mark);
-  return isNaN(num) || num < 0 || num > 60;
+const getSelectedSubjectName = () => {
+  const subject = subjectToDisplay.value.find(
+    (s) => s.id === formData.value.school_subject_id
+  );
+  return subject ? subject.subject_name : "";
 };
 
-const formatMarksInput = (student, field) => {
-  const value = student[field];
-  if (value && value !== "ABS" && !isNaN(parseFloat(value))) {
-    student[field] = parseFloat(value).toString();
+const cancelEntry = () => {
+  if (
+    confirm("Are you sure you want to cancel? All unsaved data will be lost.")
+  ) {
+    // Reset form or navigate back
+    students.value = [];
+    studentsLoaded.value = false;
+    formData.value = {
+      current_class_id: "",
+      school_subject_id: "",
+      assessmentType: "",
+    };
   }
-};
-
-const calculateTotal = (student) => {
-  if (student.examMarks === "ABS") return "ABS";
-  const ca = parseFloat(student.existingCA || 0);
-  const exam = parseFloat(student.examMarks || 0);
-  if (student.examMarks && !isNaN(exam)) {
-    return ca + exam;
-  }
-  return "--";
-};
-
-const getStudentStatus = (student) => {
-  if (assessmentType.value === "CA") {
-    if (student.caMarks === "ABS") return "absent";
-    if (isValidCAMark(student.caMarks)) return "completed";
-    if (isInvalidCAMark(student.caMarks)) return "invalid";
-  } else {
-    if (student.examMarks === "ABS") return "absent";
-    if (isValidExamMark(student.examMarks)) return "completed";
-    if (isInvalidExamMark(student.examMarks)) return "invalid";
-  }
-  return "pending";
-};
-
-const getStudentStatusText = (student) => {
-  const status = getStudentStatus(student);
-  return status.charAt(0).toUpperCase() + status.slice(1);
 };
 
 const clearAllMarks = () => {
-  if (confirm("Are you sure you want to clear all marks?")) {
-    students.value.forEach((student) => {
-      if (assessmentType.value === "CA") {
-        student.caMarks = "";
+  students.value.forEach((student) => {
+    if (formData.value.assessmentType === "CA") {
+      student.caMarks = null;
+    } else {
+      student.examMarks = null;
+    }
+  });
+  toast.info("Marks Cleared", "All marks have been cleared.");
+};
+
+const submitMarks = async () => {
+  // Validate that all students have marks entered
+  const hasIncompleteMarks = students.value.some((student) => {
+    if (formData.value.assessmentType === "CA") {
+      return !isValidCAMark(student.caMarks);
+    } else {
+      return !isValidExamMark(student.examMarks);
+    }
+  });
+
+  if (hasIncompleteMarks) {
+    toast.error(
+      "Validation Error",
+      "Please complete all marks entry before submitting."
+    );
+    return;
+  }
+
+  submitting.value = true;
+
+  try {
+    if (formData.value.assessmentType === "CA") {
+      // Filter students with CA marks
+      const studentsWithCAMarks = students.value.filter(
+        (student) =>
+          student.caMarks !== null &&
+          student.caMarks !== undefined &&
+          student.caMarks !== ""
+      );
+
+      if (studentsWithCAMarks.length > 0) {
+        await updateCA1Score(studentsWithCAMarks);
       } else {
-        student.examMarks = "";
+        toast.warning("No Marks to Submit", "No CA marks found to submit.");
       }
-    });
+    } else if (formData.value.assessmentType === "EXAM") {
+      // Filter students with exam marks
+      const studentsWithExamMarks = students.value.filter(
+        (student) =>
+          student.examMarks !== null &&
+          student.examMarks !== undefined &&
+          student.examMarks !== ""
+      );
+
+      if (studentsWithExamMarks.length > 0) {
+        await updateExamScore(studentsWithExamMarks);
+      } else {
+        toast.warning("No Marks to Submit", "No exam marks found to submit.");
+      }
+    }
+  } catch (error) {
+    console.error("Error in submitMarks:", error);
+    toast.error(
+      "Submission Failed",
+      error.message || "Failed to submit marks. Please try again."
+    );
+  } finally {
+    submitting.value = false;
   }
 };
 
-const submitMarks = () => {
-  if (!canSubmit.value) return;
+const updateCA1Score = async (studentsArray) => {
+  // Filter only students whose CA marks have changed
+  const changedStudents = studentsArray.filter((studentData) => {
+    return String(studentData.caMarks) !== String(studentData.existingCA);
+  });
 
-  console.log("Submitting marks:", students.value);
-  alert("Marks submitted successfully!");
+  if (changedStudents.length === 0) {
+    toast.info(
+      "No Changes Detected",
+      "No CA marks have been modified. Nothing to update."
+    );
+    return Promise.resolve({ status: "success", count: 0 });
+  }
+
+  const data = changedStudents.map((studentData) => ({
+    student_id: studentData.id,
+    current_class_id: formData.value.current_class_id,
+    school_subject_id: formData.value.school_subject_id,
+    current_session_id: termSession.value.session?.id,
+    current_term_id: termSession.value.term?.id,
+    ca_1_score:
+      studentData.caMarks === "ABS" ? "ABS" : parseFloat(studentData.caMarks),
+  }));
+
+  return apiServices
+    .updateCA1Score(data)
+    .then((response) => {
+      const responseData = response.data;
+
+      if (responseData.status === "success") {
+        toast.success(
+          "CA Scores Updated",
+          `CA scores updated successfully for ${
+            responseData.count || changedStudents.length
+          } students`
+        );
+      } else if (responseData.status === "partial_success") {
+        toast.warning(
+          "Partial Success",
+          `${responseData.successful_count} CA scores updated successfully, ${responseData.error_count} failed. Check console for details.`
+        );
+
+        responseData.errors?.forEach((error) => {
+          console.error(`Student ${error.student_id} error:`, error.error);
+        });
+      }
+
+      return responseData;
+    })
+    .catch((error) => {
+      console.error("Error updating CA1 scores:", error);
+      console.error("Full error response:", error.response);
+
+      toast.error(
+        "Update Failed",
+        error.response?.data?.message ||
+          "Failed to update CA scores. Please try again."
+      );
+
+      throw error;
+    });
+};
+
+const updateExamScore = async (studentsArray) => {
+  // Filter only students whose exam marks have changed
+  const changedStudents = studentsArray.filter((studentData) => {
+    return String(studentData.examMarks) !== String(studentData.existingExam);
+  });
+
+  if (changedStudents.length === 0) {
+    toast.info(
+      "No Changes Detected",
+      "No exam marks have been modified. Nothing to update."
+    );
+    return Promise.resolve({ status: "success", count: 0 });
+  }
+
+  const data = changedStudents.map((studentData) => ({
+    student_id: studentData.id,
+    current_class_id: formData.value.current_class_id,
+    school_subject_id: formData.value.school_subject_id,
+    current_session_id: termSession.value.session?.id,
+    current_term_id: termSession.value.term?.id,
+    exam_score:
+      studentData.examMarks === "ABS"
+        ? "ABS"
+        : parseFloat(studentData.examMarks),
+  }));
+
+  return apiServices
+    .updateExamScore(data)
+    .then((response) => {
+      const responseData = response.data;
+
+      if (responseData.status === "success") {
+        toast.success(
+          "Exam Scores Updated",
+          `Exam scores updated successfully for ${
+            responseData.count || changedStudents.length
+          } students`
+        );
+      } else if (responseData.status === "partial_success") {
+        console.log("Partial success errors:", responseData.errors);
+
+        toast.warning(
+          "Partial Success",
+          `${responseData.successful_count} exam scores updated successfully, ${responseData.error_count} failed. Check console for details.`
+        );
+
+        responseData.errors?.forEach((error) => {
+          console.error(`Student ${error.student_id} error:`, error.error);
+        });
+      }
+
+      return responseData;
+    })
+    .catch((error) => {
+      console.error("Error updating exam scores:", error);
+      console.error("Full error response:", error.response);
+
+      toast.error(
+        "Update Failed",
+        error.response?.data?.message ||
+          "Failed to update exam scores. Please try again."
+      );
+
+      throw error;
+    });
 };
 
 const getTermAndSession = () => {
@@ -405,7 +426,6 @@ const getTermAndSession = () => {
     .getTermAndSession()
     .then((response) => {
       termSession.value = response.data.data;
-      console.log("Term and Session Data:", response.data);
     })
     .catch((error) => {
       console.error("Error fetching staff assigned subjects:", error);
@@ -413,10 +433,12 @@ const getTermAndSession = () => {
 };
 
 const getStaffAssigned = () => {
+  store.CLEAR_TEACHER_DATA();
+
   apiServices
     .getStaffAssigned(loginStore.user?.id)
     .then((response) => {
-      assignedSubjects.value = response.data.data;
+      store.SET_TEACHER_DATA(response.data.data);
     })
     .catch((error) => {
       console.error("Error fetching staff assigned subjects:", error);
@@ -424,16 +446,102 @@ const getStaffAssigned = () => {
 };
 
 const getSubjectsToDisplay = () => {
-  const selected = assignedSubjects.value.assignments.find(
-    cls => cls.class_id === formData.value.classId
+  const selected = getAssignments.value.find(
+    (cls) => cls.class_id === formData.value.current_class_id
   );
 
   subjectToDisplay.value = selected ? selected.subjects : [];
 };
 
+const handleClassChange = () => {
+  // Reset subject selection when class changes
+  formData.value.school_subject_id = "";
+  subjectToDisplay.value = [];
+
+  // Reset students
+  students.value = [];
+  studentsLoaded.value = false;
+
+  // Load subjects for the selected class
+  getSubjectsToDisplay();
+};
+
+const handleSubjectChange = () => {
+  // Reset students when subject changes
+  students.value = [];
+  studentsLoaded.value = false;
+};
+
+const handleAssessmentTypeChange = () => {
+  // Reset students when assessment type changes
+  students.value = [];
+  studentsLoaded.value = false;
+};
+
+const getClassStudents = () => {
+  loading.value = true;
+
+  const params = {
+    current_class_id: formData.value.current_class_id,
+    school_subject_id: formData.value.school_subject_id,
+    current_session_id: termSession.value.session?.id,
+    current_term_id: termSession.value.term?.id,
+  };
+
+  apiServices
+    .getAssignedSubjectsByFilters(params)
+    .then((response) => {
+      console.log("Student assigned subjects response:", response.data);
+
+      const responseData = response.data.data;
+      const assignments = responseData.assignments || [];
+
+      // Transform assignments to student format
+      const transformedStudents = assignments.map((assignment) => ({
+        id: assignment.student.id,
+        full_name: assignment.student.full_name,
+        admission_number: assignment.student.admission_number,
+        email: assignment.student.email,
+        phone: assignment.student.phone,
+        assignment_id: assignment.assignment_id,
+        caMarks: assignment.marks.ca_1_score,
+        examMarks: assignment.marks.exam_score,
+        existingCA: assignment.marks.ca_1_score,
+        existingExam: assignment.marks.exam_score,
+      }));
+
+      students.value = transformedStudents;
+      studentsLoaded.value = true;
+    })
+    .catch((error) => {
+      console.error("Error fetching student assigned subjects:", error);
+
+      if (error.response?.status === 404) {
+        toast.warning(
+          "No Students Found",
+          "No students are assigned to this subject for the selected class, session, and term. Please check the assignments."
+        );
+      } else {
+        toast.error(
+          "Failed to Load Students",
+          error.response?.data?.message ||
+            "An error occurred while fetching student assignments."
+        );
+      }
+
+      students.value = [];
+      studentsLoaded.value = false;
+    })
+    .finally(() => {
+      loading.value = false;
+    });
+};
+
 onMounted(() => {
   getTermAndSession();
-  getStaffAssigned();
+  if (!isSubjectLoaded.value) {
+    getStaffAssigned();
+  }
 });
 </script>
 
@@ -524,176 +632,6 @@ onMounted(() => {
 .selection-actions {
   display: flex;
   justify-content: flex-end;
-}
-
-.marks-card {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-}
-
-.marks-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.marks-header h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0;
-}
-
-.summary-badge {
-  padding: 6px 12px;
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.marks-table-container {
-  overflow-x: auto;
-  margin-bottom: 24px;
-}
-
-.marks-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.marks-table th {
-  background: #f8fafc;
-  padding: 12px;
-  text-align: left;
-  font-weight: 600;
-  color: #475569;
-  border-bottom: 2px solid #e2e8f0;
-}
-
-.marks-table td {
-  padding: 12px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.exam-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.student-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.student-avatar {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 600;
-  font-size: 12px;
-}
-
-.marks-input-container {
-  width: 100%;
-}
-
-.marks-input {
-  width: 100%;
-  padding: 8px 12px;
-  border: 2px solid #e2e8f0;
-  border-radius: 6px;
-  font-size: 14px;
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.marks-input:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.marks-input.valid {
-  border-color: #10b981;
-  background: rgba(16, 185, 129, 0.05);
-}
-
-.marks-input.invalid {
-  border-color: #ef4444;
-  background: rgba(239, 68, 68, 0.05);
-}
-
-.exam-marks-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.ca-score {
-  min-width: 60px;
-  text-align: center;
-  font-weight: 600;
-  color: #64748b;
-}
-
-.exam-input-container {
-  flex: 1;
-}
-
-.exam-input {
-  max-width: 80px;
-}
-
-.total-score {
-  min-width: 60px;
-  text-align: center;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.status-badge {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: capitalize;
-}
-
-.status-badge.completed {
-  background: rgba(16, 185, 129, 0.1);
-  color: #059669;
-}
-
-.status-badge.pending {
-  background: rgba(245, 158, 11, 0.1);
-  color: #d97706;
-}
-
-.status-badge.invalid {
-  background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
-}
-
-.status-badge.absent {
-  background: rgba(107, 114, 128, 0.1);
-  color: #6b7280;
-}
-
-.marks-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
 }
 
 .empty-state {

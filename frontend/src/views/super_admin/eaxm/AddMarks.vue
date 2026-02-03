@@ -202,7 +202,7 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "../../../composables/useToast";
 import apiServices from "../../../services/apiServices";
-import MarksEntryTable from "./components/MarksEntryTable.vue";
+import MarksEntryTable from "../../../components/add-marks/MarksEntryTable.vue";
 
 const router = useRouter();
 const toast = useToast();
@@ -323,12 +323,6 @@ const getClassStudents = () => {
 
       students.value = transformedStudents;
       studentsLoaded.value = true;
-      // toast.success(
-      //   "Students Loaded",
-      //   `${transformedStudents.length} students loaded successfully. ${
-      //     summary.students_with_ca || 0
-      //   } have CA marks, ${summary.students_with_exam || 0} have exam marks.`
-      // );
     })
     .catch((error) => {
       console.error("Error fetching student assigned subjects:", error);
@@ -390,29 +384,6 @@ const loadStudentsList = () => {
   studentsLoaded.value = false;
 
   getClassStudents();
-};
-
-const calculateGrade = (student) => {
-  // This function can be removed or simplified since we're not showing grades
-  // Keeping it minimal in case it's needed for backend processing
-};
-
-// Calculate total score for a student (CA + Exam)
-const calculateStudentTotal = (student) => {
-  const caScore = parseFloat(student.caMarks || student.existingCA || 0);
-  const examScore = parseFloat(student.examMarks || 0);
-
-  // Only calculate if both scores are valid numbers
-  if (
-    !isNaN(caScore) &&
-    !isNaN(examScore) &&
-    student.examMarks &&
-    student.examMarks !== "ABS"
-  ) {
-    return caScore + examScore;
-  }
-
-  return 0;
 };
 
 // Validation functions needed for submitMarks
