@@ -3,6 +3,8 @@ const {
   authenticate,
   checkSchoolAccess,
   authorize,
+  checkSystemAccess,
+  requireSuperAdmin,
 } = require("../middleware/auth");
 const {
   validate,
@@ -16,46 +18,57 @@ const router = express.Router();
 router.get(
   "/",
   authenticate,
-  authorize(["super_admin", "admin","teacher","student","parent"]),
+  authorize(["super_admin", "admin", "teacher", "student", "parent"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   validateQuery(schemas.pagination),
-  schoolClassController.getAll
+  schoolClassController.getAll,
 );
 
 router.get(
   "/row",
   authenticate,
-  authorize(["super_admin", "admin","teacher","student","parent"]),
-  schoolClassController.getAllRowClases
+  authorize(["super_admin", "admin", "teacher", "student", "parent"]),
+  schoolClassController.getAllRowClases,
+  checkSchoolAccess,
+  checkSystemAccess,
 );
 
 router.get(
   "/:id",
   authenticate,
-  authorize(["super_admin", "admin","teacher","student","parent"]),
-  schoolClassController.getById
+  authorize(["super_admin", "admin", "teacher", "student", "parent"]),
+  checkSchoolAccess,
+  checkSystemAccess,
+  schoolClassController.getById,
 );
-
 
 router.post(
   "/",
   authenticate,
-  authorize(["super_admin", "admin"]),
+  requireSuperAdmin,
   validate(schemas.schoolClassCreation),
-  schoolClassController.create
+  schoolClassController.create,
+  checkSchoolAccess,
+  checkSystemAccess,
 );
 
 router.put(
   "/:id",
   authenticate,
-  authorize(["super_admin", "admin"]),
-  schoolClassController.update
+  requireSuperAdmin,
+  schoolClassController.update,
+  checkSchoolAccess,
+  checkSystemAccess,
 );
 
 router.delete(
   "/:id",
   authenticate,
-  authorize(["super_admin", "admin"]),
-  schoolClassController.delete
+  requireSuperAdmin,
+  schoolClassController.delete,
+  checkSchoolAccess,
+  checkSystemAccess,
 );
 
 module.exports = router;

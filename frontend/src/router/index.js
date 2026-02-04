@@ -15,7 +15,7 @@ const router = createRouter({
     {
       path: "/",
       name: "login",
-      component: () => import("../views/Login2.vue"),
+      component: () => import("../views/Login.vue"),
       meta: {
         requiresAuth: false,
         title: "Login",
@@ -329,7 +329,6 @@ const router = createRouter({
       ],
     },
 
-
     // Teacher Routes
     {
       path: "/teacher",
@@ -341,7 +340,7 @@ const router = createRouter({
           component: () => import("../views/teacher/Dashboard.vue"),
           meta: {
             requiresAuth: true,
-            roles: ['teacher'],
+            roles: ["teacher"],
             title: "Teacher Dashboard",
             description:
               "Manage your classes, students, and academic activities.",
@@ -356,6 +355,18 @@ const router = createRouter({
             roles: ["teacher"],
             title: "Enter Marks",
             description: "Record marks for your assigned classes.",
+          },
+        },
+        {
+          path: "/teacher-profile",
+          name: "teacher-profile",
+          component: () => import("../views/teacher/TeacherProfile.vue"),
+          meta: {
+            requiresAuth: true,
+            title: "My Profile",
+            roles: ["teacher"],
+
+            description: "View and update your profile information.",
           },
         },
         // Add more teacher routes as needed

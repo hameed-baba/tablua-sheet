@@ -2,6 +2,8 @@ const express = require("express");
 const {
   authenticate,
   authorize,
+  checkSchoolAccess,
+  checkSystemAccess,
 } = require("../middleware/auth");
 const {
   validate,
@@ -15,16 +17,20 @@ const router = express.Router();
 router.get(
   "/",
   authenticate,
-  authorize(["super_admin", "admin","teacher","student","parent"]),
+  authorize(["super_admin", "admin", "teacher", "student", "parent"]),
   validateQuery(schemas.pagination),
-  gradeListController.getAllGradeLists
+  gradeListController.getAllGradeLists,
+  checkSchoolAccess,
+  checkSystemAccess,
 );
 
 router.get(
   "/:id",
   authenticate,
-  authorize(["super_admin", "admin","teacher","student","parent"]),
-  gradeListController.getGradeListById
+  authorize(["super_admin", "admin", "teacher", "student", "parent"]),
+  gradeListController.getGradeListById,
+  checkSchoolAccess,
+  checkSystemAccess,
 );
 
 router.post(
@@ -32,21 +38,27 @@ router.post(
   authenticate,
   authorize(["super_admin", "admin"]),
   validate(schemas.gradeListCreation),
-  gradeListController.createGradeList
+  gradeListController.createGradeList,
+  checkSchoolAccess,
+  checkSystemAccess,
 );
 
 router.put(
   "/:id",
   authenticate,
   authorize(["super_admin", "admin"]),
-  gradeListController.updateGradeList
+  gradeListController.updateGradeList,
+  checkSchoolAccess,
+  checkSystemAccess,
 );
 
 router.delete(
   "/:id",
   authenticate,
   authorize(["super_admin", "admin"]),
-  gradeListController.deleteGradeList
+  gradeListController.deleteGradeList,
+  checkSchoolAccess,
+  checkSystemAccess,
 );
 
 module.exports = router;

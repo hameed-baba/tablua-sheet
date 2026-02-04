@@ -11,6 +11,16 @@ const loginStore = useLoginStore();
 const res = ref(null);
 
 onMounted(() => {
+  // Check if user explicitly logged out
+  const explicitLogout = localStorage.getItem("tebulasheet_explicit_logout");
+  
+  if (explicitLogout) {
+    // User explicitly logged out, don't auto-login even if token exists
+    localStorage.removeItem("tebulasheet_active_user");
+    localStorage.removeItem("tebulasheet_explicit_logout");
+    return;
+  }
+
   const authUser = localStorage.getItem("tebulasheet_active_user");
 
   if (authUser) {

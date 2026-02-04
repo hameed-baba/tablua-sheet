@@ -3,6 +3,9 @@ const {
   authenticate,
 
   authorize,
+  checkSchoolAccess,
+  checkSystemAccess,
+  requireSuperAdmin,
 } = require("../middleware/auth");
 const { schoolSessionController } = require("../controllers");
 
@@ -11,58 +14,74 @@ const router = express.Router();
 router.get(
   "/",
   authenticate,
-  authorize(["super_admin", "admin"]),
-  schoolSessionController.getAll
+  authorize(["super_admin", "admin", "teacher", "student", "parent"]),
+  checkSchoolAccess,
+  checkSystemAccess,
+  schoolSessionController.getAll,
 );
 
 router.get(
   "/row",
   authenticate,
-  authorize(["super_admin", "admin"]),
-  schoolSessionController.getAllSession
+  authorize(["super_admin", "admin", "teacher", "student", "parent"]),
+  checkSchoolAccess,
+  checkSystemAccess,
+  schoolSessionController.getAllSession,
 );
 
 // Get active session
 router.get(
   "/active",
   authenticate,
-  authorize(["super_admin", "admin"]),
-  schoolSessionController.getActiveSession
+  authorize(["super_admin", "admin", "teacher", "student", "parent"]),
+  checkSchoolAccess,
+  checkSystemAccess,
+  schoolSessionController.getActiveSession,
 );
 
 router.get(
   "/:id",
   authenticate,
-  authorize(["super_admin", "admin"]),
-  schoolSessionController.getById
+  authorize(["super_admin", "admin", "teacher", "student", "parent"]),
+  checkSchoolAccess,
+  checkSystemAccess,
+  schoolSessionController.getById,
 );
 
 router.post(
   "/",
   authenticate,
-  authorize(["super_admin", "admin"]),
-  schoolSessionController.createSession
+  requireSuperAdmin,
+  checkSchoolAccess,
+  checkSystemAccess,
+  schoolSessionController.createSession,
 );
 
 router.put(
   "/:id",
   authenticate,
-  authorize(["super_admin", "admin"]),
-  schoolSessionController.update
+  requireSuperAdmin,
+  checkSchoolAccess,
+  checkSystemAccess,
+  schoolSessionController.update,
 );
 
 router.put(
   "/:id/activate",
   authenticate,
-  authorize(["super_admin", "admin"]),
-  schoolSessionController.activateSession
+  requireSuperAdmin,
+  checkSchoolAccess,
+  checkSystemAccess,
+  schoolSessionController.activateSession,
 );
 
 router.delete(
   "/:id",
   authenticate,
-  authorize(["super_admin", "admin"]),
-  schoolSessionController.delete
+  requireSuperAdmin,
+  checkSchoolAccess,
+  checkSystemAccess,
+  schoolSessionController.delete,
 );
 
 module.exports = router;

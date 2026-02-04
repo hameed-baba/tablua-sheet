@@ -56,7 +56,7 @@ const login = asyncHandler(async (req, res) => {
     const token = jwt.sign(
       { id: staff.id, email: staff.email },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+      { expiresIn: process.env.JWT_EXPIRES_IN || '1m' }
     );
 
     // Record login session

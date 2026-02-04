@@ -16,8 +16,19 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                />
               </svg>
               Subject <span class="required">*</span>
             </label>
@@ -34,15 +45,28 @@
                 :disabled="isSubjectTaken(subject.id)"
               >
                 {{ subject.subject_name }}
-                <span v-if="isSubjectTaken(subject.id)"> (Already assigned)</span>
+                <span v-if="isSubjectTaken(subject.id)">
+                  (Already assigned)</span
+                >
               </option>
             </select>
           </div>
 
           <div class="form-group">
             <label class="form-label">
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
               </svg>
               Teacher <span class="required">*</span>
             </label>
@@ -73,9 +97,9 @@
         <button type="button" class="btn btn-cancel" @click="toggleModal">
           Cancel
         </button>
-        <button 
-          type="button" 
-          class="btn btn-success" 
+        <button
+          type="button"
+          class="btn btn-success"
           :disabled="submitting || !canUpdate"
           @click="updateAssignment"
         >
@@ -103,8 +127,8 @@ const emit = defineEmits(["send-status"]);
 const props = defineProps({
   assignmentId: {
     type: [Number, String],
-    default: null
-  }
+    default: null,
+  },
 });
 
 const loadingData = ref(false);
@@ -131,32 +155,36 @@ const originalData = ref({});
 
 // Computed properties
 const canUpdate = computed(() => {
-  return formData.value.school_subject_id && 
-         formData.value.school_staff_id &&
-         !isDuplicateAssignment();
+  return (
+    formData.value.school_subject_id &&
+    formData.value.school_staff_id &&
+    !isDuplicateAssignment()
+  );
 });
 
 // Helper functions
 const isSubjectTaken = (subjectId) => {
   // Check if subject is already assigned to another assignment (excluding current one)
-  return existingAssignments.value.some(assignment => 
-    assignment.school_subject_id == subjectId && 
-    assignment.id != props.assignmentId
+  return existingAssignments.value.some(
+    (assignment) =>
+      assignment.school_subject_id == subjectId &&
+      assignment.id != props.assignmentId
   );
 };
 
 const isDuplicateAssignment = () => {
   // Check if this exact combination already exists (excluding current assignment)
-  return existingAssignments.value.some(assignment => 
-    assignment.school_subject_id == formData.value.school_subject_id &&
-    assignment.school_staff_id == formData.value.school_staff_id &&
-    assignment.id != props.assignmentId
+  return existingAssignments.value.some(
+    (assignment) =>
+      assignment.school_subject_id == formData.value.school_subject_id &&
+      assignment.school_staff_id == formData.value.school_staff_id &&
+      assignment.id != props.assignmentId
   );
 };
 
 const toggleModal = () => {
   showModal.value = !showModal.value;
-  
+
   if (showModal.value && props.assignmentId) {
     loadAssignmentData();
   } else {
@@ -177,33 +205,38 @@ const resetForm = () => {
 
 const loadAssignmentData = async () => {
   if (!props.assignmentId) return;
-  
+
   loadingData.value = true;
-  
+
   try {
     // Load the specific assignment data
-    const assignmentResponse = await apiServices.getClassSubjectAssignmentById(props.assignmentId);
+    const assignmentResponse = await apiServices.getClassSubjectAssignmentById(
+      props.assignmentId
+    );
     const assignment = assignmentResponse.data.data;
-    
+
     // Load available subjects and teachers
-    const dataResponse = await apiServices.getStaffWithSubjectsByClassId(classId.value);
+    const dataResponse = await apiServices.getStaffWithSubjectsByClassId(
+      classId.value
+    );
     availableSubjects.value = dataResponse.data.data?.subjects || [];
     teachers.value = dataResponse.data.data?.staff || [];
-    
+
     // Load existing assignments for duplicate checking
-    const assignmentsResponse = await apiServices.getClassAssignedSubject(classId.value);
+    const assignmentsResponse = await apiServices.getClassAssignedSubject(
+      classId.value
+    );
     existingAssignments.value = assignmentsResponse.data.data || [];
-    
+
     // Set form data
     formData.value = {
       school_subject_id: assignment.school_subject_id,
       school_staff_id: assignment.school_staff_id,
       school_class_id: assignment.school_class_id,
     };
-    
+
     // Store original data for comparison
     originalData.value = { ...formData.value };
-    
   } catch (error) {
     console.error("Error loading assignment data:", error);
     errorMessage.value = "Failed to load assignment data";
@@ -215,40 +248,48 @@ const loadAssignmentData = async () => {
 
 const updateAssignment = async () => {
   validationError.value = "";
-  
+
   // Validate form
   if (!formData.value.school_subject_id) {
     validationError.value = "Please select a subject";
     return;
   }
-  
+
   if (!formData.value.school_staff_id) {
     validationError.value = "Please select a teacher";
     return;
   }
-  
+
   // Check for duplicates
   if (isDuplicateAssignment()) {
     validationError.value = "This assignment combination already exists";
     return;
   }
-  
+
   submitting.value = true;
   errorMessage.value = "";
 
   try {
-    const response = await apiServices.updateClassSubjectAssignment(props.assignmentId, formData.value);
+    const response = await apiServices.updateClassSubjectAssignment(
+      props.assignmentId,
+      formData.value
+    );
 
     if (response.status === 200) {
-      toast.success("Assignment Updated", "Subject assignment updated successfully");
+      toast.success(
+        "Assignment Updated",
+        "Subject assignment updated successfully"
+      );
       resetForm();
       toggleModal();
       emit("send-status", "success");
     }
   } catch (error) {
     console.error("Error updating assignment:", error);
-    errorMessage.value = error.response?.data?.message || "An error occurred while updating the assignment";
-    
+    errorMessage.value =
+      error.response?.data?.message ||
+      "An error occurred while updating the assignment";
+
     setTimeout(() => {
       errorMessage.value = "";
     }, 5000);
@@ -258,11 +299,14 @@ const updateAssignment = async () => {
 };
 
 // Watch for assignment ID changes
-watch(() => props.assignmentId, (newId) => {
-  if (newId && showModal.value) {
-    loadAssignmentData();
+watch(
+  () => props.assignmentId,
+  (newId) => {
+    if (newId && showModal.value) {
+      loadAssignmentData();
+    }
   }
-});
+);
 
 defineExpose({
   toggleModal,
@@ -371,7 +415,7 @@ defineExpose({
   .assignment-form {
     padding: 16px;
   }
-  
+
   .form-row {
     gap: 16px;
   }

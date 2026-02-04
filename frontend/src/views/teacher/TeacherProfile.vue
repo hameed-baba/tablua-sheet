@@ -58,7 +58,7 @@
           <div class="info-grid">
             <div class="info-item">
               <span class="info-label">Full Name</span>
-              <span class="info-value">{{ staffMember.full_name || "N/A" }}</span>
+              <span class="info-value">{{ user.full_name || "N/A" }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Email Address</span>

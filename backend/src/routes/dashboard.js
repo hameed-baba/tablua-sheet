@@ -3,18 +3,35 @@ const {
   getDashboardOverview,
   getDashboardSummary,
 } = require("../controllers/dashboardController");
-const { authenticate } = require("../middleware/auth");
+const {
+  authenticate,
+  authorize,
+  checkSchoolAccess,
+  checkSystemAccess,
+} = require("../middleware/auth");
 
 const router = express.Router();
 
-// All routes require authentication
-router.use(authenticate);
 
 // Get complete dashboard statistics
-router.get("/summary", getDashboardSummary);
+router.get(
+  "/summary",
+  authenticate,
+  authorize(["super_admin", "admin"]),
+  checkSystemAccess,
+  checkSchoolAccess,
+  getDashboardSummary,
+);
 
 // Get simplified dashboard overview
-router.get("/overview", getDashboardOverview);
+router.get(
+  "/overview",
+  authorize(["super_admin", "admin"]),
+  checkSystemAccess,
+  checkSchoolAccess,
+  getDashboardSummary,
+  getDashboardOverview,
+);
 
 // Get current session and term information
 
