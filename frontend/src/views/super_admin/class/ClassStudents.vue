@@ -482,12 +482,14 @@ const summary = ref({
   totalFemale: 0,
 });
 
+const isRemoving = ref(false);
+
 const classInfo = ref({});
 const classId = ref(null);
 const students = ref([]);
 const loading = ref(false);
 const activeTab = ref("students");
-const singleAssignPayload = ref([]);
+const singleAssignPayload = ref({});
 const pagination = ref({
   currentPage: 1,
   totalPages: 0,
@@ -656,74 +658,73 @@ const getClassStudents = (id, page = 1) => {
     params.gender = filters.value.gender;
   }
 
-apiServices
-  .getStudentsByClassId(id, params)
-  .then((response) => {
-    // Check 204 first
-    if (response.status === 204) {
-      students.value = [];
-      summary.value = {
+  apiServices
+    .getStudentsByClassId(id, params)
+    .then((response) => {
+      // Check 204 first
+      if (response.status === 204) {
+        students.value = [];
+        summary.value = {
+          totalStudents: 0,
+          totalMale: 0,
+          totalFemale: 0,
+        };
+        classInfo.value = {
+          class_name: "",
+          class_master: "",
+          class_section: "",
+          grade_name: "",
+        };
+
+        toast.error("No Students", "This class has no students assigned yet.");
+        loading.value = false;
+        return; // Stop further processing
+      }
+
+      // Normal 200 response
+      const data = response.data?.data?.students || [];
+      const summaryData = response.data?.data?.summary || {
         totalStudents: 0,
         totalMale: 0,
         totalFemale: 0,
       };
+
+      summary.value = summaryData;
+      students.value = data;
+
       classInfo.value = {
-        class_name: "",
-        class_master: "",
-        class_section: "",
-        grade_name: "",
+        class_name: data[0]?.Class?.class_name || "",
+        class_master: data[0]?.Class?.SchoolStaff?.full_name || "",
+        class_section: data[0]?.Class?.Section?.section_name || "",
+        grade_name: data[0]?.Class?.GradeList?.grade_name || "",
       };
 
-      toast.error("No Students", "This class has no students assigned yet.");
+      // Pagination
+      const paginate = response.data?.data?.pagination;
+      if (paginate) {
+        pagination.value = {
+          currentPage: paginate.currentPage,
+          totalPages: paginate.totalPages,
+          totalCount: paginate.totalCount,
+          limit: paginate.limit,
+          hasNextPage: paginate.hasNextPage,
+          hasPrevPage: paginate.hasPrevPage,
+        };
+      }
+
       loading.value = false;
-      return; // Stop further processing
-    }
+    })
+    .catch((error) => {
+      console.error("Error fetching students:", error);
 
-    // Normal 200 response
-    const data = response.data?.data?.students || [];
-    const summaryData = response.data?.data?.summary || {
-      totalStudents: 0,
-      totalMale: 0,
-      totalFemale: 0,
-    };
-
-    summary.value = summaryData;
-    students.value = data;
-
-    classInfo.value = {
-      class_name: data[0]?.Class?.class_name || "",
-      class_master: data[0]?.Class?.SchoolStaff?.full_name || "",
-      class_section: data[0]?.Class?.Section?.section_name || "",
-      grade_name: data[0]?.Class?.GradeList?.grade_name || "",
-    };
-
-    // Pagination
-    const paginate = response.data?.data?.pagination;
-    if (paginate) {
-      pagination.value = {
-        currentPage: paginate.currentPage,
-        totalPages: paginate.totalPages,
-        totalCount: paginate.totalCount,
-        limit: paginate.limit,
-        hasNextPage: paginate.hasNextPage,
-        hasPrevPage: paginate.hasPrevPage,
-      };
-    }
-
-    loading.value = false;
-  })
-  .catch((error) => {
-    console.error("Error fetching students:", error);
-
-    toast.error(
-      "Failed to Load Students",
-      error.response?.data?.message ||
-        "An error occurred while fetching students."
-    );
-    students.value = [];
-    loading.value = false;
-  });
-
+      toast.error(
+        "Failed to Load Students",
+        error.response?.data?.message ||
+          "An error occurred while fetching students."
+      );
+      students.value = [];
+      loading.value = false;
+    });
 };
 
 const getClassSubjects = async () => {
@@ -799,6 +800,35 @@ const assignSubjectToClassStudents = async (data) => {
     });
 };
 
+const removeSubjectFromClassStudents = async (data) => {
+  isRemoving.value = true;
+
+  apiServices
+    .removeSubjectFromClassStudents(data)
+    .then((response) => {
+      if (response.status === 200) {
+        toast.success(
+          "Subject Removed",
+          response.data.message || "Subject has been removed from this class."
+        );
+      } else {
+        toast.error("error", "Assignment Failed");
+      }
+      getClassSubjects();
+    })
+    .catch((error) => {
+      console.error(error);
+
+      toast.error(
+        "error",
+        error?.response?.data?.message || "Something went wrong"
+      );
+    })
+    .finally(() => {
+      isRemoving.value = false;
+    });
+};
+
 const assignSUbjectBtn = computed(() => {
   return isAssigningSubjects.value
     ? "<i class='fa fa-spinner fa-spin'></i> Assigning..."
@@ -825,19 +855,31 @@ const removeSubjectConfirmation = (subject) => {
   showDeleteSubjectModal.value = true;
 };
 
-const removeSubject = async () => {
+const removeSubject = async (id) => {
   // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
 
-  // Remove from local array
-  assignedSubjects.value = assignedSubjects.value.filter(
-    (s) => s.id !== selectedSubject.value.id
-  );
+  if (!students.value?.length) {
+    toast.error("error", "No students available for assignment");
+    return;
+  }
 
-  toast.success(
-    "Subject Removed",
-    `${selectedSubject.value.subject_name} has been removed from this class.`
-  );
+  if (!selectedSubject.value) {
+    toast.error("error", "No subject found", "Selected subject not found");
+    return;
+  }
+
+  const studentinfo = students.value[0];
+
+  singleAssignPayload.value = {
+    subject_id: selectedSubject.value.school_subject_id,
+    current_class_id: studentinfo.current_class_id,
+    current_session_id: studentinfo.current_session_id,
+    class_subject_assign_id:selectedSubject.value.id,
+  };
+
+  console.log(singleAssignPayload.value);
+
+  await removeSubjectFromClassStudents(singleAssignPayload.value);
 
   showDeleteSubjectModal.value = false;
 };

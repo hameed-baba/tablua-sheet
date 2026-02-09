@@ -284,9 +284,9 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import { useLoginStore } from "../../store/loginStore";
-import apiServices from "../../services/apiServices";
-import { useToast } from "../../composables/useToast";
+import { useLoginStore } from "../store/loginStore";
+import apiServices from "../services/apiServices";
+import { useToast } from "../composables/useToast";
 
 const loginStore = useLoginStore();
 const toast = useToast()

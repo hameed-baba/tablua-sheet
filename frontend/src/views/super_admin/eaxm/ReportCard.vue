@@ -207,9 +207,62 @@
         <div class="position-box">
           <div class="position-header">Position</div>
           <div class="position-value">
-            {{ student.performance.display_position }}
+            {{ student.performance?.display_position }}
           </div>
         </div>
+      </div>
+      <!-- <div class="d-flex justify-content-end">
+        <button
+          @click="getSingleStudent(student.student?.id)"
+          class="add-btn btn-primary me-4 mt-2"
+        >
+          Download
+        </button>
+      </div> -->
+
+      <div class="d-flex justify-content-end">
+        <button
+          @click="getSingleStudentPdf(student.student?.id)"
+          class="add-btn  me-4 mt-2"
+          :disabled="isGeneratingSinglePdf === student.student?.id"
+        >
+          <svg
+            v-if="isGeneratingSinglePdf === student.student?.id"
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            class="animate-spin"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
+          </svg>
+          <svg
+            v-else
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+          {{
+            isGeneratingSinglePdf === student.student?.id
+              ? "Downloading..."
+              : "Download"
+          }}
+        </button>
       </div>
 
       <!-- Main Content: Subjects Table and Summary Boxes -->
@@ -323,7 +376,9 @@
     <!-- No Search Results State -->
     <div
       class="empty-state border"
-      v-if="freshData.length > 0 && filteredReportData.length == 0 && searchQuery"
+      v-if="
+        freshData.length > 0 && filteredReportData.length == 0 && searchQuery
+      "
     >
       <svg
         width="64"
@@ -366,13 +421,12 @@ const filters = ref({
 const reportGenerated = ref(false);
 const allReportData = ref([]);
 const searchQuery = ref("");
-const isGeneratingPDF = ref(false);
+const isGeneratingSinglePdf = ref(false);
 const isGeneratingPDF2 = ref(false);
 const classes = ref([]);
 const sessions = ref([]);
 const subjects = ref([]);
 const gradeList = ref(null);
-
 
 const filteredReportData = computed(() => {
   if (!searchQuery.value.trim()) {
@@ -381,8 +435,8 @@ const filteredReportData = computed(() => {
 
   const query = searchQuery.value.toLowerCase().trim();
   return freshData.value.filter((student) => {
-    const studentName = student.student?.full_name?.toLowerCase() || '';
-    const admissionNo = student.student?.admission_number?.toLowerCase() || '';
+    const studentName = student.student?.full_name?.toLowerCase() || "";
+    const admissionNo = student.student?.admission_number?.toLowerCase() || "";
 
     return studentName.includes(query) || admissionNo.includes(query);
   });
@@ -416,7 +470,6 @@ const getAllRowClases = () => {
     });
 };
 
-
 const printReport = () => {
   window.print();
 };
@@ -442,6 +495,55 @@ const getAssignedSubjects = () => {
         "Failed to Generate Report",
         error.response.data.message || "Could not load broadsheet data"
       );
+    });
+};
+
+const getSingleStudentPdf = (studentId) => {
+  if (!studentId) {
+    toast.error("Error", "Student ID is required");
+    return;
+  }
+
+  // Find the specific student
+  const selectedStudent = freshData.value.find((st) => {
+    // Check different possible ID properties based on your data structure
+    return (
+      st.id === studentId ||
+      st.student?.id === studentId ||
+      st.student_id === studentId
+    );
+  });
+
+  if (!selectedStudent) {
+    toast.error("Error", "Student not found");
+    return;
+  }
+
+  isGeneratingSinglePdf.value = studentId;
+
+  // Send only the single student data to your PDF generation endpoint
+  apiServices
+    // .generateSingleReportCard([selectedStudent])
+    .generateSingleReportCard(selectedStudent)
+    .then((response) => {
+      const pdfBlob = new Blob([response.data], {
+        type: "application/pdf",
+      });
+
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl, "_blank");
+
+
+    })
+    .catch((error) => {
+      console.error("Error generating single PDF:", error);
+      toast.error(
+        "Failed to Download",
+        error.response?.data?.message || "Could not generate PDF"
+      );
+    })
+    .finally(() => {
+      isGeneratingSinglePdf.value = null;
     });
 };
 
@@ -488,7 +590,7 @@ const downloadPdf = () => {
         type: "application/pdf",
       });
       const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
+      link.href = URL.createObjectURL(pdfBlob);
       link.download = "report-cards.pdf";
       link.click();
 
@@ -1275,7 +1377,6 @@ watch(
 /* Subjects Table Section */
 .subjects-section {
   overflow-x: auto;
-
 }
 
 .subjects-table {
@@ -1300,7 +1401,7 @@ watch(
 }
 
 .sn-col {
-  width:0px !important;
+  width: 0px !important;
 }
 
 .subject-col {

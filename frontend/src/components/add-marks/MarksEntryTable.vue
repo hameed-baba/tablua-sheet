@@ -9,7 +9,7 @@
           <span v-else> (Examination) </span>
         </p>
       </div>
-      <div class="marks-summary">
+      <div class="marks-summary mt-1">
         <span class="summary-badge">
           <strong>{{ completedCount }}</strong> /
           {{ students.length }} Completed
@@ -18,28 +18,10 @@
     </div>
 
     <!-- Quick Actions -->
-    <div class="quick-actions">
-      <button class="btn-quick-action" @click="clearAllMarks">
-        <svg
-          width="16"
-          height="16"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-          />
-        </svg>
-        Clear All Marks
-      </button>
-    </div>
+ 
 
     <!-- Enhanced Marks Table -->
-    <div class="table-container">
+    <div class="table-container mt-2">
       <div class="table-header">
         <div class="table-title">
           <svg
@@ -218,6 +200,7 @@
                             student.caMarks || student.existingCA || "--"
                           }}</span>
                         </div>
+
                         <div class="exam-input-wrapper">
                           <input
                             type="text"
@@ -235,6 +218,7 @@
                             @blur="formatMarksInput(student, 'examMarks')"
                           />
                         </div>
+
                         <div
                           class="total-score-display"
                           v-if="
@@ -252,7 +236,7 @@
                 </div>
               </td>
 
-              <td class="col-status">
+              <td class="col-status status-cols">
                 <div class="status-indicator">
                   <span
                     v-if="isStudentAbsent(student)"
@@ -509,15 +493,6 @@ const formatMarksInput = (student, field) => {
   emit("update:students", props.students);
 };
 
-const clearAllMarks = () => {
-  if (
-    confirm(
-      "Are you sure you want to clear all marks? This action cannot be undone."
-    )
-  ) {
-    emit("clear-marks");
-  }
-};
 </script>
 
 <style scoped>
@@ -1114,6 +1089,14 @@ const clearAllMarks = () => {
 
   .marks-range-hint {
     font-size: 9px;
+  }
+}
+
+@media (max-width: 530px) {
+  .col-status,
+  .ca-score-display,
+  .total-score-display {
+    display: none;
   }
 }
 </style>

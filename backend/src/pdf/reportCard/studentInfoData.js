@@ -1,3 +1,4 @@
+const dateFormatter = require("../../utils/dateFormatter");
 
 
 module.exports = studentInfoData = (student) => {
@@ -61,7 +62,7 @@ module.exports = studentInfoData = (student) => {
             fontSize: 9,
           },
           {
-            text: student.student.dob || "-", // fallback if no DOB
+            text: dateFormatter(student.student.dob) || "-", // fallback if no DOB
             fontSize: 9,
           },
           { text: "", fontSize: 9 }, // empty cell to match column

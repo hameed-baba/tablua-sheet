@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   generateAllReportCards,
   generateBroadsheet,
+  generateSingleReportCard,
 } = require("../controllers/pdfController2");
 const {
   authenticate,
@@ -27,6 +28,15 @@ router.post(
   checkSchoolAccess,
   checkSystemAccess,
   generateAllReportCards,
+);
+
+router.post(
+  "/generate-single-reportcard",
+  authenticate,
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
+  generateSingleReportCard,
 );
 router.post(
   "/generate-broadheet",

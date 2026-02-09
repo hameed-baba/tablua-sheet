@@ -217,6 +217,24 @@
                     placeholder="e.g., Excellent, Good"
                   />
                 </div>
+                <div class="form-group">
+                  <label class="form-label">Principal Remark *</label>
+                  <input
+                    type="text"
+                    v-model="range.principal_remark"
+                    class="form-input"
+                    placeholder="e.g., Excellent, Good"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Class Teacher Remark *</label>
+                  <input
+                    type="text"
+                    v-model="range.class_teacher_remark"
+                    class="form-input"
+                    placeholder="e.g., Excellent, Good"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -268,6 +286,8 @@ const formData = ref({
       to_mark: "",
       grade: "",
       remark: "",
+      principal_remark: "",
+      class_teacher_remark: "",
     },
   ],
 });

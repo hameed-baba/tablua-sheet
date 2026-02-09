@@ -159,6 +159,12 @@ export default {
       data,
     );
   },
+  removeSubjectFromClassStudents(data) {
+    return apiClient.delete(
+      "/class-subject-assigns/student/remove-assign-subject",
+     { data,}
+    );
+  },
   getClassSubjectAssignmentById(id) {
     return apiClient.get(`/class-subject-assigns/${id}`);
   },
@@ -485,4 +491,13 @@ export default {
       { responseType: "blob" }, // important to get PDF
     );
   },
+   generateSingleReportCard(studentsData) {
+    return apiClient.post(
+      "/pdf/generate-single-reportcard",
+      studentsData,
+      { responseType: "blob" }, // important to get PDF
+    );
+  },
+
+  
 };

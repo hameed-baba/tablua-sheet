@@ -317,7 +317,7 @@ const router = createRouter({
         {
           path: "/profile",
           name: "profile",
-          component: () => import("../views/super_admin/Profile.vue"),
+          component: () => import("../views/Profile.vue"),
           meta: {
             requiresAuth: true,
             title: "My Profile",
@@ -360,7 +360,8 @@ const router = createRouter({
         {
           path: "/teacher-profile",
           name: "teacher-profile",
-          component: () => import("../views/teacher/TeacherProfile.vue"),
+          component: () => import("../views/Profile.vue"),
+          // component: () => import("../views/teacher/TeacherProfile.vue"),
           meta: {
             requiresAuth: true,
             title: "My Profile",

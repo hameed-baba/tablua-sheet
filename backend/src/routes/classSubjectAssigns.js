@@ -60,6 +60,15 @@ router.post(
   classSubjectAssignController.assignSubjectToClassStudents,
 );
 
+router.post(
+  "/student/remove-assign-subject",
+  authenticate,
+  authorize(["super_admin", "admin"]),
+  checkSystemAccess,
+  checkSchoolAccess,
+  classSubjectAssignController.removeSubjectFromClassStudents,
+);
+
 router.put(
   "/:id",
   authenticate,
@@ -67,6 +76,15 @@ router.put(
   checkSchoolAccess,
   checkSystemAccess,
   classSubjectAssignController.updateAssignment,
+);
+
+router.delete(
+  "/student/remove-assign-subject",
+  authenticate,
+  authorize(["super_admin", "admin"]),
+  checkSystemAccess,
+  checkSchoolAccess,
+  classSubjectAssignController.removeSubjectFromClassStudents,
 );
 
 router.delete(

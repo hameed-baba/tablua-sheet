@@ -16,14 +16,6 @@ module.exports = performanceSummary = (student) => {
         ],
         [
           {
-            text: "Marks Obtained",
-          },
-          {
-            text: student.performance.mark_obtained,
-            bold: true,
-            alignment: "center",
-          },
-          {
             text: "Marks Obtainable",
           },
           {
@@ -31,16 +23,16 @@ module.exports = performanceSummary = (student) => {
             bold: true,
             alignment: "center",
           },
-        ],
-        [
           {
-            text: "Average Marks",
+            text: "Marks Obtained",
           },
           {
-            text: student.performance.average,
+            text: student.performance.mark_obtained,
             bold: true,
             alignment: "center",
           },
+        ],
+        [
           {
             text: "Total Subjects",
           },
@@ -48,6 +40,14 @@ module.exports = performanceSummary = (student) => {
             text: student.performance.total_subjects,
             alignment: "center",
             bold: true,
+          },
+          {
+            text: "Average Marks",
+          },
+          {
+            text: student.performance.average,
+            bold: true,
+            alignment: "center",
           },
         ],
       ],

@@ -47,19 +47,12 @@ module.exports = scoreBreakDown = (student) => {
         ],
 
         ...student.class.grading_name?.gradeSystems.map((grade, index) => [
-          { text: (index + 1).toString() }, 
+          { text: (index + 1).toString(),alignment: "center", }, 
           { text: grade.from_mark }, 
           { text: grade.to_mark ?? "" }, 
-          { text: grade.grade ?? "" }, 
+          { text: grade.grade ?? "",alignment: "center", }, 
           { text: grade.remark ?? "" }, 
         ]),
-
-        // ["1", "0 - 39", "F", "Fail"],
-        // ["2", "40 - 49", "D", "Poor"],
-        // ["3", "50 - 59", "C", "Fair"],
-        // ["4", "60 - 69", "B", "Good"],
-        // ["5", "70 - 74", "B+", "Very Good"],
-        // ["6", "75 - 100", "A", "Excellent"],
       ],
     },
     layout: {
