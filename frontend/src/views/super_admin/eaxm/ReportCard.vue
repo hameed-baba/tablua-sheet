@@ -68,14 +68,24 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Term</label>
-          <select v-model="filters.current_term_id" class="form-select">
+          <label class="form-label">Term *</label>
+          <select
+            v-model="filters.current_term_id"
+            class="form-select"
+            required
+            :disabled="isLoadingTerm"
+          >
             <option value="" selected disabled>Select Term</option>
-            <option value="1">First Term</option>
-            <option value="2">Second Term</option>
-            <option value="3">Third Term</option>
+            <option v-for="term in paidTerms" :value="term.id" :key="term.id">
+              {{ term.term_name }}
+            </option>
+            <option v-if="!paidTerms.length" disabled>
+              No paid term available
+            </option>
           </select>
         </div>
+
+   
 
         <div class="form-group">
           <label class="form-label">Class</label>
@@ -168,7 +178,6 @@
           <span v-else> Showing all {{ freshData.length }} students </span>
         </div>
       </div>
-      <!-- <pre>{{ freshData }}</pre> -->
     </div>
 
     <div
@@ -211,19 +220,12 @@
           </div>
         </div>
       </div>
-      <!-- <div class="d-flex justify-content-end">
-        <button
-          @click="getSingleStudent(student.student?.id)"
-          class="add-btn btn-primary me-4 mt-2"
-        >
-          Download
-        </button>
-      </div> -->
+     
 
       <div class="d-flex justify-content-end">
         <button
           @click="getSingleStudentPdf(student.student?.id)"
-          class="add-btn  me-4 mt-2"
+          class="add-btn me-4 mt-2"
           :disabled="isGeneratingSinglePdf === student.student?.id"
         >
           <svg
@@ -425,8 +427,8 @@ const isGeneratingSinglePdf = ref(false);
 const isGeneratingPDF2 = ref(false);
 const classes = ref([]);
 const sessions = ref([]);
-const subjects = ref([]);
-const gradeList = ref(null);
+const allTerms = ref([]);
+const isLoadingTerm = ref(false);
 
 const filteredReportData = computed(() => {
   if (!searchQuery.value.trim()) {
@@ -442,6 +444,23 @@ const filteredReportData = computed(() => {
   });
 });
 
+const getAllTerm = () => {
+  isLoadingTerm.value = true;
+  apiServices
+    .getAllTerm()
+    .then((response) => {
+      allTerms.value = response.data.data?.terms;
+    })
+    .catch((error) => {
+      console.error("Error fetching terms:", error);
+    })
+    .finally(() => {
+      isLoadingTerm.value = false;
+    });
+};
+const paidTerms = computed(() => {
+  return allTerms.value.filter((term) => Boolean(term.was_paid));
+});
 // API functions
 const getAllRowSessions = () => {
   apiServices
@@ -532,8 +551,6 @@ const getSingleStudentPdf = (studentId) => {
 
       const pdfUrl = URL.createObjectURL(pdfBlob);
       window.open(pdfUrl, "_blank");
-
-
     })
     .catch((error) => {
       console.error("Error generating single PDF:", error);
@@ -605,6 +622,7 @@ const downloadPdf = () => {
 onMounted(() => {
   getAllRowSessions();
   getAllRowClases();
+  getAllTerm();
 });
 
 // Watch for filter changes

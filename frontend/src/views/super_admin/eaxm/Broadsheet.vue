@@ -62,12 +62,20 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Term</label>
-          <select v-model="filters.current_term_id" class="form-select">
+          <label class="form-label">Term *</label>
+          <select
+            v-model="filters.current_term_id"
+            class="form-select"
+            required
+            :disabled="isLoadingTerm"
+          >
             <option value="" selected disabled>Select Term</option>
-            <option value="1">First Term</option>
-            <option value="2">Second Term</option>
-            <option value="3">Third Term</option>
+            <option v-for="term in paidTerms" :value="term.id" :key="term.id">
+              {{ term.term_name }}
+            </option>
+            <option v-if="!paidTerms.length" disabled>
+              No paid term available
+            </option>
           </select>
         </div>
 
@@ -278,12 +286,32 @@ const classes = ref([]);
 const sessions = ref([]);
 const classSubjects = ref([]);
 const students = ref([]);
+const isLoadingTerm = ref(false);
+const allTerms = ref([]);
 
 // Get a specific score for a subject
 const getStudentSubjectScore = (studentData, subjectId, key) => {
   const subject = studentData.subjects.find((s) => s.id === subjectId);
   return subject ? subject[key] : "-";
 };
+
+const getAllTerm = () => {
+  isLoadingTerm.value = true;
+  apiServices
+    .getAllTerm()
+    .then((response) => {
+      allTerms.value = response.data.data?.terms;
+    })
+    .catch((error) => {
+      console.error("Error fetching terms:", error);
+    })
+    .finally(() => {
+      isLoadingTerm.value = false;
+    });
+};
+const paidTerms = computed(() => {
+  return allTerms.value.filter((term) => Boolean(term.was_paid));
+});
 
 // API functions
 const getAllRowSessions = () => {
@@ -374,6 +402,7 @@ const generatePdf = () => {
 onMounted(() => {
   getAllRowSessions();
   getAllRowClases();
+  getAllTerm();
 });
 </script>
 

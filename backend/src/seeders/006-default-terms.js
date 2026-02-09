@@ -5,7 +5,7 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     const terms = [
       {
-        term_name: "Fisrt Term",
+        term_name: "First Term",
         status: "active",
         createdAt: new Date(),
         updatedAt: new Date(),

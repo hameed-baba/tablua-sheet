@@ -17,10 +17,10 @@ module.exports = {
         type: Sequelize.ENUM("active", "inactive"),
         defaultValue: "inactive",
       },
-      payment_status: {
-        type: Sequelize.ENUM("uppaid", "paid", "overdue", "free"),
-        defaultValue: "uppaid",
-      },
+      // payment_status: {
+      //   type: Sequelize.ENUM("uppaid", "paid", "overdue", "free"),
+      //   defaultValue: "uppaid",
+      // },
       first_term_start: {
         type: Sequelize.DATE,
       },
@@ -40,6 +40,30 @@ module.exports = {
       },
       third_term_end: {
         type: Sequelize.DATE,
+      },
+      first_term_payment_mode: {
+        type: Sequelize.ENUM("paid", "free"),
+        defaultValue: "paid",
+      },
+      second_term_payment_mode: {
+        type: Sequelize.ENUM("paid", "free"),
+        defaultValue: "paid",
+      },
+      third_term_payment_mode: {
+        type: Sequelize.ENUM("paid", "free"),
+        defaultValue: "paid",
+      },
+      first_term_was_paid: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+       second_term_was_paid: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+       third_term_was_paid: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
 
       createdAt: {

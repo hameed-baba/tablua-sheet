@@ -18,13 +18,18 @@ module.exports = (sequelize, DataTypes) => {
     {
       session_name: DataTypes.STRING,
       status: DataTypes.ENUM("active", "inactive"),
-      payment_status: DataTypes.ENUM("unpaid", "paid", "overdue", "free"),
       first_term_start: DataTypes.DATE,
       first_term_end: DataTypes.DATE,
       second_term_start: DataTypes.DATE,
       second_term_end: DataTypes.DATE,
       third_term_start: DataTypes.DATE,
       third_term_end: DataTypes.DATE,
+      first_term_payment_mode: DataTypes.ENUM("paid", "free"),
+      second_term_payment_mode: DataTypes.ENUM("paid", "free"),
+      third_term_payment_mode: DataTypes.ENUM("paid", "free"),
+      first_term_was_paid: DataTypes.BOOLEAN,
+      second_term_was_paid: DataTypes.BOOLEAN,
+      third_term_was_paid: DataTypes.BOOLEAN,
     },
 
     {
@@ -32,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "SchoolSession",
       tableName: "school_sessions",
       paranoid: true,
-    }
+    },
   );
 
   return SchoolSession;

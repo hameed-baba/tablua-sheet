@@ -30,13 +30,18 @@ class SchoolSessionController extends BaseController {
     const {
       session_name,
       status = "inactive",
-      payment_status = "unpaid",
       first_term_start,
       first_term_end,
       second_term_start,
       second_term_end,
       third_term_start,
       third_term_end,
+      first_term_payment_mode = "paid",
+      second_term_payment_mode = "paid",
+      third_term_payment_mode = "paid",
+      first_term_was_paid = false,
+      second_term_was_paid = false,
+      third_term_was_paid = false,
     } = req.body;
 
     const existingSession = await SchoolSession.findOne({
@@ -51,13 +56,18 @@ class SchoolSessionController extends BaseController {
     const newSession = await SchoolSession.create({
       session_name,
       status,
-      payment_status,
       first_term_start: this.cleanDate(first_term_start),
       first_term_end: this.cleanDate(first_term_end),
       second_term_start: this.cleanDate(second_term_start),
       second_term_end: this.cleanDate(second_term_end),
       third_term_start: this.cleanDate(third_term_start),
       third_term_end: this.cleanDate(third_term_end),
+      first_term_payment_mode,
+      second_term_payment_mode,
+      third_term_payment_mode,
+      first_term_was_paid,
+      second_term_was_paid,
+      third_term_was_paid,
     });
 
     res.status(201).json({
@@ -134,7 +144,7 @@ class SchoolSessionController extends BaseController {
     const updatedSession = await sequelize.transaction(async (t) => {
       await SchoolSession.update(
         { status: "inactive" },
-        { where: { id: { [Op.not]: id } }, transaction: t }
+        { where: { id: { [Op.not]: id } }, transaction: t },
       );
 
       return await session.update({ status: "active" }, { transaction: t });

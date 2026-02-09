@@ -49,11 +49,19 @@
 
         <div class="form-group">
           <label class="form-label">Term *</label>
-          <select v-model="selection.term" class="form-select" required>
-            <option value="">Select Term</option>
-            <option value="1">First Term</option>
-            <option value="2">Second Term</option>
-            <option value="3">Third Term</option>
+          <select
+            v-model="selection.term"
+            class="form-select"
+            required
+            :disabled="isLoadingTerm"
+          >
+            <option value="" selected disabled>Select Term</option>
+            <option v-for="term in paidTerms" :value="term.id" :key="term.id">
+              {{ term.term_name }}
+            </option>
+            <option v-if="!paidTerms.length" disabled>
+              No paid term available
+            </option>
           </select>
         </div>
 
@@ -211,6 +219,8 @@ const loading = ref(false);
 const submitting = ref(false);
 const studentsLoaded = ref(false);
 const loadingSubjects = ref(false);
+const isLoadingTerm = ref(false);
+const allTerms = ref([]);
 
 const selection = ref({
   session: "",
@@ -234,6 +244,24 @@ const canLoadStudents = computed(() => {
     selection.value.subject &&
     selection.value.assessmentType
   );
+});
+
+const getAllTerm = () => {
+  isLoadingTerm.value = true;
+  apiServices
+    .getAllTerm()
+    .then((response) => {
+      allTerms.value = response.data.data?.terms;
+    })
+    .catch((error) => {
+      console.error("Error fetching terms:", error);
+    })
+    .finally(() => {
+      isLoadingTerm.value = false;
+    });
+};
+const paidTerms = computed(() => {
+  return allTerms.value.filter((term) => Boolean(term.was_paid));
 });
 
 // API Functions
@@ -659,6 +687,7 @@ const updateExamScore = async (studentsArray) => {
 onMounted(() => {
   getAllRowSessions();
   getAllRowClases();
+  getAllTerm();
 });
 </script>
 

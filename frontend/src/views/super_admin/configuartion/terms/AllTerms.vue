@@ -30,6 +30,7 @@
           <tr>
             <th>Secton Name</th>
             <th class="d-none d-lg-table-cell">Status</th>
+            <th class="d-none d-lg-table-cell">Payment Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -48,6 +49,19 @@
                   ]"
                 >
                   {{ term.status == "active" ? "Active" : "Inactive" }}
+                </small>
+              </div>
+                <div class="d-lg-none">
+                <!-- <small class="text-muted">{{ term.status }}</small> -->
+                <small
+                  :class="[
+                    'status-badge',
+                    term.was_paid == true
+                      ? 'status-active'
+                      : 'status-pending',
+                  ]"
+                >
+                  {{ term.was_paid == true ? "Paid" : "Pending" }}
                 </small>
               </div>
               <div class="d-xl-none">
@@ -69,6 +83,20 @@
                 ]"
               >
                 {{ term.status == "active" ? "Active" : "Inactive" }}
+              </span>
+            </td>
+
+               <td class="d-none d-lg-table-cell">
+              <span
+                :class="[
+                    'status-badge',
+                    term.was_paid == true
+                      ? 'status-active'
+                      : 'status-pending',
+                  ]"
+              >
+               
+                  {{ term.was_paid == true ? "Paid" : "Pending" }}
               </span>
             </td>
 
@@ -109,7 +137,7 @@ const getAllTerm = () => {
     .then((response) => {
       // The array of roles is inside response.data.data
       // allTerms.value = response.data.data?.schoolterms;
-      allTerms.value = response.data.data?.schoolterms.map((term) => ({
+      allTerms.value = response.data.data?.terms.map((term) => ({
         ...term,
         buttonState: "activate", // add button state per term
       }));

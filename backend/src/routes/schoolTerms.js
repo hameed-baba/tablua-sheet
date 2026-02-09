@@ -19,7 +19,7 @@ router.get(
   "/",
   authenticate,
   authorize(["super_admin", "admin"]),
-  schoolTermController.getAll,
+  schoolTermController.getAllTerms,
 );
 
 router.get(

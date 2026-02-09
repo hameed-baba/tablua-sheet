@@ -50,6 +50,66 @@ class SchoolTermController extends BaseController {
     });
   });
 
+  getAllTerms = asyncHandler(async (req, res) => {
+    const session = await SchoolSession.findOne({
+      where: { status: "active" },
+    });
+
+    if (!session) {
+      return res.status(404).json({
+        message: "School Session not found",
+      });
+    }
+
+    const terms = await SchoolTerm.findAll({
+      // where: { session_id: session.id },
+      attributes: { exclude: ["updatedAt", "createdAt", "deletedAt"] },
+    });
+
+    // 🔁 Mapping term names to session fields
+    const termMetaMap = {
+      "First Term": {
+        payment_mode: session.first_term_payment_mode,
+        was_paid: session.first_term_was_paid,
+        start: session.first_term_start,
+        end: session.first_term_end,
+      },
+      "Second Term": {
+        payment_mode: session.second_term_payment_mode,
+        was_paid: session.second_term_was_paid,
+        start: session.second_term_start,
+        end: session.second_term_end,
+      },
+      "Third Term": {
+        payment_mode: session.third_term_payment_mode,
+        was_paid: session.third_term_was_paid,
+        start: session.third_term_start,
+        end: session.third_term_end,
+      },
+    };
+
+    const enrichedTerms = terms.map((term) => {
+      const meta = termMetaMap[term.term_name] || {};
+
+      return {
+        ...term.toJSON(),
+        payment_mode: meta.payment_mode ?? null,
+        was_paid: meta.was_paid ?? null,
+        start_date: meta.start ?? null,
+        end_date: meta.end ?? null,
+      };
+    });
+
+    res.json({
+      success: true,
+      message: "Terms retrieved successfully",
+      data: {
+        session_name: session.session_name,
+        terms: enrichedTerms,
+      },
+    });
+  });
+
   getTermAndSession = asyncHandler(async (req, res) => {
     const session = await SchoolSession.findOne({
       where: { status: "active" },
@@ -68,7 +128,7 @@ class SchoolTermController extends BaseController {
     res.json({
       success: true,
       message: "Terms retrieved successfully",
-      data: { term: terms, session: session},
+      data: { term: terms, session: session },
     });
   });
 
