@@ -26,12 +26,23 @@ module.exports = {
         type: Sequelize.DECIMAL(10, 2),
         defaultValue: 0,
       },
-      balance: {
-        type: Sequelize.VIRTUAL,
-      },
+      // balance: {
+      //   type: Sequelize.VIRTUAL,
+      // },
       status: {
         type: Sequelize.ENUM("unpaid", "paid", "overdue", "free"),
         defaultValue: "unpaid",
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
+      deletedAt: {
+        type: Sequelize.DATE,
       },
     });
   },

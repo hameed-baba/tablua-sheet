@@ -1,6 +1,6 @@
 "use strict";
 
-const { Model } = require("sequelize");
+const { Model, ENUM } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   class SchoolSession extends Model {
@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       session_name: DataTypes.STRING,
       status: DataTypes.ENUM("active", "inactive"),
+      // payment_status: ENUM("unpaid", "paid", "overdue", "free"),
       first_term_start: DataTypes.DATE,
       first_term_end: DataTypes.DATE,
       second_term_start: DataTypes.DATE,

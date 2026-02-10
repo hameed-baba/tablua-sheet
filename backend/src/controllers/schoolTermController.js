@@ -157,22 +157,115 @@ class SchoolTermController extends BaseController {
     });
   });
 
-  activateTerm = asyncHandler(async (req, res) => {
-    const { id } = req.params;
+  // activateTerm = asyncHandler(async (req, res) => {
+  //   const { id } = req.params;
 
-    // Find the term to activate
-    const term = await SchoolTerm.findByPk(id);
-    if (!term) {
-      return res.status(404).json({ message: "School Term not found" });
+  //   // Find the term to activate
+  //   const term = await SchoolTerm.findByPk(id);
+  //   if (!term) {
+  //     return res.status(404).json({ message: "School Term not found" });
+  //   }
+
+  //   // Deactivate all terms
+  //   await SchoolTerm.update({ status: "inactive" }, { where: {} });
+
+  //   // Activate the selected term
+  //   await term.update({ status: "active" });
+
+  //   res.json({ message: "School Term activated successfully" });
+  // });
+  activateTerm = asyncHandler(async (req, res) => {
+    const termId = Number(req.params.id);
+
+    // 🔒 Only allow fixed term IDs
+    const VALID_TERMS = [1, 2, 3];
+    if (!VALID_TERMS.includes(termId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid school term",
+      });
     }
 
-    // Deactivate all terms
+    // 1️⃣ Get the term
+    const term = await SchoolTerm.findByPk(termId);
+    if (!term) {
+      return res.status(404).json({
+        success: false,
+        message: "School Term not found",
+      });
+    }
+
+    // 2️⃣ Count sessions
+    const sessionCount = await SchoolSession.count();
+    if (sessionCount === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No school session found",
+      });
+    }
+
+    // 3️⃣ Get current (active) session
+    const currentSession = await SchoolSession.findOne({
+      where: { status: "active" },
+      order: [["createdAt", "DESC"]],
+    });
+
+    if (!currentSession) {
+      return res.status(400).json({
+        success: false,
+        message: "No active school session found",
+      });
+    }
+
+    // 4️⃣ Get last created session (for previous session check)
+    const lastSession = await SchoolSession.findOne({
+      order: [["createdAt", "DESC"]],
+    });
+
+    // 5️⃣ Enforce payment rules
+    switch (termId) {
+      case 1:
+        // ✅ Allow first term freely if this is the first session ever
+        if (sessionCount > 1 && !lastSession.third_term_was_paid) {
+          return res.status(400).json({
+            success: false,
+            message:
+              "You must pay the previous session's third term before activating the first term.",
+          });
+        }
+        break;
+
+      case 2:
+        if (!currentSession.first_term_was_paid) {
+          return res.status(400).json({
+            success: false,
+            message:
+              "You must pay the current session's first term before activating the second term.",
+          });
+        }
+        break;
+
+      case 3:
+        if (!currentSession.second_term_was_paid) {
+          return res.status(400).json({
+            success: false,
+            message:
+              "You must pay the current session's second term before activating the third term.",
+          });
+        }
+        break;
+    }
+
+    // 6️⃣ Deactivate all terms
     await SchoolTerm.update({ status: "inactive" }, { where: {} });
 
-    // Activate the selected term
+    // 7️⃣ Activate selected term
     await term.update({ status: "active" });
 
-    res.json({ message: "School Term activated successfully" });
+    return res.status(200).json({
+      success: true,
+      message: "School Term activated successfully",
+    });
   });
 }
 

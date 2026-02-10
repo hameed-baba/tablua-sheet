@@ -27,7 +27,7 @@ module.exports = {
         student_status: "active",
         current_class_id: faker.number.int({ min: 1, max: 5 }),
         current_session_id: 1,
-        parent_id: faker.number.int({ min: 1, max: 2 }),
+        parent_id: faker.number.int({ min: 1, max: 3 }),
         createdAt: new Date(),
         updatedAt: new Date(),
         // deletedAt: null,

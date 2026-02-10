@@ -255,17 +255,6 @@ const router = createRouter({
               "View comprehensive class performance report with rankings.",
           },
         },
-        // {
-        //   path: "/scoresheet",
-        //   name: "scoresheet",
-        //   component: () => import("../views/super_admin/Scoresheet.vue"),
-        //   meta: {
-        //     requiresAuth: true,
-        //     title: "Scoresheet",
-        //     roles: ['super_admin', 'admin'],
-        //     description: "View detailed student scores for all subjects.",
-        //   },
-        // },
         {
           path: "/report-card",
           name: "report-card",
@@ -437,6 +426,49 @@ const router = createRouter({
   ],
 });
 
+// router.beforeEach((to, from, next) => {
+//   const loginStore = useLoginStore();
+//   const { isAuthenticated, userRole } = storeToRefs(loginStore);
+
+//   document.title = to.meta.title
+//     ? `TebulaSheet | ${to.meta.title}`
+//     : "TebulaSheet";
+
+//   // Handle authentication
+//   if (to.meta.requiresAuth && !isAuthenticated.value) {
+//     // Redirect unauthenticated users to login
+//     next({ name: "login" });
+//     return;
+//   }
+
+//   if (isAuthenticated.value) {
+//     // Prevent logged-in users from accessing login page
+//     const dashboardRouteName = getDashboardRouteName(userRole.value);
+//     next({ name: dashboardRouteName });
+//     return;
+//   }
+
+//   // Handle role-based access control
+//   if (to.meta.roles && isAuthenticated.value) {
+//     const allowedRoles = to.meta.roles;
+
+//     if (!hasRouteAccess(userRole.value, allowedRoles)) {
+//       // User doesn't have permission for this route
+//       next({ name: "forbidden" });
+//       return;
+//     }
+//   }
+
+//   // Handle root path redirect based on user role
+//   if (to.path === "/" && isAuthenticated.value) {
+//     const dashboardRouteName = getDashboardRouteName(userRole.value);
+//     next({ name: dashboardRouteName });
+//     return;
+//   }
+
+//   next();
+// });
+
 router.beforeEach((to, from, next) => {
   const loginStore = useLoginStore();
   const { isAuthenticated, userRole } = storeToRefs(loginStore);
@@ -445,39 +477,29 @@ router.beforeEach((to, from, next) => {
     ? `TebulaSheet | ${to.meta.title}`
     : "TebulaSheet";
 
-  // Handle authentication
+  // 1️⃣ Not authenticated but route requires auth
   if (to.meta.requiresAuth && !isAuthenticated.value) {
-    // Redirect unauthenticated users to login
     next({ name: "login" });
     return;
   }
 
-  if (to.meta.requiresGuest && isAuthenticated.value) {
-    // Prevent logged-in users from accessing login page
+  // 2️⃣ Authenticated user trying to access login
+  if (to.name === "login" && isAuthenticated.value) {
     const dashboardRouteName = getDashboardRouteName(userRole.value);
     next({ name: dashboardRouteName });
     return;
   }
 
-  // Handle role-based access control
+  // 3️⃣ Role-based access
   if (to.meta.roles && isAuthenticated.value) {
-    const allowedRoles = to.meta.roles;
-
-    if (!hasRouteAccess(userRole.value, allowedRoles)) {
-      // User doesn't have permission for this route
+    if (!hasRouteAccess(userRole.value, to.meta.roles)) {
       next({ name: "forbidden" });
       return;
     }
   }
 
-  // Handle root path redirect based on user role
-  if (to.path === "/" && isAuthenticated.value) {
-    const dashboardRouteName = getDashboardRouteName(userRole.value);
-    next({ name: dashboardRouteName });
-    return;
-  }
-
   next();
 });
+
 
 export default router;

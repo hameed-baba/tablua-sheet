@@ -124,6 +124,12 @@
         </template>
       </nav>
 
+      <div class="upgrade-card">
+        <h3>School Invoice</h3>
+        <p>Manage, generate, and track all school invoices in one place.</p>
+        <button class="upgrade-btn">View Now</button>
+      </div>
+
       <button class="logout-btn" @click="logout">
         <svg
           class="nav-icon"

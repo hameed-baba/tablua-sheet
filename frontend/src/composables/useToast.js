@@ -46,7 +46,7 @@ export function useToast() {
       type = 'info',
       title,
       message = '',
-      duration = 4000,
+      duration = 6000,
       persistent = false
     } = options
 
