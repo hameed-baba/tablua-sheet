@@ -507,7 +507,7 @@ onMounted(() => {
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -711,9 +711,9 @@ onMounted(() => {
 }
 
 .tab-btn.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
-  border-color: #667eea;
+  border-color: #3b82f6;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
@@ -812,7 +812,7 @@ onMounted(() => {
   display: inline-flex;
   align-items: center;
   padding: 0.5rem 0.875rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
   font-size: 0.8125rem;
   font-weight: 600;
@@ -907,7 +907,7 @@ onMounted(() => {
 }
 
 .toggle-switch input[type="checkbox"]:checked + .toggle-slider {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
 }
 
 .toggle-switch input[type="checkbox"]:checked + .toggle-slider::before {
@@ -966,7 +966,7 @@ onMounted(() => {
 }
 
 .toggle-switch-small input[type="checkbox"]:checked + .toggle-slider-small {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
 }
 
 .toggle-switch-small

@@ -43,7 +43,7 @@
 <style scoped>
 .demo-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -85,7 +85,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
   text-decoration: none;
   border-radius: 8px;

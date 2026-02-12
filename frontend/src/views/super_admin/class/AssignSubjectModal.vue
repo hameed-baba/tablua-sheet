@@ -460,7 +460,7 @@ defineExpose({
   justify-content: center;
   gap: 8px;
   padding: 12px 32px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
   border: none;
   border-radius: 10px;

@@ -1085,7 +1085,7 @@ onMounted(() => {
 
 /* Action buttons */
 .action-btn.promote {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
   border: none;
   padding: 0.4rem 0.8rem;
@@ -1214,8 +1214,8 @@ onMounted(() => {
 }
 
 .checkbox-label input[type="checkbox"]:checked + .checkmark {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-color: #667eea;
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  border-color: #3b82f6;
 }
 
 .checkbox-label input[type="checkbox"]:checked + .checkmark::after {
@@ -1267,7 +1267,7 @@ onMounted(() => {
 }
 
 .btn-promote {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: #fff;
   border: none;
   padding: 0.75rem 1.5rem;

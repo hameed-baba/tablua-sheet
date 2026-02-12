@@ -358,7 +358,7 @@ onMounted(()=>{
 }
 
 .profile-header-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   border-radius: 16px;
   padding: 32px;
   color: white;

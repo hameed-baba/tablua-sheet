@@ -250,7 +250,7 @@ const clearAllData = async () => {
 }
 
 .config-nav-item.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
   font-weight: 600;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);

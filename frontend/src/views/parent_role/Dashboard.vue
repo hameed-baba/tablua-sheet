@@ -390,7 +390,7 @@ const mockData = ref({
 .child-avatar {
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -498,7 +498,7 @@ const mockData = ref({
 .stat-icon.average { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
 .stat-icon.attendance { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
 .stat-icon.position { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
-.stat-icon.subjects { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.stat-icon.subjects { background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); }
 
 .stat-content h3 {
   font-size: 28px;
@@ -591,7 +591,7 @@ const mockData = ref({
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   border-radius: 4px;
 }
 
@@ -671,7 +671,7 @@ const mockData = ref({
   align-items: center;
   min-width: 50px;
   padding: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
   border-radius: 8px;
 }
@@ -772,7 +772,7 @@ const mockData = ref({
 .action-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
