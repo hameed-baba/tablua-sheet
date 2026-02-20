@@ -14,7 +14,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      amount_to_paid: {
+      amount_paid: {
         type: Sequelize.DECIMAL(10, 2),
         defaultValue: 0,
       },

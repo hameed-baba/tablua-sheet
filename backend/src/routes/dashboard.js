@@ -17,7 +17,7 @@ const router = express.Router();
 router.get(
   "/summary",
   authenticate,
-  authorize(["super_admin", "admin"]),
+  authorize(["super_admin", "admin","system_owner"]),
   checkSystemAccess,
   checkSchoolAccess,
   getDashboardSummary,

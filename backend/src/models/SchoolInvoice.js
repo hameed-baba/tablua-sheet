@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       school_session_id: DataTypes.INTEGER,
       school_term_id: DataTypes.INTEGER,
+      total_students: DataTypes.INTEGER,
       amount_to_pay: DataTypes.DECIMAL,
       amount_to_paid: DataTypes.DECIMAL,
       balance: {

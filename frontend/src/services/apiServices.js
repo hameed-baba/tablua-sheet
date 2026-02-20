@@ -119,7 +119,7 @@ export default {
   getAllTerm() {
     return apiClient.get("/school-terms");
   },
-  getTermAndSession(){
+  getTermAndSession() {
     return apiClient.get("/school-terms/active-terms-session");
   },
   // =================== SUBJECT MANAGEMENT ===================
@@ -162,7 +162,7 @@ export default {
   removeSubjectFromClassStudents(data) {
     return apiClient.delete(
       "/class-subject-assigns/student/remove-assign-subject",
-     { data,}
+      { data },
     );
   },
   getClassSubjectAssignmentById(id) {
@@ -309,7 +309,7 @@ export default {
   getStudentAssignedSubjects(studentId, params = {}) {
     return apiClient.get(`/students/${studentId}/subjects`, { params });
   },
-  generateAddmissionNumber(){
+  generateAddmissionNumber() {
     return apiClient.get("/students/generate-admission-number");
   },
 
@@ -436,7 +436,6 @@ export default {
     });
   },
 
-
   // =================== STAFF ACTIVITY ===================
   getStaffActivityStatus() {
     return apiClient.get("/staff-activity/status");
@@ -456,7 +455,7 @@ export default {
   cleanupStaleSessions() {
     return apiClient.post("/staff-activity/cleanup");
   },
-  getStaffAssigned(id){
+  getStaffAssigned(id) {
     return apiClient.get(`/staff/assigned-subjects/${id}`);
   },
 
@@ -467,7 +466,6 @@ export default {
   getDashboardOverview() {
     return apiClient.get("/dashboard/overview");
   },
- 
 
   // =================== PDF ===================
   // generatePdfMakeReport2() {
@@ -491,7 +489,7 @@ export default {
       { responseType: "blob" }, // important to get PDF
     );
   },
-   generateSingleReportCard(studentsData) {
+  generateSingleReportCard(studentsData) {
     return apiClient.post(
       "/pdf/generate-single-reportcard",
       studentsData,
@@ -499,5 +497,20 @@ export default {
     );
   },
 
-  
+  // =================== SCHOOL INVOICE ===================
+  createSchoolInvoice(data) {
+    return apiClient.post("/invoice/school-invoice", data);
+  },
+  getAllSchoolInvoices() {
+    return apiClient.get("/invoice/school-invoices");
+  },
+  getSchoolInvoiceById(id) {
+    return apiClient.get("/invoice/school-invoice/" + id);
+  },
+  updateSchoolInvoice(id) {
+    return apiClient.put("/invoice/school-invoices/"+id);
+  },
+  deleteSchoolInvoice(id) {
+    return apiClient.delete("/invoice/school-invoices/" + id);
+  },
 };

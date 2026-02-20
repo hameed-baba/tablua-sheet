@@ -51,14 +51,12 @@
                   {{ term.status == "active" ? "Active" : "Inactive" }}
                 </small>
               </div>
-                <div class="d-lg-none">
+              <div class="d-lg-none">
                 <!-- <small class="text-muted">{{ term.status }}</small> -->
                 <small
                   :class="[
                     'status-badge',
-                    term.was_paid == true
-                      ? 'status-active'
-                      : 'status-pending',
+                    term.was_paid == true ? 'status-active' : 'status-pending',
                   ]"
                 >
                   {{ term.was_paid == true ? "Paid" : "Pending" }}
@@ -86,17 +84,14 @@
               </span>
             </td>
 
-               <td class="d-none d-lg-table-cell">
+            <td class="d-none d-lg-table-cell">
               <span
                 :class="[
-                    'status-badge',
-                    term.was_paid == true
-                      ? 'status-active'
-                      : 'status-pending',
-                  ]"
+                  'status-badge',
+                  term.was_paid == true ? 'status-active' : 'status-pending',
+                ]"
               >
-               
-                  {{ term.was_paid == true ? "Paid" : "Pending" }}
+                {{ term.was_paid == true ? "Paid" : "Pending" }}
               </span>
             </td>
 
@@ -108,10 +103,12 @@
               >
                 {{ term.buttonState === "activate" ? "Activate" : "Confirm" }}
               </button>
+              <button class="action-btn" @click="generateInvoice(term)">Generate Invoice</button>
             </td>
           </tr>
         </tbody>
       </table>
+      <pre>{{ selectedTerm }}</pre>
     </div>
   </div>
 </template>
@@ -129,15 +126,16 @@ const modifyRef = ref(null);
 const selectedTerm = ref({});
 const activateRef = ref(null);
 const buttonState = ref("activate");
+const sessionId = ref("");
 
 const getAllTerm = () => {
   loading.value = true;
   apiServices
     .getAllTerm()
     .then((response) => {
-      // The array of roles is inside response.data.data
-      // allTerms.value = response.data.data?.schoolterms;
-      allTerms.value = response.data.data?.terms.map((term) => ({
+      const data = response.data.data;
+      sessionId.value = data.session_id;
+      allTerms.value = data.terms.map((term) => ({
         ...term,
         buttonState: "activate", // add button state per term
       }));
@@ -149,8 +147,6 @@ const getAllTerm = () => {
       loading.value = false;
     });
 };
-
-
 
 const handleButtonClick = (term) => {
   if (term.buttonState === "activate") {
@@ -188,7 +184,7 @@ const activateSelectedTerm = (term) => {
 
         selectedTerm.value = null; // reset selection
       }
-      getAllTerm()
+      getAllTerm();
     })
     .catch((error) => {
       console.error("Error activating term:", error);
@@ -203,6 +199,25 @@ const activateSelectedTerm = (term) => {
     })
     .finally(() => {
       loading.value = false;
+    });
+};
+
+const generateInvoice = (term) => {
+  const payload = {
+    school_session_id: sessionId.value,
+    school_term_id: term.id,
+  };
+
+  console.log(payload);
+
+  // call API
+  apiServices
+    .createSchoolInvoice(payload)
+    .then((response) => {
+      toast.success("Success", "Invoice generated successfully");
+    })
+    .catch((error) => {
+      toast.error("Error", error.response?.data?.message);
     });
 };
 

@@ -315,6 +315,18 @@ const router = createRouter({
             description: "View and update your profile information.",
           },
         },
+        {
+          path: "/school-invoice",
+          name: "school-invoice",
+          component: () => import("../views/super_admin/InvoiceView.vue"),
+          meta: {
+            requiresAuth: true,
+            title: "School Invoice",
+            roles: ["super_admin"],
+
+            description: "View school invoice information.",
+          },
+        },
       ],
     },
 
@@ -500,6 +512,5 @@ router.beforeEach((to, from, next) => {
 
   next();
 });
-
 
 export default router;

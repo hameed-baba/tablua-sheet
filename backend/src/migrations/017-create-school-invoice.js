@@ -18,6 +18,9 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
+      total_students: {
+        type: Sequelize.INTEGER,
+      },
       amount_to_pay: {
         type: Sequelize.DECIMAL(10, 2),
         defaultValue: 0,

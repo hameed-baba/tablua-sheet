@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
   SchoolPayment.init(
     {
       invoice_id: DataTypes.INTEGER,
-      amount_to_paid: DataTypes.DECIMAL,
+      amount_paid: DataTypes.DECIMAL,
       getway: DataTypes.STRING,
       getway_ref: DataTypes.STRING,
       payment_method: DataTypes.ENUM("online", "offline"),

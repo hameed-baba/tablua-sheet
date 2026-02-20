@@ -105,6 +105,7 @@ class SchoolTermController extends BaseController {
       message: "Terms retrieved successfully",
       data: {
         session_name: session.session_name,
+        session_id: session.id,
         terms: enrichedTerms,
       },
     });
