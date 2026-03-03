@@ -17,6 +17,7 @@ class SchoolSessionController extends BaseController {
   getAllSession = asyncHandler(async (req, res) => {
     const allSession = await SchoolSession.findAll({
       attributes: ["id", "session_name"],
+      order: [["createdAt", "DESC"]],
     });
 
     res.json({
@@ -25,59 +26,6 @@ class SchoolSessionController extends BaseController {
       data: allSession,
     });
   });
-
-  // createSession = asyncHandler(async (req, res) => {
-  //   const {
-  //     session_name,
-  //     status = "inactive",
-  //     // payment_status= "unpaind",
-  //     first_term_start,
-  //     first_term_end,
-  //     second_term_start,
-  //     second_term_end,
-  //     third_term_start,
-  //     third_term_end,
-  //     first_term_payment_mode = "paid",
-  //     second_term_payment_mode = "paid",
-  //     third_term_payment_mode = "paid",
-  //     first_term_was_paid = false,
-  //     second_term_was_paid = false,
-  //     third_term_was_paid = false,
-  //   } = req.body;
-
-  //   const existingSession = await SchoolSession.findOne({
-  //     where: { session_name },
-  //   });
-  //   if (existingSession) {
-  //     return res.status(400).json({
-  //       message: "School Session already exist",
-  //     });
-  //   }
-
-  //   const newSession = await SchoolSession.create({
-  //     session_name,
-  //     status,
-  //     // payment_status,
-  //     first_term_start: this.cleanDate(first_term_start),
-  //     first_term_end: this.cleanDate(first_term_end),
-  //     second_term_start: this.cleanDate(second_term_start),
-  //     second_term_end: this.cleanDate(second_term_end),
-  //     third_term_start: this.cleanDate(third_term_start),
-  //     third_term_end: this.cleanDate(third_term_end),
-  //     first_term_payment_mode,
-  //     second_term_payment_mode,
-  //     third_term_payment_mode,
-  //     first_term_was_paid,
-  //     second_term_was_paid,
-  //     third_term_was_paid,
-  //   });
-
-  //   res.status(201).json({
-  //     success: true,
-  //     message: "School Session created successfully",
-  //     data: { createdSession: newSession },
-  //   });
-  // });
 
   // Override the update method to handle date fields properly
 
@@ -105,23 +53,39 @@ class SchoolSessionController extends BaseController {
     });
 
     if (lastSession) {
-      const hasUnpaidTerm =
-        !lastSession.first_term_was_paid ||
-        !lastSession.second_term_was_paid ||
-        !lastSession.third_term_was_paid;
+      // Check each term only if its payment mode is "paid"
+      const unpaidTerms = {};
 
-      if (hasUnpaidTerm) {
+      if (
+        lastSession.first_term_payment_mode === "paid" &&
+        !lastSession.first_term_was_paid
+      ) {
+        unpaidTerms.first_term = true;
+      }
+
+      if (
+        lastSession.second_term_payment_mode === "paid" &&
+        !lastSession.second_term_was_paid
+      ) {
+        unpaidTerms.second_term = true;
+      }
+
+      if (
+        lastSession.third_term_payment_mode === "paid" &&
+        !lastSession.third_term_was_paid
+      ) {
+        unpaidTerms.third_term = true;
+      }
+
+      // If there are any unpaid terms (that were set to "paid" mode), prevent creation
+      if (Object.keys(unpaidTerms).length > 0) {
         return res.status(400).json({
           success: false,
           message:
-            "You have an unpaid school session. Please complete all term payments before creating a new session.",
+            "You have unpaid terms in the previous session. Please complete all required term payments before creating a new session.",
           data: {
             session_name: lastSession.session_name,
-            unpaid_terms: {
-              first_term: !lastSession.first_term_was_paid,
-              second_term: !lastSession.second_term_was_paid,
-              third_term: !lastSession.third_term_was_paid,
-            },
+            unpaid_terms: unpaidTerms,
           },
         });
       }

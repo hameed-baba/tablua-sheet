@@ -7,8 +7,15 @@
         "preview:frontend": "vite preview frontend",
         "start:backend": "cd backend && node src/app.js",
         "dev:backend": "cd backend && nodemon src/app.js",
+        "db:create": "cd backend && npx sequelize-cli db:create",
+        "db:drop": "cd backend && npx sequelize-cli db:drop",
         "db:migrate": "cd backend && npx sequelize-cli db:migrate",
-        "db:seed": "cd backend && npx sequelize-cli db:seed:all"
+        "db:migrate:undo": "cd backend && npx sequelize-cli db:migrate:undo",
+        "db:seed": "cd backend && npx sequelize-cli db:seed:all",
+        "db:seed:undo": "cd backend && npx sequelize-cli db:seed:undo:all",
+        "db:seed:undo:one": "cd backend && npx sequelize-cli db:seed:undo",
+        "db:reset": "cd backend && npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all",
+        "db:fresh": "cd backend && npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all"
     },
     "dependencies": {
         "@faker-js/faker": "^10.1.0",

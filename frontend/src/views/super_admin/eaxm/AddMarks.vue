@@ -260,8 +260,14 @@ const getAllTerm = () => {
       isLoadingTerm.value = false;
     });
 };
+// const paidTerms = computed(() => {
+//   return allTerms.value.filter((term) => Boolean(term.was_paid));
+// });
+
 const paidTerms = computed(() => {
-  return allTerms.value.filter((term) => Boolean(term.was_paid));
+  return allTerms.value.filter(
+    (term) => term.was_paid || term.status === "active"
+  );
 });
 
 // API Functions

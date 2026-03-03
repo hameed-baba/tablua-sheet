@@ -97,18 +97,21 @@
 
             <td>
               <button
+                v-if="term.status !== 'active'"
                 class="action-btn"
                 :class="term.buttonState === 'activate' ? 'present' : 'warning'"
                 @click="handleButtonClick(term)"
               >
                 {{ term.buttonState === "activate" ? "Activate" : "Confirm" }}
               </button>
-              <button class="action-btn" @click="generateInvoice(term)">Generate Invoice</button>
+              <button v-else class="action-btn" disabled>Active</button>
+              <!-- <button class="action-btn" @click="generateInvoice(term)">
+                Generate Invoice
+              </button> -->
             </td>
           </tr>
         </tbody>
       </table>
-      <pre>{{ selectedTerm }}</pre>
     </div>
   </div>
 </template>
@@ -116,16 +119,12 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import apiServices from "../../../../services/apiServices";
-import ActivateTerm from "./ActivateTerm.vue";
 import { useToast } from "../../../../composables/useToast";
 
 const toast = useToast();
 const loading = ref(false);
 const allTerms = ref([]);
-const modifyRef = ref(null);
 const selectedTerm = ref({});
-const activateRef = ref(null);
-const buttonState = ref("activate");
 const sessionId = ref("");
 
 const getAllTerm = () => {
@@ -183,6 +182,9 @@ const activateSelectedTerm = (term) => {
         term.buttonState = "activate";
 
         selectedTerm.value = null; // reset selection
+
+        // Automatically generate invoice after successful activation
+        generateInvoice(term);
       }
       getAllTerm();
     })
@@ -227,4 +229,10 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+.disabled-btn {
+  background-color: #9e9e9e !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+  opacity: 1;
+}
 </style>

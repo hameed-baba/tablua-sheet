@@ -156,18 +156,6 @@ const router = createRouter({
           },
         },
         {
-          path: "/staff/activity",
-          name: "staff-activity",
-          component: () =>
-            import("../views/super_admin/staff/StaffActivity.vue"),
-          meta: {
-            requiresAuth: true,
-            title: "Staff Activity",
-            roles: ["super_admin"],
-            description: "Monitor staff login sessions and activity.",
-          },
-        },
-        {
           path: "/parents",
           name: "parents",
           component: () => import("../views/super_admin/Parents.vue"),

@@ -22,6 +22,7 @@ const termPosition = require("../pdf/reportCard/termPositions");
 const qrCode = require("../pdf/reportCard/qrCode");
 const termCalendar = require("../pdf/reportCard/termCalendar");
 const dateFormatter = require("../utils/dateFormatter");
+const { stack } = require("sequelize/lib/utils");
 
 const generateAllReportCards2 = (req, res) => {
   try {
@@ -244,20 +245,6 @@ const generateAllReportCards = (req, res) => {
       });
     }
 
-    let currentTerm = student.current_term;
-    let nextTermBegin;
-    if (currentTerm.id === 1) {
-      nextTermBegin =
-        "Next term will begin on: " +
-        dateFormatter(student.session?.second_term_start);
-    } else if (currentTerm.id === 2) {
-      nextTermBegin =
-        "Next term will begin on: " +
-        dateFormatter(student.session.third_term_start);
-    } else {
-      nextTermBegin = "SESSION HAS ENDED!";
-    }
-
     // Use standard PDF fonts that don't require embedding
     const fonts = {
       Times: {
@@ -294,6 +281,21 @@ const generateAllReportCards = (req, res) => {
       content: [
         ...studentsData
           .map((student, index) => {
+            // Calculate next term begin date for each student
+            let currentTerm = student.current_term;
+            let nextTermBegin;
+            if (currentTerm.id === 1) {
+              nextTermBegin =
+                "Next term will begin on: " +
+                dateFormatter(student.session?.second_term_start);
+            } else if (currentTerm.id === 2) {
+              nextTermBegin =
+                "Next term will begin on: " +
+                dateFormatter(student.session.third_term_start);
+            } else {
+              nextTermBegin = "SESSION HAS ENDED!";
+            }
+
             return [
               // Repeat header info for each student page
               schoolLogo(),
@@ -356,7 +358,7 @@ const generateAllReportCards = (req, res) => {
                       scoreBreakDown(student),
                       qrCode(student),
                       {
-                        text: currentTerm,
+                        text: nextTermBegin,
                         italics: true,
                         alignment: "center",
                         margin: [0, 10, 0, 0],
@@ -640,7 +642,7 @@ const generateSingleReportCard = (req, res) => {
   }
 };
 
-const generateBroadsheet = (req, res) => {
+const generateBroadsheet3 = (req, res) => {
   try {
     const students = req.body.students || req.body.studentsData;
     const classSubjects = req.body.classSubjects;
@@ -700,7 +702,7 @@ const generateBroadsheet = (req, res) => {
     const className = firstStudent?.class?.name || "SS 2A";
 
     const docDefinition = {
-      pageSize: "A4",
+      pageSize: "A3",
       pageOrientation: "landscape",
       defaultStyle: {
         font: "Helvetica",
@@ -805,7 +807,7 @@ const generateBroadsheet = (req, res) => {
   }
 };
 
-const generateBroadsheet2 = (req, res) => {
+const generateBroadsheet = (req, res) => {
   try {
     const students = req.body.students || req.body.studentsData;
     const classSubjects = req.body.classSubjects;
@@ -831,11 +833,9 @@ const generateBroadsheet2 = (req, res) => {
 
     const tableBody = studentList2(students, classSubjects);
 
-    // Calculate widths - adjust as needed
+    // Calculate widths - 3 columns per subject (CA, Exam, Total)
     const subjectWidths = Array(classSubjects.length * 3).fill("auto");
-    // const subjectWidths = Array(classSubjects.length * 3).fill(35);
-    const widths = ["auto", 55, ...subjectWidths, "auto", "auto", "auto"];
-    // const widths = ["auto", 60, ...subjectWidths, "auto", "auto", "auto"];
+    const widths = ["auto", "*", ...subjectWidths, "auto", "auto", "auto"];
 
     const fonts = {
       Times: {
@@ -867,11 +867,11 @@ const generateBroadsheet2 = (req, res) => {
     const className = firstStudent?.class?.name || "";
 
     const docDefinition = {
-      pageSize: "A4",
+      pageSize: "A3",
       pageOrientation: "landscape",
       defaultStyle: {
         font: "Helvetica",
-        fontSize: 3.3,
+        fontSize: 8,
       },
       styles: {
         header: {
@@ -892,11 +892,22 @@ const generateBroadsheet2 = (req, res) => {
       footer: footerImage,
 
       content: [
-        schoolLogo(160, 100),
-        getSchoolName(18),
-        getSchoolAddress(9),
-        getSchoolMotto(8),
-        dashSeparator(768),
+        {
+          columns: [
+            schoolLogo(180, 120),
+            {
+              margin: [0, 20, 0, 0],
+              stack: [
+                getSchoolName(38),
+                getSchoolAddress(20),
+                getSchoolMotto(18),
+              ],
+            },
+            schoolLogo(180, 120),
+          ],
+        },
+        dashSeparator(1100),
+
 
         {
           text: "CLASS BROADSHEET".toUpperCase(),
@@ -938,6 +949,7 @@ const generateBroadsheet2 = (req, res) => {
             },
           ],
         },
+        dashSeparator(1100),
 
         {
           table: {
@@ -945,7 +957,7 @@ const generateBroadsheet2 = (req, res) => {
             widths: widths,
             body: tableBody,
           },
-          margin: [0, 0, 0, 20],
+          margin: [0, 20, 0, 20],
           layout: {
             hLineWidth: () => 0.8,
             vLineWidth: () => 0.8,

@@ -5,7 +5,7 @@
         <h1>Report Card</h1>
         <p>Generate report cards for all students in a class</p>
       </div>
-      <div class="header-actions">
+      <div class="header-actions" v-if="freshData.length != 0">
         <button
           class="add-btn"
           :disabled="isGeneratingPDF2"
@@ -25,28 +25,7 @@
               d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          {{ isGeneratingPDF2 ? "Generating..." : "Export PDF" }}
-        </button>
-        <button
-          class="add-btn secondary"
-          @click="printReport"
-          :disabled="!reportGenerated"
-        >
-          <svg
-            width="18"
-            height="18"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 0 712-2h2a2 2 0 712 2v4M6 7h.01M10 7h.01"
-            />
-          </svg>
-          Print
+          {{ isGeneratingPDF2 ? "Downloading..." : "Download PDF" }}
         </button>
       </div>
     </div>
@@ -84,8 +63,6 @@
             </option>
           </select>
         </div>
-
-   
 
         <div class="form-group">
           <label class="form-label">Class</label>
@@ -220,7 +197,6 @@
           </div>
         </div>
       </div>
-     
 
       <div class="d-flex justify-content-end">
         <button
@@ -458,9 +434,16 @@ const getAllTerm = () => {
       isLoadingTerm.value = false;
     });
 };
+// const paidTerms = computed(() => {
+//   return allTerms.value.filter((term) => Boolean(term.was_paid));
+// });
+
 const paidTerms = computed(() => {
-  return allTerms.value.filter((term) => Boolean(term.was_paid));
+  return allTerms.value.filter(
+    (term) => term.was_paid || term.status === "active"
+  );
 });
+
 // API functions
 const getAllRowSessions = () => {
   apiServices

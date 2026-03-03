@@ -436,25 +436,6 @@ export default {
     });
   },
 
-  // =================== STAFF ACTIVITY ===================
-  getStaffActivityStatus() {
-    return apiClient.get("/staff-activity/status");
-  },
-  getStaffSessions(staffId = null, params = {}) {
-    const url = staffId
-      ? `/staff-activity/sessions/${staffId}`
-      : "/staff-activity/sessions";
-    return apiClient.get(url, { params });
-  },
-  recordLogin(data) {
-    return apiClient.post("/staff-activity/login", data);
-  },
-  recordLogout(data) {
-    return apiClient.post("/staff-activity/logout", data);
-  },
-  cleanupStaleSessions() {
-    return apiClient.post("/staff-activity/cleanup");
-  },
   getStaffAssigned(id) {
     return apiClient.get(`/staff/assigned-subjects/${id}`);
   },
@@ -465,6 +446,9 @@ export default {
   },
   getDashboardOverview() {
     return apiClient.get("/dashboard/overview");
+  },
+  getDashboardCharts() {
+    return apiClient.get("/dashboard/charts");
   },
 
   // =================== PDF ===================
@@ -501,8 +485,8 @@ export default {
   createSchoolInvoice(data) {
     return apiClient.post("/invoice/school-invoice", data);
   },
-  getAllSchoolInvoices() {
-    return apiClient.get("/invoice/school-invoices");
+  getAllSchoolInvoices(params = {}) {
+    return apiClient.get("/invoice/school-invoices", { params });
   },
   getSchoolInvoiceById(id) {
     return apiClient.get("/invoice/school-invoice/" + id);

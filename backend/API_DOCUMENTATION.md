@@ -271,6 +271,82 @@ Content-Type: application/json
 }
 ```
 
+## Dashboard
+
+### Get Dashboard Summary
+```http
+GET /api/dashboard/summary
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "message": "Dashboard summary retrieved successfully",
+  "data": {
+    "totals": {
+      "activeStudents": 290,
+      "studentsInActiveSession": 280,
+      "activeStaff": 25,
+      "totalClasses": 12
+    },
+    "session": {
+      "id": 1,
+      "name": "2024/2025",
+      "startDate": "2024-09-01",
+      "endDate": "2025-08-31",
+      "status": "active"
+    },
+    "term": {
+      "id": 1,
+      "name": "First Term",
+      "startDate": "2024-09-01",
+      "endDate": "2024-12-20",
+      "status": "active"
+    }
+  }
+}
+```
+
+### Get Dashboard Charts Data
+```http
+GET /api/dashboard/charts
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "message": "Dashboard charts data retrieved successfully",
+  "data": {
+    "studentsByClass": [
+      { "label": "Grade 1A", "value": 25 },
+      { "label": "Grade 2B", "value": 30 }
+    ],
+    "studentsByGender": [
+      { "label": "Male", "value": 150 },
+      { "label": "Female", "value": 140 }
+    ],
+    "studentsByStatus": [
+      { "label": "Active", "value": 280 },
+      { "label": "Graduated", "value": 50 },
+      { "label": "Transfer", "value": 10 }
+    ],
+    "staffByRole": [
+      { "label": "Teacher", "value": 20 },
+      { "label": "Principal", "value": 2 }
+    ],
+    "enrollmentTrend": [
+      { "label": "Jan 2024", "value": 15 },
+      { "label": "Feb 2024", "value": 20 },
+      { "label": "Mar 2024", "value": 18 }
+    ]
+  }
+}
+```
+
 ## Common Query Parameters
 
 Most GET endpoints support:

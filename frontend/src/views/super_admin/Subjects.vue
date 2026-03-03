@@ -34,7 +34,7 @@
             />
 
             <tr v-for="(subject, index) in allSubjects" :key="subject.id">
-              <td>{{ index + 1 }}</td>
+              <td>{{ (pagination.currentPage - 1) * pagination.limit + index + 1 }}</td>
               <td>
                 <strong>
                   {{ subject.subject_name }}
@@ -83,6 +83,18 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Pagination Component -->
+      <Pagination
+        v-if="!loading && allSubjects.length > 0"
+        :current-page="pagination.currentPage"
+        :total-pages="pagination.totalPages"
+        :total-count="pagination.totalCount"
+        :limit="pagination.limit"
+        :has-next-page="pagination.hasNextPage"
+        :has-prev-page="pagination.hasPrevPage"
+        @page-change="handlePageChange"
+      />
     </div>
   </div>
   <RegisterSubject ref="subjectRef" @send-status="getStatus" />
@@ -106,6 +118,7 @@ import apiServices from "../../services/apiServices";
 import RegisterSubject from "./subject/RegisterSubject.vue";
 import UpdateSubject from "./subject/UpdateSubject.vue";
 import ConfirmDeleteModal from "../../components/public/ConfirmDeleteModal.vue";
+import Pagination from "../../components/public/Pagination.vue";
 import { useToast } from "../../composables/useToast";
 import ViewSubjectInfo from "./subject/ViewSubjectInfo.vue";
 
@@ -118,6 +131,16 @@ const selectedSubject = ref({});
 const showDeleteModal = ref(false);
 const isDeleteing = ref(false);
 const viewRef = ref(null);
+
+// Pagination state
+const pagination = ref({
+  currentPage: 1,
+  totalPages: 1,
+  totalCount: 0,
+  limit: 25,
+  hasNextPage: false,
+  hasPrevPage: false,
+});
 
 const getAllSubject = (page = 1) => {
   loading.value = true;
@@ -132,18 +155,31 @@ const getAllSubject = (page = 1) => {
             ? subject.section_ids.split(",").map((id) => Number(id)) // convert to numbers if needed
             : [],
         })) || [];
+      
+      // Update pagination data
+      if (response.data.data?.pagination) {
+        pagination.value = response.data.data.pagination;
+      }
     })
     .catch((error) => {
       console.error("Error fetching subjects:", error);
+      toast.error(
+        "Failed to Load Subjects",
+        error.response?.data?.message || "An error occurred while loading subjects"
+      );
     })
     .finally(() => {
       loading.value = false;
     });
 };
 
+const handlePageChange = (page) => {
+  getAllSubject(page);
+};
+
 const getStatus = (status) => {
   if (status === "success") {
-    getAllSubject();
+    getAllSubject(pagination.value.currentPage);
   }
 };
 
@@ -172,7 +208,7 @@ const deleteSubject = () => {
           "Subject Deleted Successfully",
           `The subject ${selectedSubject.value.subject_name} has been deleted successfully.`
         );
-        getAllSubject();
+        getAllSubject(pagination.value.currentPage);
       }
       // remove role from list or reload data
     })

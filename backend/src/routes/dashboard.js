@@ -2,6 +2,7 @@ const express = require("express");
 const {
   getDashboardOverview,
   getDashboardSummary,
+  getDashboardCharts,
 } = require("../controllers/dashboardController");
 const {
   authenticate,
@@ -33,6 +34,14 @@ router.get(
   getDashboardOverview,
 );
 
-// Get current session and term information
+// Get dashboard charts data
+router.get(
+  "/charts",
+  authenticate,
+  authorize(["super_admin", "admin", "system_owner"]),
+  checkSystemAccess,
+  checkSchoolAccess,
+  getDashboardCharts,
+);
 
 module.exports = router;

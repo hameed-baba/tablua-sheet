@@ -1,7 +1,7 @@
 const BaseController = require("./baseController");
 const { SchoolTerm, SchoolSession } = require("../models");
 const { asyncHandler } = require("../middleware/errorHandler");
-const { where } = require("sequelize");
+const { where, Op } = require("sequelize");
 
 class SchoolTermController extends BaseController {
   constructor() {
@@ -158,23 +158,6 @@ class SchoolTermController extends BaseController {
     });
   });
 
-  // activateTerm = asyncHandler(async (req, res) => {
-  //   const { id } = req.params;
-
-  //   // Find the term to activate
-  //   const term = await SchoolTerm.findByPk(id);
-  //   if (!term) {
-  //     return res.status(404).json({ message: "School Term not found" });
-  //   }
-
-  //   // Deactivate all terms
-  //   await SchoolTerm.update({ status: "inactive" }, { where: {} });
-
-  //   // Activate the selected term
-  //   await term.update({ status: "active" });
-
-  //   res.json({ message: "School Term activated successfully" });
-  // });
   activateTerm = asyncHandler(async (req, res) => {
     const termId = Number(req.params.id);
 
@@ -218,16 +201,30 @@ class SchoolTermController extends BaseController {
       });
     }
 
-    // 4️⃣ Get last created session (for previous session check)
-    const lastSession = await SchoolSession.findOne({
+    // 4️⃣ Get previous session (the one before current active session)
+    const previousSession = await SchoolSession.findOne({
+      where: {
+        id: { [Op.ne]: currentSession.id }, // Exclude current session
+      },
       order: [["createdAt", "DESC"]],
     });
 
     // 5️⃣ Enforce payment rules
     switch (termId) {
       case 1:
-        // ✅ Allow first term freely if this is the first session ever
-        if (sessionCount > 1 && !lastSession.third_term_was_paid) {
+        // Check current session's first term payment mode
+        if (currentSession.first_term_payment_mode === "free") {
+          // Free mode - allow activation
+          break;
+        }
+
+        // Paid mode - check if previous session's third term was paid
+        if (
+          sessionCount > 1 &&
+          previousSession &&
+          previousSession.third_term_payment_mode === "paid" &&
+          !previousSession.third_term_was_paid
+        ) {
           return res.status(400).json({
             success: false,
             message:
@@ -237,7 +234,17 @@ class SchoolTermController extends BaseController {
         break;
 
       case 2:
-        if (!currentSession.first_term_was_paid) {
+        // Check current session's second term payment mode
+        if (currentSession.second_term_payment_mode === "free") {
+          // Free mode - allow activation
+          break;
+        }
+
+        // Paid mode - check if first term was paid
+        if (
+          currentSession.first_term_payment_mode === "paid" &&
+          !currentSession.first_term_was_paid
+        ) {
           return res.status(400).json({
             success: false,
             message:
@@ -247,7 +254,17 @@ class SchoolTermController extends BaseController {
         break;
 
       case 3:
-        if (!currentSession.second_term_was_paid) {
+        // Check current session's third term payment mode
+        if (currentSession.third_term_payment_mode === "free") {
+          // Free mode - allow activation
+          break;
+        }
+
+        // Paid mode - check if second term was paid
+        if (
+          currentSession.second_term_payment_mode === "paid" &&
+          !currentSession.second_term_was_paid
+        ) {
           return res.status(400).json({
             success: false,
             message:
@@ -268,6 +285,7 @@ class SchoolTermController extends BaseController {
       message: "School Term activated successfully",
     });
   });
+
 }
 
 module.exports = new SchoolTermController();

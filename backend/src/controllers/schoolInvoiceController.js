@@ -40,9 +40,10 @@ const createSchoolInvoice = async (req, res) => {
     });
 
     if (existingInvoice) {
-      return res.status(400).json({
-        success: false,
+      return res.status(200).json({
+        success: true,
         message: "Invoice already exists for this session and term",
+        data: existingInvoice,
       });
     }
 
@@ -80,7 +81,25 @@ const createSchoolInvoice = async (req, res) => {
 // ============================
 const getAllSchoolInvoices = async (req, res) => {
   try {
+    const { page = 1, limit = 10, school_session_id } = req.query;
+
+    // Build where clause
+    const whereClause = {};
+    if (school_session_id) {
+      whereClause.school_session_id = school_session_id;
+    }
+
+    // Calculate offset
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    // Get total count
+    const totalCount = await SchoolInvoice.count({
+      where: whereClause,
+    });
+
+    // Get paginated invoices
     const invoices = await SchoolInvoice.findAll({
+      where: whereClause,
       include: [
         {
           model: SchoolSession,
@@ -90,12 +109,22 @@ const getAllSchoolInvoices = async (req, res) => {
         { model: SchoolTerm, as: "Term", attributes: ["id", "term_name"] },
       ],
       order: [["createdAt", "DESC"]],
+      limit: parseInt(limit),
+      offset: offset,
     });
 
     return res.status(200).json({
       success: true,
       message: "Invoices retrieved successfully",
-      data: invoices,
+      data: {
+        invoices,
+        pagination: {
+          total: totalCount,
+          page: parseInt(page),
+          limit: parseInt(limit),
+          totalPages: Math.ceil(totalCount / parseInt(limit)),
+        },
+      },
     });
   } catch (error) {
     console.error(error);

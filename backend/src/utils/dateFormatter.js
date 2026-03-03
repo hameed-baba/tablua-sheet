@@ -1,4 +1,9 @@
 module.exports = function dateFormatter(dateTimeString) {
+  // Handle null, undefined, or empty values
+  if (!dateTimeString) {
+    return "Date not set";
+  }
+
   // dateTimeString = dateTimeString.replace(' ', 'T');
   dateTimeString = dateTimeString.split(".")[0].replace(" ", "T") + "Z";
 

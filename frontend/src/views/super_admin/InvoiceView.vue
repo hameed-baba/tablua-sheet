@@ -14,6 +14,14 @@
     <div class="data-table-container">
       <div class="table-header">
         <h2 class="table-title">All Invoices</h2>
+        <div class="filter-section">
+          <select v-model="selectedSessionId" @change="handleSessionFilter" class="form-select">
+            <option value="">All Sessions</option>
+            <option v-for="session in sessions.schoolsessions" :key="session.id" :value="session.id">
+              {{ session.session_name }}
+            </option>
+          </select>
+        </div>
       </div>
       <div class="table-responsive">
         <table class="data-table">
@@ -26,7 +34,7 @@
               <th>Amount Paid</th>
               <th>Balance</th>
               <th>Status</th>
-              <th>Actions</th>
+              <th v-if="false">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -42,7 +50,7 @@
                   {{ invoice.status }}
                 </span>
               </td>
-              <td>
+              <td v-if="false">
                 <button
                   class="action-btn edit"
                   @click="editInvoice(invoice)"
@@ -67,6 +75,27 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      
+      <!-- Pagination -->
+      <div class="pagination-container" v-if="pagination.totalPages > 1">
+        <button 
+          class="pagination-btn" 
+          @click="changePage(pagination.page - 1)"
+          :disabled="pagination.page === 1"
+        >
+          Previous
+        </button>
+        <span class="pagination-info">
+          Page {{ pagination.page }} of {{ pagination.totalPages }} ({{ pagination.total }} total)
+        </span>
+        <button 
+          class="pagination-btn" 
+          @click="changePage(pagination.page + 1)"
+          :disabled="pagination.page === pagination.totalPages"
+        >
+          Next
+        </button>
       </div>
     </div>
 
@@ -149,11 +178,20 @@ import { useToast } from "../../composables/useToast";
 const toast = useToast();
 
 const invoices = ref([]);
+const sessions = ref([]);
+const selectedSessionId = ref("");
 const selectedInvoice = ref(null);
 const showDeleteModal = ref(false);
 const showViewModal = ref(false);
 const isUpdating = ref(false);
 const isDeleting = ref(false);
+
+const pagination = ref({
+  page: 1,
+  limit: 10,
+  total: 0,
+  totalPages: 0,
+});
 
 const formatAmount = (amount) => {
   return new Intl.NumberFormat("en-NG", {
@@ -163,15 +201,46 @@ const formatAmount = (amount) => {
 };
 
 const getAllSchoolInvoices = () => {
+  const params = {
+    page: pagination.value.page,
+    limit: pagination.value.limit,
+  };
+
+  if (selectedSessionId.value) {
+    params.school_session_id = selectedSessionId.value;
+  }
+
   apiServices
-    .getAllSchoolInvoices()
+    .getAllSchoolInvoices(params)
     .then((response) => {
       console.log(response);
-      invoices.value = response.data.data;
+      invoices.value = response.data.data.invoices;
+      pagination.value = response.data.data.pagination;
     })
     .catch((error) => {
       console.log(error);
     });
+};
+
+const getAllSessions = () => {
+  apiServices
+    .getAllSessions()
+    .then((response) => {
+      sessions.value = response.data.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+const handleSessionFilter = () => {
+  pagination.value.page = 1;
+  getAllSchoolInvoices();
+};
+
+const changePage = (page) => {
+  pagination.value.page = page;
+  getAllSchoolInvoices();
 };
 
 const editInvoice = (invoice) => {
@@ -259,6 +328,7 @@ const deleteInvoice = () => {
 };
 
 onMounted(() => {
+  getAllSessions();
   getAllSchoolInvoices();
 });
 </script>
@@ -417,5 +487,53 @@ onMounted(() => {
 
 .detail-value {
   color: #111827;
+}
+
+.filter-section {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.form-select {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
+  min-width: 200px;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.pagination-btn {
+  padding: 8px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: #6b7280;
 }
 </style>
