@@ -92,7 +92,8 @@ module.exports = {
           "contract",
           "internship",
           "substitute",
-          "temporary"
+          "temporary",
+          "teaching-practise"
         ),
         allowNull: true,
       },

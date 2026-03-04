@@ -70,6 +70,7 @@ const schemas = {
         "internship",
         "substitute",
         "temporary",
+        "teaching-practise",
       ],
       optional: true,
     },
