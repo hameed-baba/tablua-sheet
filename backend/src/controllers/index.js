@@ -7,6 +7,8 @@ const schoolTermController = require("./schoolTermController");
 const schoolSessionController = require("./schoolSessionController");
 const roleController = require("./roleController");
 const schoolSubjectController = require("./schoolSubjectController");
+const schoolInvoiceController = require("./schoolInvoiceController");
+const schoolPaymentController = require("./schoolPaymentController");
 const gradeListController = require("./gradeListController");
 const parentController = require("./parentController");
 const schoolClassController = require("./schoolClasesController");
@@ -39,6 +41,8 @@ module.exports = {
   schoolSubjectController,
   schoolTermController,
   schoolSessionController,
+  schoolInvoiceController,
+  schoolPaymentController,
   chartController,
   dashboardController,
 };

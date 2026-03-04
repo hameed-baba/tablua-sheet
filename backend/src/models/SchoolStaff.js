@@ -15,11 +15,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "role_id",
         as: "Role",
       });
-      
-      SchoolStaff.hasMany(models.StaffSession, {
-        foreignKey: "staff_id",
-        as: "StaffSessions",
-      });
     }
 
     async comparePassword(candidatePassword) {
@@ -53,7 +48,8 @@ module.exports = (sequelize, DataTypes) => {
         "contract",
         "internship",
         "substitute",
-        "temporary"
+        "temporary",
+        "teaching-practise",
       ),
       // qualifications: DataTypes.TEXT,
       qualifications: DataTypes.ENUM(
@@ -65,7 +61,7 @@ module.exports = (sequelize, DataTypes) => {
         "Master's Degree (MSc)",
         "Doctorate (PhD)",
         "Certificate",
-        "Other"
+        "Other",
       ),
       qualification_title: DataTypes.STRING,
       institution: DataTypes.STRING,
@@ -95,7 +91,7 @@ module.exports = (sequelize, DataTypes) => {
           }
         },
       },
-    }
+    },
   );
 
   return SchoolStaff;

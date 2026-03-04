@@ -1,37 +1,71 @@
 module.exports = function studentStubject(students, classSubjects) {
-  // Header row - only one row needed now
-  const headerRow = [
-    { text: "SN", bold: true, rowSpan: 1, alignment: "center" },
-    { text: "Student Name", bold: true, rowSpan: 1, alignment: "center" },
-    ...classSubjects.map((cs) => ({
-      text: cs.Subject.subject_name.substring(0, 3),
-      bold: true,
-      alignment: "center",
-    })),
-    { text: "Total", bold: true, rowSpan: 1, alignment: "center" },
-    { text: "Average", bold: true, rowSpan: 1, alignment: "center" },
-    { text: "Position", bold: true, rowSpan: 1, alignment: "center" },
+  // Header row 1 - Subject names with colSpan
+  const headerRow1 = [
+    { text: "SN", bold: true, rowSpan: 2, alignment: "center" },
+    { text: "Student Name", bold: true, rowSpan: 2, alignment: "center" },
+    ...classSubjects.flatMap((cs) => [
+      {
+        text: cs.Subject.subject_name.substring(0, 3).toUpperCase(),
+        bold: true,
+        alignment: "center",
+        colSpan: 3,
+      },
+      {},
+      {},
+    ]),
+    { text: "Total", bold: true, rowSpan: 2, alignment: "center" },
+    { text: "Average", bold: true, rowSpan: 2, alignment: "center" },
+    { text: "Position", bold: true, rowSpan: 2, alignment: "center" },
+  ];
+
+  // Header row 2 - CA, Exam, Total for each subject
+  const headerRow2 = [
+    {},
+    {},
+    ...classSubjects.flatMap(() => [
+      { text: "CA", bold: true, alignment: "center" },
+      { text: "EX", bold: true, alignment: "center" },
+      { text: "TT", bold: true, alignment: "center" },
+    ]),
+    {},
+    {},
+    {},
   ];
 
   // Data rows
   const dataRows = students.map((student, index) => {
-    // For each class subject, find if the student has it and get the total
-    const subjectScores = classSubjects.map((cs) => {
+    // For each class subject, get CA, Exam, and Total
+    const subjectScores = classSubjects.flatMap((cs) => {
       // Try to find the subject by ID or by name
       const subject = student.subjects?.find(
         (s) => s.id === cs.Subject.id || s.name === cs.Subject.subject_name,
       );
 
       if (subject) {
-        return {
-          text: subject.total?.toString() || "-",
-          alignment: "center",
-        };
+        return [
+          {
+            text: subject.ca_1_score?.toString() || "-",
+            alignment: "center",
+            
+          },
+          {
+            text: subject.exam_score?.toString() || "-",
+            alignment: "center",
+            
+          },
+          {
+            text: subject.total?.toString() || "-",
+            alignment: "center",
+            
+            bold: true,
+          },
+        ];
       } else {
-        return {
-          text: "-",
-          alignment: "center",
-        };
+        return [
+          { text: "-", alignment: "center" },
+          { text: "-", alignment: "center" },
+          { text: "-", alignment: "center" },
+        ];
       }
     });
 
@@ -53,7 +87,7 @@ module.exports = function studentStubject(students, classSubjects) {
     ];
   });
 
-  return [headerRow, ...dataRows];
+  return [headerRow1, headerRow2, ...dataRows];
 };
 
 // module.exports = function studentStubject2(students, classSubjects) {
@@ -69,7 +103,7 @@ module.exports = function studentStubject(students, classSubjects) {
 //     },
 //     ...classSubjects.map((cs) =>
 //       rotateTextSVG(cs.Subject.subject_name, {
-//         fontSize: 7,
+//         
 //         width: 8,
 //         height: 80,
 //       }),

@@ -1131,8 +1131,8 @@ onMounted(() => {
   }
 
   input[type="checkbox"]:checked + .checkmark {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-color: #667eea;
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    border-color: #3b82f6;
   }
 
   input[type="checkbox"]:checked + .checkmark::after {
@@ -1223,8 +1223,8 @@ onMounted(() => {
   }
 
   input[type="checkbox"]:checked + .subject-checkmark {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-color: #667eea;
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    border-color: #3b82f6;
   }
 
   input[type="checkbox"]:checked + .subject-checkmark::after {
@@ -1657,7 +1657,7 @@ onMounted(() => {
   }
 
   &.btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
     color: white;
 
     &:hover:not(:disabled) {
@@ -1729,7 +1729,7 @@ onMounted(() => {
 
 .generate-btn {
   padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
   border: none;
   border-radius: 8px;

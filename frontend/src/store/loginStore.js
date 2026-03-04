@@ -52,6 +52,9 @@ export const useLoginStore = defineStore('loginStore', {
 
       this.SAVE_TOKENS({ accessToken })
 
+      // Clear explicit logout flag on successful login
+      localStorage.removeItem('tebulasheet_explicit_logout')
+
       // Persist in localStorage
       localStorage.setItem(
         'tebulasheet_active_user',
@@ -76,6 +79,19 @@ export const useLoginStore = defineStore('loginStore', {
       }
     },
 
+    // Silent logout (for token expiration - no page reload)
+    SILENT_LOGOUT() {
+      this.accessToken = ''
+      this.isLoggedIn = false
+      this.user = null
+      this.role = null
+      this.permissions = []
+
+      localStorage.removeItem('tebulasheet_active_user')
+      localStorage.setItem('tebulasheet_explicit_logout', 'true')
+      delete apiClient.defaults.headers.common['Authorization']
+    },
+
     // Logout
     LOGOUT() {
       this.accessToken = ''
@@ -85,6 +101,8 @@ export const useLoginStore = defineStore('loginStore', {
       this.permissions = []
 
       localStorage.removeItem('tebulasheet_active_user')
+      // Set a flag to indicate explicit logout
+      localStorage.setItem('tebulasheet_explicit_logout', 'true')
       delete apiClient.defaults.headers.common['Authorization']
       location.reload()
     },

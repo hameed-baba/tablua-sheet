@@ -43,7 +43,7 @@
           <tr>
             <th>Session Name</th>
             <th class="d-none d-lg-table-cell">Status</th>
-            <th class="d-none d-lg-table-cell">Payment Status</th>
+            <!-- <th class="d-none d-lg-table-cell">Payment Status</th> -->
             <th class="d-none d-lg-table-cell">Created Date</th>
             <th>Actions</th>
           </tr>
@@ -73,14 +73,14 @@
                     {{ session.status == "active" ? "Active" : "Inactive" }}
                   </span>
                 </div>
-                <div class="mobile-detail-item">
+                <!-- <div class="mobile-detail-item">
                   <span
                     class="status-badge"
                     :class="getStatusClass(session.payment_status)"
                   >
                     {{ session.payment_status }}
                   </span>
-                </div>
+                </div> -->
                 <div class="mobile-detail-item">
                   <small class="text-muted">
                     {{
@@ -104,13 +104,13 @@
                 {{ session.status == "active" ? "Active" : "Inactive" }}
               </span>
             </td>
-            <td class="d-none d-lg-table-cell">
+            <!-- <td class="d-none d-lg-table-cell">
               <span
                 class="status-badge"
                 :class="getStatusClass(session.payment_status)"
                 >{{ session.payment_status }}</span
               >
-            </td>
+            </td> -->
             <td class="d-none d-lg-table-cell">
               {{ session.createdAt ? session.createdAt.substring(0, 10) : "" }}
             </td>

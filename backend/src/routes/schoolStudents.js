@@ -3,6 +3,7 @@ const {
   authenticate,
   checkSchoolAccess,
   authorize,
+  checkSystemAccess,
 } = require("../middleware/auth");
 const {
   validate,
@@ -14,20 +15,15 @@ const { schoolStudentController } = require("../controllers");
 const router = express.Router();
 
 // Register new student
-router.post(
-  "/",
-  authenticate,
-  authorize(["super_admin","admin"]),
-  validate(schemas.studentRegistrationWithSubjects),
-  schoolStudentController.register,
-);
 
 // Get all students with pagination and filters
 router.get(
   "/",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
   validateQuery(schemas.pagination),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.getAll,
 );
 
@@ -35,15 +31,19 @@ router.get(
 router.get(
   "/generate-admission-number",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.generateAdmissionNumber,
 );
 
 router.get(
   "/session",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
   validateQuery(schemas.pagination),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.getAllStudentByActiveSession,
 );
 
@@ -51,7 +51,9 @@ router.get(
 router.get(
   "/search",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.getStudents,
 );
 
@@ -59,21 +61,27 @@ router.get(
 router.get(
   "/:id",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.getById,
 );
 
 router.get(
   "/class/:classId",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.getStudentsByClassId,
 );
 
 router.get(
   "/:id/subjects",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.getStudentSubjects,
 );
 
@@ -81,15 +89,29 @@ router.get(
 router.get(
   "/debug/class-subjects/:classId",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.debugClassSubjects,
+);
+
+router.post(
+  "/",
+  authenticate,
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
+  validate(schemas.studentRegistrationWithSubjects),
+  schoolStudentController.register,
 );
 
 // Create test class subject assignments
 router.post(
   "/debug/create-class-subjects",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.createTestClassSubjects,
 );
 
@@ -97,7 +119,9 @@ router.post(
 router.get(
   "/debug/promotion-data",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.debugPromotionData,
 );
 
@@ -105,7 +129,9 @@ router.get(
 router.get(
   "/debug/assignments/:studentId",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.debugStudentAssignments,
 );
 
@@ -113,7 +139,9 @@ router.get(
 router.post(
   "/debug/test-promote",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.testPromote,
 );
 
@@ -121,7 +149,9 @@ router.post(
 router.get(
   "/status/:status",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.getStudentsByStatus,
 );
 
@@ -129,7 +159,9 @@ router.get(
 router.put(
   "/:id/status",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.updateStudentStatus,
 );
 
@@ -137,7 +169,9 @@ router.put(
 router.put(
   "/:id/promote",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.promoteStudent,
 );
 
@@ -145,7 +179,9 @@ router.put(
 router.put(
   "/bulk-promote",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.bulkPromoteStudents,
 );
 
@@ -153,7 +189,9 @@ router.put(
 router.put(
   "/:id",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.updateStudent,
 );
 
@@ -161,7 +199,9 @@ router.put(
 router.delete(
   "/:id",
   authenticate,
-  authorize(["super_admin","admin"]),
+  authorize(["super_admin", "admin"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolStudentController.delete,
 );
 

@@ -51,7 +51,7 @@ const navItems = [
     id: "profile",
     label: "My Profile",
     icon: ProfileIcon,
-    route: "/profile",
+    route: "/teacher-profile",
   },
   {
     id: "logout",
@@ -66,7 +66,7 @@ const currentPageName = computed(() => {
   const routeToTitle = {
     "/teacher": "Dashboard",
     "/teacher/marks/add": "Add Marks",
-    "/profile": "My Profile",
+    "/teacher-profile": "My Profile",
     "/logout": "Logout",
   };
 

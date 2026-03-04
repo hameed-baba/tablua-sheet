@@ -6,7 +6,12 @@
     </div>
 
     <div class="form-container" v-if="staffMember">
-      <vee-form class="staff-form" :validation-schema="formValidation" v-slot="{ errors }" @submit="handleSubmit">
+      <vee-form
+        class="staff-form"
+        :validation-schema="formValidation"
+        v-slot="{ errors }"
+        @submit="handleSubmit"
+      >
         <!-- Personal Information -->
         <div class="form-section">
           <div class="d-flex align-items-center justify-content-between w-100">
@@ -19,14 +24,26 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Full Name *</label>
-              <vee-form-field type="text" v-model="staffMember.full_name" name="full_name"
-                :class="['form-input', errors.full_name]" placeholder="Enter full name" />
-              <vee-form-error name="full_name" class="text-danger error-message" />
+              <vee-form-field
+                type="text"
+                v-model="staffMember.full_name"
+                name="full_name"
+                :class="['form-input', errors.full_name]"
+                placeholder="Enter full name"
+              />
+              <vee-form-error
+                name="full_name"
+                class="text-danger error-message"
+              />
             </div>
             <div class="form-group">
               <label class="form-label">Gender *</label>
-              <vee-form-field v-model="staffMember.gender" name="gender" :class="['form-select', errors.gender]"
-                as="select">
+              <vee-form-field
+                v-model="staffMember.gender"
+                name="gender"
+                :class="['form-select', errors.gender]"
+                as="select"
+              >
                 <option value="" selected disabled>Select gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -39,30 +56,54 @@
             <!-- dd -->
             <div class="form-group">
               <label class="form-label">Date of Birth</label>
-              <vee-form-field type="date" v-model="staffMember.date_of_birth" name="date_of_birth"
-                :class="['form-input', errors.date_of_birth]" />
-              <vee-form-error name="date_of_birth" class="text-danger error-message" />
+              <vee-form-field
+                type="date"
+                v-model="staffMember.date_of_birth"
+                name="date_of_birth"
+                :class="['form-input', errors.date_of_birth]"
+              />
+              <vee-form-error
+                name="date_of_birth"
+                class="text-danger error-message"
+              />
             </div>
             <div class="form-group">
               <label class="form-label">Phone Number *</label>
-              <vee-form-field type="text" v-model="staffMember.phone_number" name="phone_number"
-                :class="['form-input', errors.phone_number]" placeholder="Enter phone number" />
-              <vee-form-error name="phone_number" class="text-danger error-message" />
+              <vee-form-field
+                type="text"
+                v-model="staffMember.phone_number"
+                name="phone_number"
+                :class="['form-input', errors.phone_number]"
+                placeholder="Enter phone number"
+              />
+              <vee-form-error
+                name="phone_number"
+                class="text-danger error-message"
+              />
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Email *</label>
-              <vee-form-field type="email" v-model="staffMember.email" name="email"
-                :class="['form-input', errors.email]" placeholder="Enter email" />
+              <vee-form-field
+                type="email"
+                v-model="staffMember.email"
+                name="email"
+                :class="['form-input', errors.email]"
+                placeholder="Enter email"
+              />
               <vee-form-error name="email" class="text-danger error-message" />
             </div>
 
             <div class="form-group">
               <label class="form-label">Staff Status</label>
-              <vee-form-field v-model="staffMember.status" name="status" :class="['form-select', errors.status]"
-                as="select">
+              <vee-form-field
+                v-model="staffMember.status"
+                name="status"
+                :class="['form-select', errors.status]"
+                as="select"
+              >
                 <option value="" selected disabled>Select Status</option>
                 <option value="true">ACTIVE</option>
                 <option value="false">IN-ACTIVE</option>
@@ -75,10 +116,18 @@
             <!-- State -->
             <div class="form-group">
               <label class="form-label">State *</label>
-              <vee-form-field v-model="staffMember.state" name="state" :class="['form-select', errors.state]"
-                as="select">
+              <vee-form-field
+                v-model="staffMember.state"
+                name="state"
+                :class="['form-select', errors.state]"
+                as="select"
+              >
                 <option value="">Select State</option>
-                <option v-for="state in states" :key="state" :value="state.value">
+                <option
+                  v-for="state in states"
+                  :key="state"
+                  :value="state.value"
+                >
                   {{ state.label }}
                 </option>
               </vee-form-field>
@@ -88,21 +137,35 @@
             <!-- Local Government -->
             <div class="form-group">
               <label class="form-label">Local Government *</label>
-              <vee-form-field v-model="staffMember.local_gov" name="local_gov"
-                :class="['form-select', errors.local_gov]" as="select" :disabled="localGovs.length < 0">
+              <vee-form-field
+                v-model="staffMember.local_gov"
+                name="local_gov"
+                :class="['form-select', errors.local_gov]"
+                as="select"
+                :disabled="localGovs.length < 0"
+              >
                 <option value="">Select LGA</option>
                 <option v-for="lg in localGovs" :key="lg" :value="lg.value">
                   {{ lg.label }}
                 </option>
               </vee-form-field>
-              <vee-form-error name="local_gov" class="text-danger error-message" />
+              <vee-form-error
+                name="local_gov"
+                class="text-danger error-message"
+              />
             </div>
           </div>
 
           <div class="form-group">
             <label class="form-label">Address *</label>
-            <vee-form-field as="textarea" v-model="staffMember.address" name="address"
-              :class="['form-textarea', errors.address]" placeholder="Enter address" rows="3" />
+            <vee-form-field
+              as="textarea"
+              v-model="staffMember.address"
+              name="address"
+              :class="['form-textarea', errors.address]"
+              placeholder="Enter address"
+              rows="3"
+            />
             <vee-form-error name="address" class="text-danger error-message" />
           </div>
         </div>
@@ -114,30 +177,56 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Employee ID *</label>
-              <vee-form-field type="text" v-model="staffMember.employee_id" name="employee_id"
-                :class="['form-input', errors.employee_id]" placeholder="Enter employee ID eg. XYZ001" />
-              <vee-form-error name="employee_id" class="text-danger error-message" />
+              <vee-form-field
+                type="text"
+                v-model="staffMember.employee_id"
+                name="employee_id"
+                :class="['form-input', errors.employee_id]"
+                placeholder="Enter employee ID eg. XYZ001"
+              />
+              <vee-form-error
+                name="employee_id"
+                class="text-danger error-message"
+              />
             </div>
 
             <div class="form-group">
               <label class="form-label">Role *</label>
-              <vee-form-field v-model="staffMember.role_id" name="role_id" :class="['form-select', errors.role_id]"
-                as="select">
+              <vee-form-field
+                v-model="staffMember.role_id"
+                name="role_id"
+                :class="['form-select', errors.role_id]"
+                as="select"
+              >
                 <option value="">Select Role</option>
-                <option v-for="(role, index) in roles" :key="index" :value="role.id">
+                <option
+                  v-for="(role, index) in roles"
+                  :key="index"
+                  :value="role.id"
+                >
                   {{ role.role_name }}
                 </option>
               </vee-form-field>
-              <vee-form-error name="role_id" class="text-danger error-message" />
+              <vee-form-error
+                name="role_id"
+                class="text-danger error-message"
+              />
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Date of Employment *</label>
-              <vee-form-field type="date" v-model="staffMember.date_of_employment" name="date_of_employment"
-                :class="['form-input', errors.date_of_employment]" />
-              <vee-form-error name="date_of_employment" class="text-danger error-message" />
+              <vee-form-field
+                type="date"
+                v-model="staffMember.date_of_employment"
+                name="date_of_employment"
+                :class="['form-input', errors.date_of_employment]"
+              />
+              <vee-form-error
+                name="date_of_employment"
+                class="text-danger error-message"
+              />
             </div>
 
             <div class="form-group">
@@ -158,22 +247,38 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Employment Type</label>
-              <vee-form-field v-model="staffMember.employment_type" name="employment_type"
-                :class="['form-select', errors.employment_type]" as="select">
+              <vee-form-field
+                v-model="staffMember.employment_type"
+                name="employment_type"
+                :class="['form-select', errors.employment_type]"
+                as="select"
+              >
                 <option value="">Select Type</option>
                 <option value="full-time">Full-time</option>
                 <option value="part-time">Part-time</option>
                 <option value="contract">Contract</option>
                 <option value="internship">Internship</option>
+                <option value="substitute">Substitute</option>
+                <option value="temporary">Temporary</option>
+                <option value="teaching-practise">Teaching Practise</option>
               </vee-form-field>
-              <vee-form-error name="employment_type" class="text-danger error-message" />
+              <vee-form-error
+                name="employment_type"
+                class="text-danger error-message"
+              />
             </div>
 
             <div class="form-group">
               <label class="form-label">Sections</label>
               <div class="multi-select-container">
-                <div class="multi-select-dropdown" @click="toggleSectionDropdown">
-                  <span v-if="selectedSections.length === 0" class="placeholder">
+                <div
+                  class="multi-select-dropdown"
+                  @click="toggleSectionDropdown"
+                >
+                  <span
+                    v-if="selectedSections.length === 0"
+                    class="placeholder"
+                  >
                     Select Sections
                   </span>
                   <span v-else class="selected-count">
@@ -183,15 +288,33 @@
                 </div>
 
                 <div v-if="showSectionDropdown" class="multi-select-options">
-                  <label v-for="(section, index) in sections" :key="index" class="permission-checkbox">
-                    <input type="checkbox" :value="section.id" v-model="selectedSections" @change="updateSectionIds" />
+                  <label
+                    v-for="(section, index) in sections"
+                    :key="index"
+                    class="permission-checkbox"
+                  >
+                    <input
+                      type="checkbox"
+                      :value="section.id"
+                      v-model="selectedSections"
+                      @change="updateSectionIds"
+                    />
                     <span class="checkmark"></span>
-                    <span class="permission-label">{{ section.section_name }}</span>
+                    <span class="permission-label">{{
+                      section.section_name
+                    }}</span>
                   </label>
                 </div>
               </div>
-              <vee-form-field type="hidden" v-model="staffMember.section_ids" name="section_ids" />
-              <vee-form-error name="section_ids" class="text-danger error-message" />
+              <vee-form-field
+                type="hidden"
+                v-model="staffMember.section_ids"
+                name="section_ids"
+              />
+              <vee-form-error
+                name="section_ids"
+                class="text-danger error-message"
+              />
             </div>
           </div>
         </div>
@@ -204,56 +327,107 @@
             <div class="form-group">
               <label class="form-label">Highest Qualification *</label>
 
-              <vee-form-field v-model="staffMember.qualifications" name="qualifications"
-                :class="['form-select', errors.qualifications]" as="select">
+              <vee-form-field
+                v-model="staffMember.qualifications"
+                name="qualifications"
+                :class="['form-select', errors.qualifications]"
+                as="select"
+              >
                 <option value="" selected disabled>
                   Select Qualifications
                 </option>
-                <option v-for="qualification in qualifications" :key="qualification" :value="qualification.label">
+                <option
+                  v-for="qualification in qualifications"
+                  :key="qualification"
+                  :value="qualification.label"
+                >
                   {{ qualification.label }}
                 </option>
               </vee-form-field>
-              <vee-form-error name="qualifications" class="text-danger error-message" />
+              <vee-form-error
+                name="qualifications"
+                class="text-danger error-message"
+              />
             </div>
 
             <div class="form-group">
               <label class="form-label">Qualification Title *</label>
-              <vee-form-field type="text" v-model="staffMember.qualification_title" name="qualification_title"
+              <vee-form-field
+                type="text"
+                v-model="staffMember.qualification_title"
+                name="qualification_title"
                 :class="['form-input', errors.qualification_title]"
-                placeholder="Qualification Title eg (Bsc in Mathematics)" />
-              <vee-form-error name="qualification_title" class="text-danger error-message" />
+                placeholder="Qualification Title eg (Bsc in Mathematics)"
+              />
+              <vee-form-error
+                name="qualification_title"
+                class="text-danger error-message"
+              />
             </div>
           </div>
 
           <div class="form-group mb-3">
             <label class="form-label">Institution *</label>
-            <vee-form-field type="text" v-model="staffMember.institution" name="institution" class="form-input"
-              :class="['form-input', errors.institution]" placeholder="Institution attended" />
-            <vee-form-error name="institution" class="text-danger error-message" />
+            <vee-form-field
+              type="text"
+              v-model="staffMember.institution"
+              name="institution"
+              class="form-input"
+              :class="['form-input', errors.institution]"
+              placeholder="Institution attended"
+            />
+            <vee-form-error
+              name="institution"
+              class="text-danger error-message"
+            />
           </div>
 
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Year Obtained *</label>
-              <vee-form-field type="month" v-model="staffMember.year_obtained" name="year_obtained"
-                :class="['form-input', errors.year_obtained]" placeholder="e.g. 2025" />
-              <vee-form-error name="year_obtained" class="text-danger error-message" />
+              <vee-form-field
+                type="month"
+                v-model="staffMember.year_obtained"
+                name="year_obtained"
+                :class="['form-input', errors.year_obtained]"
+                placeholder="e.g. 2025"
+              />
+              <vee-form-error
+                name="year_obtained"
+                class="text-danger error-message"
+              />
             </div>
 
             <div class="form-group">
               <label class="form-label">Years of Experience *</label>
-              <vee-form-field type="month" v-model="staffMember.year_of_experience" name="year_of_experience"
-                :class="['form-input', errors.year_of_experience]" placeholder="Enter year of experience" />
-              <vee-form-error name="year_obtained" class="text-year_of_experience error-message" />
+              <vee-form-field
+                type="month"
+                v-model="staffMember.year_of_experience"
+                name="year_of_experience"
+                :class="['form-input', errors.year_of_experience]"
+                placeholder="Enter year of experience"
+              />
+              <vee-form-error
+                name="year_obtained"
+                class="text-year_of_experience error-message"
+              />
             </div>
           </div>
 
           <div class="form-group">
             <label class="form-label">Specializations</label>
-            <vee-form-field as="textarea" v-model="staffMember.specializations" name="specializations"
-              :class="['form-textarea', errors.specializations]" placeholder="List specializations or subjects taught"
-              rows="3" />
-            <vee-form-error name="specializations" class="text-danger error-message" />
+            <vee-form-field
+              as="textarea"
+              v-model="staffMember.specializations"
+              name="specializations"
+              :class="['form-textarea', errors.specializations]"
+              placeholder="List specializations or subjects taught"
+              rows="3"
+            />
+            <vee-form-error
+              name="specializations"
+              class="text-danger error-message"
+            />
           </div>
         </div>
 
@@ -264,25 +438,48 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Contact Name</label>
-              <vee-form-field type="text" v-model="staffMember.emergency_contact_name" name="emergency_contact_name"
-                :class="['form-input', errors.emergency_contact_name]" placeholder="Enter contact name" />
-              <vee-form-error name="emergency_contact_name" class="text-danger error-message" />
+              <vee-form-field
+                type="text"
+                v-model="staffMember.emergency_contact_name"
+                name="emergency_contact_name"
+                :class="['form-input', errors.emergency_contact_name]"
+                placeholder="Enter contact name"
+              />
+              <vee-form-error
+                name="emergency_contact_name"
+                class="text-danger error-message"
+              />
             </div>
 
             <div class="form-group">
               <label class="form-label">Contact Number</label>
-              <vee-form-field type="text" v-model="staffMember.emergency_contact" name="emergency_contact"
-                :class="['form-input', errors.emergency_contact]" placeholder="Enter contact number" />
-              <vee-form-error name="emergency_contact" class="text-danger error-message" />
+              <vee-form-field
+                type="text"
+                v-model="staffMember.emergency_contact"
+                name="emergency_contact"
+                :class="['form-input', errors.emergency_contact]"
+                placeholder="Enter contact number"
+              />
+              <vee-form-error
+                name="emergency_contact"
+                class="text-danger error-message"
+              />
             </div>
           </div>
 
           <div class="form-group">
             <label class="form-label">Contact Relation</label>
-            <vee-form-field type="text" v-model="staffMember.emergency_contact_relation"
-              name="emergency_contact_relation" :class="['form-input', errors.emergency_contact_relation]"
-              placeholder="Enter contact relation" />
-            <vee-form-error name="emergency_contact_relation" class="text-danger error-message" />
+            <vee-form-field
+              type="text"
+              v-model="staffMember.emergency_contact_relation"
+              name="emergency_contact_relation"
+              :class="['form-input', errors.emergency_contact_relation]"
+              placeholder="Enter contact relation"
+            />
+            <vee-form-error
+              name="emergency_contact_relation"
+              class="text-danger error-message"
+            />
           </div>
         </div>
 
@@ -327,7 +524,7 @@ const loading = ref(false);
 const submitting = ref(false);
 
 // Salary formatting
-const displaySalary = ref('');
+const displaySalary = ref("");
 
 const qualifications = [
   { value: "SSCE", label: "Senior Secondary Certificate (SSCE)" },
@@ -388,17 +585,16 @@ const formValidation = yup.object({
 const handleSalaryInput = (event) => {
   const value = event.target.value;
   // Remove any non-numeric characters except decimal point
-  const numericValue = value.replace(/[^\d.]/g, '');
-  
+  const numericValue = value.replace(/[^\d.]/g, "");
+
   // Prevent multiple decimal points
-  const parts = numericValue.split('.');
-  const cleanValue = parts.length > 2 
-    ? parts[0] + '.' + parts.slice(1).join('') 
-    : numericValue;
-  
+  const parts = numericValue.split(".");
+  const cleanValue =
+    parts.length > 2 ? parts[0] + "." + parts.slice(1).join("") : numericValue;
+
   // Format with commas
   displaySalary.value = formatNumber(cleanValue);
-  
+
   // Update the actual form value (without formatting)
   staffMember.value.salary = parseCurrency(displaySalary.value);
 };
@@ -431,7 +627,7 @@ const handleSubmit = async () => {
       toast.error(
         "Failed to Update Staff",
         error.response?.data?.message ||
-        "An error occurred while updating the staff. Please try again."
+          "An error occurred while updating the staff. Please try again."
       );
     })
     .finally(() => {
@@ -476,9 +672,9 @@ const getStaffById = () => {
       // Parse section_ids and populate selectedSections
       if (staffMember.value.section_ids) {
         selectedSections.value = staffMember.value.section_ids
-          .split(',')
-          .map(id => parseInt(id.trim()))
-          .filter(id => !isNaN(id));
+          .split(",")
+          .map((id) => parseInt(id.trim()))
+          .filter((id) => !isNaN(id));
       }
     })
     .catch((error) => {
@@ -486,7 +682,7 @@ const getStaffById = () => {
       toast.error(
         "Failed to get the Staff",
         error.response?.data?.message ||
-        "An error occurred while getting the staff. Please try again."
+          "An error occurred while getting the staff. Please try again."
       );
       if (error.response?.status == 404) {
         router.push("/staff");
@@ -517,12 +713,12 @@ const toggleSectionDropdown = () => {
 };
 
 const updateSectionIds = () => {
-  staffMember.value.section_ids = selectedSections.value.join(',');
+  staffMember.value.section_ids = selectedSections.value.join(",");
 };
 
 // Close dropdown when clicking outside
 const handleClickOutside = (event) => {
-  const dropdown = event.target.closest('.multi-select-container');
+  const dropdown = event.target.closest(".multi-select-container");
   if (!dropdown) {
     showSectionDropdown.value = false;
   }
@@ -545,21 +741,18 @@ watch(
 
 onMounted(async () => {
   // Load roles and sections first
-  await Promise.all([
-    getAllRoles(),
-    getAllSection()
-  ]);
-  
+  await Promise.all([getAllRoles(), getAllSection()]);
+
   // Then load staff data (which will set the correct role and local government)
   await getStaffById();
-  
-  document.addEventListener('click', handleClickOutside);
+
+  document.addEventListener("click", handleClickOutside);
 });
 
 // Cleanup event listener
-import { onUnmounted } from 'vue';
+import { onUnmounted } from "vue";
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
+  document.removeEventListener("click", handleClickOutside);
 });
 </script>
 

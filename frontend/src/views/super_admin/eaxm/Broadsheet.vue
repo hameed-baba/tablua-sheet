@@ -5,8 +5,12 @@
         <h1>Broadsheet Report</h1>
         <p>Class performance report with student rankings</p>
       </div>
-      <div class="header-actions">
-        <button class="add-btn" @click="generatePdf">
+      <div class="header-actions" v-if="students.length != 0">
+        <button
+          class="add-btn"
+          @click="generatePdf"
+          :disabled="isGeneratingPDF"
+        >
           <svg
             width="18"
             height="18"
@@ -21,26 +25,8 @@
               d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          Export PDF
+          {{ isGeneratingPDF ? "Downloading..." : "Download" }}
         </button>
-        <button class="add-btn secondary" :disabled="!reportGenerated">
-          <svg
-            width="18"
-            height="18"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 012-2h2a2 2 0 012 2v4M6 7h.01M10 7h.01"
-            />
-          </svg>
-          Print
-        </button>
-        <!-- <button class="btn border" @click="exportResultSheet">Export Result Sheet</button> -->
       </div>
     </div>
 
@@ -62,12 +48,20 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Term</label>
-          <select v-model="filters.current_term_id" class="form-select">
+          <label class="form-label">Term *</label>
+          <select
+            v-model="filters.current_term_id"
+            class="form-select"
+            required
+            :disabled="isLoadingTerm"
+          >
             <option value="" selected disabled>Select Term</option>
-            <option value="1">First Term</option>
-            <option value="2">Second Term</option>
-            <option value="3">Third Term</option>
+            <option v-for="term in paidTerms" :value="term.id" :key="term.id">
+              {{ term.term_name }}
+            </option>
+            <option v-if="!paidTerms.length" disabled>
+              No paid term available
+            </option>
           </select>
         </div>
 
@@ -262,8 +256,6 @@
 import { ref, computed, onMounted } from "vue";
 import apiServices from "../../../services/apiServices";
 import { useToast } from "../../../composables/useToast";
-// import CSVExportButton from "../../../components/CSVExportButton2.vue";
-import * as XLSX from "xlsx";
 const toast = useToast();
 
 // Reactive data
@@ -272,18 +264,45 @@ const filters = ref({
   current_term_id: "",
   current_class_id: "",
 });
+const isGeneratingPDF = ref(false);
 
 const reportGenerated = ref(false);
 const classes = ref([]);
 const sessions = ref([]);
 const classSubjects = ref([]);
 const students = ref([]);
+const isLoadingTerm = ref(false);
+const allTerms = ref([]);
 
 // Get a specific score for a subject
 const getStudentSubjectScore = (studentData, subjectId, key) => {
   const subject = studentData.subjects.find((s) => s.id === subjectId);
   return subject ? subject[key] : "-";
 };
+
+const getAllTerm = () => {
+  isLoadingTerm.value = true;
+  apiServices
+    .getAllTerm()
+    .then((response) => {
+      allTerms.value = response.data.data?.terms;
+    })
+    .catch((error) => {
+      console.error("Error fetching terms:", error);
+    })
+    .finally(() => {
+      isLoadingTerm.value = false;
+    });
+};
+// const paidTerms = computed(() => {
+//   return allTerms.value.filter((term) => Boolean(term.was_paid));
+// });
+
+const paidTerms = computed(() => {
+  return allTerms.value.filter(
+    (term) => term.was_paid || term.status === "active"
+  );
+});
 
 // API functions
 const getAllRowSessions = () => {
@@ -352,7 +371,7 @@ const getAssignedSubjects = () => {
 };
 
 const generatePdf = () => {
-  // isGeneratingPDF2.value = true;
+  isGeneratingPDF.value = true;
   apiServices
     .generatePdfBroadsheet(students.value, classSubjects.value)
     .then((response) => {
@@ -366,7 +385,7 @@ const generatePdf = () => {
       console.error(error);
     })
     .finally(() => {
-      // isGeneratingPDF2.value = false;
+      isGeneratingPDF.value = false;
     });
 };
 
@@ -374,6 +393,7 @@ const generatePdf = () => {
 onMounted(() => {
   getAllRowSessions();
   getAllRowClases();
+  getAllTerm();
 });
 </script>
 
@@ -422,7 +442,7 @@ onMounted(() => {
   align-items: center;
   gap: 8px;
   padding: 12px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
   border: none;
   border-radius: 8px;

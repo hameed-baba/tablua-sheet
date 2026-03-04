@@ -77,10 +77,20 @@
                 :disabled="gradeData.grade_type === 'letter_grade'"
                 @change="toggleAllowGrade"
               />
-              <span class="checkmark" :class="{ disabled: gradeData.grade_type === 'letter_grade' }"></span>
-              <span class="permission-label" :class="{ disabled: gradeData.grade_type === 'letter_grade' }">
+              <span
+                class="checkmark"
+                :class="{ disabled: gradeData.grade_type === 'letter_grade' }"
+              ></span>
+              <span
+                class="permission-label"
+                :class="{ disabled: gradeData.grade_type === 'letter_grade' }"
+              >
                 Allow Grade <small>(A, B)</small>
-                <small v-if="gradeData.grade_type === 'letter_grade'" class="text-muted d-block">Required for Letter Grade</small>
+                <small
+                  v-if="gradeData.grade_type === 'letter_grade'"
+                  class="text-muted d-block"
+                  >Required for Letter Grade</small
+                >
               </span>
             </label>
 
@@ -137,6 +147,7 @@
             </div>
           </div>
         </div>
+
 
         <div class="form-card">
           <div class="section-header">
@@ -205,6 +216,24 @@
                     v-model="range.grade"
                     class="form-input"
                     placeholder="e.g., A+, B, 1st"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Principal Remark *</label>
+                  <input
+                    type="text"
+                    v-model="range.principal_remark"
+                    class="form-input"
+                    placeholder="e.g., Excellent, Good"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Class Teacher Remark *</label>
+                  <input
+                    type="text"
+                    v-model="range.class_teacher_remark"
+                    class="form-input"
+                    placeholder="e.g., Excellent, Good"
                   />
                 </div>
               </div>
@@ -301,6 +330,8 @@ const addGradeRange = () => {
     to_mark: "",
     grade: "",
     remark: "",
+    principal_remark: "",
+    class_teacher_remark: "",
   });
 };
 
@@ -472,7 +503,7 @@ onMounted(() => {
 }
 
 .summary-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   border-radius: 8px;
   padding: 1.25rem;
   margin-bottom: 1.5rem;

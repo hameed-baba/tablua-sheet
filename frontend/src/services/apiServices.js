@@ -119,7 +119,7 @@ export default {
   getAllTerm() {
     return apiClient.get("/school-terms");
   },
-  getTermAndSession(){
+  getTermAndSession() {
     return apiClient.get("/school-terms/active-terms-session");
   },
   // =================== SUBJECT MANAGEMENT ===================
@@ -157,6 +157,12 @@ export default {
     return apiClient.post(
       "/class-subject-assigns/student/assign-subject",
       data,
+    );
+  },
+  removeSubjectFromClassStudents(data) {
+    return apiClient.delete(
+      "/class-subject-assigns/student/remove-assign-subject",
+      { data },
     );
   },
   getClassSubjectAssignmentById(id) {
@@ -303,7 +309,7 @@ export default {
   getStudentAssignedSubjects(studentId, params = {}) {
     return apiClient.get(`/students/${studentId}/subjects`, { params });
   },
-  generateAddmissionNumber(){
+  generateAddmissionNumber() {
     return apiClient.get("/students/generate-admission-number");
   },
 
@@ -430,27 +436,7 @@ export default {
     });
   },
 
-
-  // =================== STAFF ACTIVITY ===================
-  getStaffActivityStatus() {
-    return apiClient.get("/staff-activity/status");
-  },
-  getStaffSessions(staffId = null, params = {}) {
-    const url = staffId
-      ? `/staff-activity/sessions/${staffId}`
-      : "/staff-activity/sessions";
-    return apiClient.get(url, { params });
-  },
-  recordLogin(data) {
-    return apiClient.post("/staff-activity/login", data);
-  },
-  recordLogout(data) {
-    return apiClient.post("/staff-activity/logout", data);
-  },
-  cleanupStaleSessions() {
-    return apiClient.post("/staff-activity/cleanup");
-  },
-  getStaffAssigned(id){
+  getStaffAssigned(id) {
     return apiClient.get(`/staff/assigned-subjects/${id}`);
   },
 
@@ -461,7 +447,9 @@ export default {
   getDashboardOverview() {
     return apiClient.get("/dashboard/overview");
   },
- 
+  getDashboardCharts() {
+    return apiClient.get("/dashboard/charts");
+  },
 
   // =================== PDF ===================
   // generatePdfMakeReport2() {
@@ -484,5 +472,29 @@ export default {
       { studentsData, classSubjects },
       { responseType: "blob" }, // important to get PDF
     );
+  },
+  generateSingleReportCard(studentsData) {
+    return apiClient.post(
+      "/pdf/generate-single-reportcard",
+      studentsData,
+      { responseType: "blob" }, // important to get PDF
+    );
+  },
+
+  // =================== SCHOOL INVOICE ===================
+  createSchoolInvoice(data) {
+    return apiClient.post("/invoice/school-invoice", data);
+  },
+  getAllSchoolInvoices(params = {}) {
+    return apiClient.get("/invoice/school-invoices", { params });
+  },
+  getSchoolInvoiceById(id) {
+    return apiClient.get("/invoice/school-invoice/" + id);
+  },
+  updateSchoolInvoice(id) {
+    return apiClient.put("/invoice/school-invoices/"+id);
+  },
+  deleteSchoolInvoice(id) {
+    return apiClient.delete("/invoice/school-invoices/" + id);
   },
 };

@@ -539,6 +539,7 @@ const getStudentsByClassId = asyncHandler(async (req, res) => {
 
   const whereClause = {
     current_class_id: classId,
+    student_status: "active",
   };
 
   // Search filter
@@ -728,17 +729,23 @@ const getStudentSubjects = asyncHandler(async (req, res) => {
   } else {
     // If no assignments found, use student's current class and session info
     const currentClass = await SchoolClass.findByPk(student.current_class_id);
-    const currentSession = await SchoolSession.findByPk(student.current_session_id);
-    
-    classInfo = currentClass ? {
-      id: currentClass.id,
-      class_name: currentClass.class_name,
-    } : null;
-    
-    sessionInfo = currentSession ? {
-      id: currentSession.id,
-      session_name: currentSession.session_name,
-    } : null;
+    const currentSession = await SchoolSession.findByPk(
+      student.current_session_id,
+    );
+
+    classInfo = currentClass
+      ? {
+          id: currentClass.id,
+          class_name: currentClass.class_name,
+        }
+      : null;
+
+    sessionInfo = currentSession
+      ? {
+          id: currentSession.id,
+          session_name: currentSession.session_name,
+        }
+      : null;
   }
 
   // Group subjects by term
@@ -1768,7 +1775,10 @@ const generateAdmissionNumber = asyncHandler(async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error occurred when generating admission number:", error.message);
+    console.error(
+      "Error occurred when generating admission number:",
+      error.message,
+    );
     return res.status(500).json({
       status: "error",
       message: "Error occurred when generating admission number",

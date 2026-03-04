@@ -10,7 +10,12 @@ const {
   GradeSystem,
 } = require("../models");
 const BaseController = require("./baseController");
-const { getRemark, displayPosition } = require("../utils/grading");
+
+const {
+  getRemark,
+  getPrincipalAndTeacherRemark,
+  displayPosition,
+} = require("../utils/grading");
 
 class StudentSubjectAssignController extends BaseController {
   constructor() {
@@ -79,7 +84,6 @@ class StudentSubjectAssignController extends BaseController {
 
       try {
         // Find the student subject assignment
-      
 
         const assignment = await StudentSubjectAssign.findOne({
           where: {
@@ -92,8 +96,6 @@ class StudentSubjectAssignController extends BaseController {
           include: this.includes,
         });
 
-      
-
         if (!assignment) {
           const error = "Student subject assignment not found";
           console.log(`CA1 Assignment not found for student ${student_id}`);
@@ -105,7 +107,7 @@ class StudentSubjectAssignController extends BaseController {
         }
 
         // Update the CA1 score
-       
+
         await assignment.update({ ca_1_score });
 
         // Fetch the updated record with includes
@@ -1696,11 +1698,6 @@ class StudentSubjectAssignController extends BaseController {
 
     const termId = Number(current_term_id);
 
-    // Remove termIds array - we only need the current term
-    // if (termId === 1) termIds = [1];
-    // if (termId === 2) termIds = [1, 2];
-    // if (termId === 3) termIds = [1, 2, 3];
-
     // Term mapping
     const termMapping = {
       1: "First Term",
@@ -1740,7 +1737,15 @@ class StudentSubjectAssignController extends BaseController {
                 {
                   model: GradeSystem,
                   as: "gradeSystems",
-                  attributes: ["id", "from_mark", "to_mark", "grade", "remark"],
+                  attributes: [
+                    "id",
+                    "from_mark",
+                    "to_mark",
+                    "grade",
+                    "remark",
+                    "principal_remark",
+                    "class_teacher_remark",
+                  ],
                 },
               ],
             },
@@ -1826,6 +1831,8 @@ class StudentSubjectAssignController extends BaseController {
             total_subjects: 0,
             average: 0,
             position: null,
+            principal_remark: null,
+            class_teacher_remark: null,
           },
         };
       }
@@ -1953,6 +1960,18 @@ class StudentSubjectAssignController extends BaseController {
         student.performance.average,
         student.performance.position,
       );
+
+      let principalRemark = null;
+      let classTeacherRemark = null;
+
+      const avg = student.performance.average;
+      let staffRemarks = getPrincipalAndTeacherRemark(gradeSystem, avg);
+
+      principalRemark = staffRemarks.principal_remark;
+      classTeacherRemark = staffRemarks.class_teacher_remark;
+
+      student.performance.principal_remark = principalRemark;
+      student.performance.class_teacher_remark = classTeacherRemark;
     });
 
     // ===============================

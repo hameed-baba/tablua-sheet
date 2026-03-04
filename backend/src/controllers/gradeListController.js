@@ -2,34 +2,16 @@ const { Op } = require("sequelize");
 const { asyncHandler } = require("../middleware/errorHandler");
 const { GradeList, GradeSystem } = require("../models");
 
-/**
- * @desc Create a new grade list
- * @route POST /api/grade-lists
- */
-// const createGradeList = asyncHandler(async (req, res) => {
-//   const existing = await GradeList.findOne({
-//     where: { grade_name: req.body.grade_name },
-//   });
-
-//   if (existing) {
-//     return res.status(400).json({
-//       status: "error",
-//       message: "Grade list with this name already exists",
-//     });
-//   }
-
-//   const gradeList = await GradeList.create(req.body);
-
-//   res.status(201).json({
-//     status: "success",
-//     message: "Grade list created successfully",
-//     data: gradeList,
-//   });
-// });
-
 const createGradeList = asyncHandler(async (req, res) => {
-  const { grade_name, grade_type, allow_grade, allow_remark, gradeSystems } =
-    req.body;
+  const {
+    grade_name,
+    grade_type,
+    allow_grade,
+    allow_remark,
+    principal_remark,
+    class_teacher_remark,
+    gradeSystems,
+  } = req.body;
 
   const existing = await GradeList.findOne({ where: { grade_name } });
   if (existing) {
@@ -46,11 +28,13 @@ const createGradeList = asyncHandler(async (req, res) => {
       grade_type,
       allow_grade,
       allow_remark,
+      principal_remark,
+      class_teacher_remark,
       gradeSystems: gradeSystems || [], // Include grade systems from payload
     },
     {
       include: [{ model: GradeSystem, as: "gradeSystems" }],
-    }
+    },
   );
 
   // Fetch the created grade list with all associations
@@ -65,37 +49,6 @@ const createGradeList = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc Get all grade lists (no pagination)
- * @route GET /api/grade-lists
- */
-// const getAllGradeLists = asyncHandler(async (req, res) => {
-//   const search = req.query.search?.trim() || "";
-//   const sortBy = req.query.sortBy || "createdAt";
-//   const sortOrder = (req.query.sortOrder || "DESC").toUpperCase();
-
-//   const whereClause = {};
-
-//   if (search) {
-//     whereClause.grade_name = { [Op.like]: `%${search}%` };
-//   }
-
-//   const gradeLists = await GradeList.findAll({
-//     where: whereClause,
-//     include: [
-//       {
-//         model: GradeSystem,
-//         as: "gradeSystems",
-//       },
-//     ],
-//     order: [[sortBy, sortOrder]],
-//   });
-
-//   res.json({
-//     status: "success",
-//     data: gradeLists,
-//   });
-// });
 const getAllGradeLists = asyncHandler(async (req, res) => {
   // Fetch all grade lists with their associated grade systems
   const gradeLists = await GradeList.findAll({
@@ -103,7 +56,15 @@ const getAllGradeLists = asyncHandler(async (req, res) => {
       {
         model: GradeSystem,
         as: "gradeSystems", // make sure your association uses this alias
-        attributes: ["id", "from_mark", "to_mark", "grade", "remark"],
+        attributes: [
+          "id",
+          "from_mark",
+          "to_mark",
+          "grade",
+          "remark",
+          "principal_remark",
+          "class_teacher_remark",
+        ],
       },
     ],
     order: [["id", "ASC"]],
@@ -142,32 +103,10 @@ const getGradeListById = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc Update grade list
- * @route PUT /api/grade-lists/:id
- */
-// const updateGradeList = asyncHandler(async (req, res) => {
-//   const gradeList = await GradeList.findByPk(req.params.id);
-
-//   if (!gradeList) {
-//     return res.status(404).json({
-//       status: "error",
-//       message: "Grade list not found",
-//     });
-//   }
-
-//   await gradeList.update(req.body);
-
-//   res.json({
-//     status: "success",
-//     message: "Grade list updated successfully",
-//     data: gradeList,
-//   });
-// });
-
 const updateGradeList = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { grade_name, grade_type, gradeSystems } = req.body;
+  const { grade_name, grade_type, allow_grade, allow_remark, gradeSystems } =
+    req.body;
 
   // Find existing grade list
   const gradeList = await GradeList.findByPk(id, {
@@ -180,7 +119,7 @@ const updateGradeList = asyncHandler(async (req, res) => {
   }
 
   // Update main grade list fields
-  await gradeList.update({ grade_name, grade_type });
+  await gradeList.update({ grade_name, grade_type, allow_grade, allow_remark });
 
   // Handle grade systems if provided
   if (gradeSystems && Array.isArray(gradeSystems)) {
@@ -206,8 +145,10 @@ const updateGradeList = asyncHandler(async (req, res) => {
             to_mark: gs.to_mark,
             grade: gs.grade,
             remark: gs.remark,
+            principal_remark:gs.principal_remark,
+            class_teacher_remark:gs.class_teacher_remark
           },
-          { where: { id: gs.id, grade_list_id: id } }
+          { where: { id: gs.id, grade_list_id: id } },
         );
       } else {
         // New grade system → create

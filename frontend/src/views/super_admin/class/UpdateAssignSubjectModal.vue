@@ -2,7 +2,7 @@
   <BaseModal
     :show="showModal"
     @close="toggleModal"
-    title="Update Subject Assignment"
+    title="Update Subject Assignments"
     size="large"
   >
     <div class="assignment-container">
@@ -113,6 +113,7 @@
         <i class="fa fa-spinner fa-spin"></i> Loading...
       </p>
     </div>
+    <pre>{{ subjectInfo }}</pre>
   </BaseModal>
 </template>
 
@@ -242,7 +243,7 @@ const handleSubmit = async () => {
   errorMessage.value = "";
 
   const data = {
-    school_class_id: props.subjectInfo.school_class_id,
+    school_class_id: classId.value,
     school_subject_id: props.subjectInfo.school_subject_id,
     school_staff_id: props.subjectInfo.school_staff_id,
   };

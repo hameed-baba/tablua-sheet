@@ -173,7 +173,7 @@
           <div
             class="action-icon"
             style="
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
             "
           >
             <svg
@@ -287,205 +287,56 @@
       </div>
     </div>
 
-    <!-- Staff Activity Status -->
-    <div class="data-table-container" v-if="getUserRole() === 'super_admin'">
-      <div class="table-header">
-        <h2 class="table-title">Staff Activity Status</h2>
-        <div class="table-actions">
-          <button
-            class="btn btn-secondary btn-sm"
-            @click="cleanupStaleSessions"
-            :disabled="cleanupLoading"
-          >
-            <svg
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              style="margin-right: 0.5rem"
-            >
-              path
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-              />
-            </svg>
-            {{ cleanupLoading ? "Cleaning..." : "Cleanup" }}
-          </button>
-          <button
-            class="btn btn-secondary btn-sm"
-            @click="refreshStaffActivity"
-            :disabled="staffActivityLoading"
-          >
-            <svg
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              style="margin-right: 0.5rem"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
-            {{ staffActivityLoading ? "Loading..." : "Refresh" }}
-          </button>
+    <!-- Charts Section -->
+    <div class="charts-section">
+      <h2 class="section-title">Analytics Overview</h2>
+      <div class="charts-grid">
+        <!-- Students by Class -->
+        <div class="chart-card">
+          <BarChart
+            title="Students by Class"
+            subtitle="Distribution of active students across classes"
+            :data="chartData.studentsByClass"
+            :loading="chartsLoading"
+            :error="chartsError"
+          />
         </div>
-      </div>
 
-      <!-- Loading State -->
-      <div v-if="staffActivityLoading" class="loading-state">
-        <div class="loading-spinner"></div>
-        <p>Loading staff activity...</p>
-      </div>
-
-      <!-- Error State -->
-      <div v-else-if="staffActivityError" class="error-state">
-        <p>{{ staffActivityError }}</p>
-        <button class="btn btn-primary btn-sm" @click="loadStaffActivity">
-          Try Again
-        </button>
-      </div>
-
-      <!-- Staff Activity Table -->
-      <div v-else class="table-responsive">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Staff Name</th>
-              <th class="d-none d-md-table-cell">Email</th>
-              <th class="d-none d-lg-table-cell">Role</th>
-              <th class="d-none d-sm-table-cell">Time</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Active Staff -->
-            <tr
-              v-for="staff in staffActivity.active_staff"
-              :key="`active-${staff.id}`"
-            >
-              <td>
-                <strong>{{ staff.full_name }}</strong>
-                <div class="d-md-none">
-                  <small class="text-muted"
-                    >{{ staff.email }} •
-                    {{ formatTime(staff.login_time) }}</small
-                  >
-                </div>
-              </td>
-              <td class="d-none d-md-table-cell">{{ staff.email }}</td>
-              <td class="d-none d-lg-table-cell">
-                <span class="module-badge">{{ staff.role }}</span>
-              </td>
-              <td class="d-none d-sm-table-cell">
-                {{ formatTime(staff.login_time) }}
-              </td>
-              <td>
-                <span class="status-badge status-active">
-                  <svg
-                    width="8"
-                    height="8"
-                    fill="currentColor"
-                    viewBox="0 0 8 8"
-                    style="margin-right: 0.25rem"
-                  >
-                    <circle cx="4" cy="4" r="4" />
-                  </svg>
-                  Online
-                </span>
-              </td>
-            </tr>
-
-            <!-- Recently Logged Out Staff -->
-            <tr
-              v-for="staff in staffActivity.recently_logged_out"
-              :key="`recent-${staff.id}`"
-            >
-              <td>
-                <strong>{{ staff.full_name }}</strong>
-                <div class="d-md-none">
-                  <small class="text-muted"
-                    >{{ staff.email }} •
-                    {{ formatTime(staff.logout_time) }}</small
-                  >
-                </div>
-              </td>
-              <td class="d-none d-md-table-cell">{{ staff.email }}</td>
-              <td class="d-none d-lg-table-cell">
-                <span class="module-badge">{{ staff.role }}</span>
-              </td>
-              <td class="d-none d-sm-table-cell">
-                {{ formatTime(staff.logout_time) }}
-              </td>
-              <td>
-                <span class="status-badge status-pending">
-                  <svg
-                    width="8"
-                    height="8"
-                    fill="currentColor"
-                    viewBox="0 0 8 8"
-                    style="margin-right: 0.25rem"
-                  >
-                    <circle cx="4" cy="4" r="4" />
-                  </svg>
-                  Recently Offline
-                </span>
-              </td>
-            </tr>
-
-            <!-- Empty State -->
-            <tr
-              v-if="
-                !staffActivity.active_staff?.length &&
-                !staffActivity.recently_logged_out?.length
-              "
-            >
-              <td colspan="5" class="text-center">
-                <div class="empty-state">
-                  <svg
-                    width="48"
-                    height="48"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    style="margin-bottom: 1rem; opacity: 0.5"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                  <p>No staff activity data available</p>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Summary -->
-      <div v-if="staffActivity.summary" class="activity-summary">
-        <div class="summary-item">
-          <span class="summary-label">Active Staff:</span>
-          <span class="summary-value">{{
-            staffActivity.summary.total_active
-          }}</span>
+        <!-- Students by Gender -->
+        <div class="chart-card">
+          <DonutChart
+            title="Students by Gender"
+            subtitle="Gender distribution of active students"
+            :data="chartData.studentsByGender"
+            :loading="chartsLoading"
+            :error="chartsError"
+            :colors="['#3b82f6', '#ec4899']"
+          />
         </div>
-        <div class="summary-item">
-          <span class="summary-label">Recently Offline:</span>
-          <span class="summary-value">{{
-            staffActivity.summary.total_recently_logged_out
-          }}</span>
+
+        <!-- Students by Status -->
+        <div class="chart-card">
+          <BarChart
+            title="Students by Status"
+            subtitle="Student enrollment status overview"
+            :data="chartData.studentsByStatus"
+            :loading="chartsLoading"
+            :error="chartsError"
+            :colors="['#10b981', '#f59e0b', '#ef4444']"
+          />
+        </div>
+
+        <!-- Enrollment Trend -->
+        <div class="chart-card full-width" v-if="false">
+          <LineChart
+            title="Student Enrollment Trend"
+            subtitle="New student registrations over the last 6 months"
+            :data="chartData.enrollmentTrend"
+            :loading="chartsLoading"
+            :error="chartsError"
+            :width="800"
+            :height="300"
+          />
         </div>
       </div>
     </div>
@@ -497,6 +348,9 @@ import { ref, onMounted } from "vue";
 import apiServices from "../../services/apiServices";
 import { gsap } from "gsap";
 import { getUserRole } from "../../utils/userRole";
+import BarChart from "../../components/charts/BarChart.vue";
+import DonutChart from "../../components/charts/DonutChart.vue";
+import LineChart from "../../components/charts/LineChart.vue";
 
 const stats = ref({
   totalStudents: 0,
@@ -511,96 +365,43 @@ const sessionInfo = ref({
 });
 const isGettingSummary = ref(false);
 
-// Staff Activity Data
-const staffActivity = ref({
-  active_staff: [],
-  recently_logged_out: [],
-  summary: {
-    total_active: 0,
-    total_recently_logged_out: 0,
-    total_staff: 0,
-  },
+// Chart data
+const chartData = ref({
+  studentsByClass: [],
+  studentsByGender: [],
+  studentsByStatus: [],
+  staffByRole: [],
+  enrollmentTrend: [],
 });
+const chartsLoading = ref(false);
+const chartsError = ref(null);
 
-const staffActivityLoading = ref(false);
-const staffActivityError = ref(null);
-const cleanupLoading = ref(false);
-// const isGettingSummary = ref(false);
-
-// Load staff activity status
-const loadStaffActivity = () => {
-  staffActivityLoading.value = true;
-  staffActivityError.value = null;
+// Load chart data
+const loadChartData = () => {
+  console.log("Loading chart data...");
+  chartsLoading.value = true;
+  chartsError.value = null;
 
   apiServices
-    .getStaffActivityStatus()
+    .getDashboardCharts()
     .then((response) => {
-      staffActivity.value = response.data.data;
+      console.log("Chart data received:", response.data);
+      chartData.value = response.data.data;
+      console.log("Chart data set:", chartData.value);
     })
     .catch((error) => {
-      console.error("Failed to load staff activity:", error);
-      staffActivityError.value = "Failed to load staff activity data";
+      console.error("Failed to load chart data:", error);
+      chartsError.value = "Failed to load chart data";
     })
     .finally(() => {
-      staffActivityLoading.value = false;
+      chartsLoading.value = false;
+      console.log("Chart loading complete");
     });
-};
-
-// Refresh staff activity
-const refreshStaffActivity = () => {
-  loadStaffActivity();
 };
 
 // Refresh all dashboard data
 const refreshDashboard = async () => {
-  await Promise.all([getDashboardSummary(), loadStaffActivity()]);
-};
-
-const cleanupStaleSessions = () => {
-  cleanupLoading.value = true;
-
-  apiServices
-    .cleanupStaleSessions()
-    .then((response) => {
-      alert(
-        `Successfully cleaned up ${response.data.data.sessions_cleaned} stale sessions`
-      );
-
-      // Refresh the staff activity data
-      return loadStaffActivity();
-    })
-    .catch((error) => {
-      console.error("Failed to cleanup stale sessions:", error);
-      alert("Failed to cleanup stale sessions");
-    })
-    .finally(() => {
-      cleanupLoading.value = false;
-    });
-};
-
-// Format time helper
-const formatTime = (timeString) => {
-  if (!timeString) return "N/A";
-
-  const date = new Date(timeString);
-  const now = new Date();
-  const diffInMinutes = Math.floor((now - date) / (1000 * 60));
-
-  if (diffInMinutes < 1) {
-    return "Just now";
-  } else if (diffInMinutes < 60) {
-    return `${diffInMinutes}m ago`;
-  } else if (diffInMinutes < 1440) {
-    // Less than 24 hours
-    const hours = Math.floor(diffInMinutes / 60);
-    return `${hours}h ago`;
-  } else {
-    return (
-      date.toLocaleDateString() +
-      " " +
-      date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    );
-  }
+  await Promise.all([getDashboardSummary(), loadChartData()]);
 };
 
 const getDashboardSummary = () => {
@@ -627,7 +428,7 @@ const getDashboardSummary = () => {
 
 onMounted(async () => {
   // Load all dashboard data
-  await Promise.all([getDashboardSummary(), loadStaffActivity()]);
+  await Promise.all([getDashboardSummary(), loadChartData()]);
 
   gsap.from(".sum-box", {
     opacity: 0,
@@ -645,14 +446,14 @@ onMounted(async () => {
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 1.25rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 500;
 }
 
-/* .charts-section {
+.charts-section {
   margin-bottom: 2rem;
 }
 
@@ -673,7 +474,7 @@ onMounted(async () => {
 
 .chart-card.full-width {
   grid-column: 1 / -1;
-} */
+}
 
 .quick-actions-section {
   margin-bottom: 2rem;
@@ -750,110 +551,6 @@ onMounted(async () => {
   font-size: 0.875rem;
 }
 
-/* Staff Activity Styles */
-.loading-state,
-.error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 1rem;
-  text-align: center;
-}
-
-.loading-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid #f3f4f6;
-  border-top: 3px solid #667eea;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.error-state p {
-  color: #ef4444;
-  margin-bottom: 1rem;
-}
-
-.empty-state {
-  padding: 2rem;
-  color: #6b7280;
-}
-
-.empty-state svg {
-  color: #9ca3af;
-}
-
-.activity-summary {
-  display: flex;
-  gap: 2rem;
-  padding: 1rem;
-  background: #f8fafc;
-  border-top: 1px solid #e2e8f0;
-  border-radius: 0 0 12px 12px;
-}
-
-.summary-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.summary-label {
-  font-size: 0.875rem;
-  color: #64748b;
-}
-
-.summary-value {
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.8125rem;
-  font-weight: 500;
-}
-
-.status-active {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
-}
-
-.status-pending {
-  background: rgba(245, 158, 11, 0.1);
-  color: #f59e0b;
-}
-
-.status-inactive {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-}
-
-.table-actions {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.table-actions .btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .stats-grid.loading {
   opacity: 0.7;
   pointer-events: none;
@@ -879,14 +576,14 @@ onMounted(async () => {
     justify-content: center;
   }
 
-  /* .charts-grid {
+  .charts-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
 
   .chart-card.full-width {
     grid-column: 1;
-  } */
+  }
 
   .quick-actions-grid {
     grid-template-columns: 1fr;

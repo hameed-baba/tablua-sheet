@@ -439,14 +439,14 @@ const handleSubmit = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-color: #667eea;
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  border-color: #3b82f6;
 }
 
 .submit-btn:hover {
-  // background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  // background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(99, 91, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .submit-btn:active {

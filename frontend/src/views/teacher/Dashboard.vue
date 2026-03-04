@@ -239,7 +239,7 @@ onMounted(() => {
 
 /* Welcome Card */
 .welcome-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
   padding: 24px;
   border-radius: 12px;
@@ -288,7 +288,7 @@ onMounted(() => {
 }
 
 .dashboard-icon {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
 }
 .exams-icon {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);

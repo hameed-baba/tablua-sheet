@@ -3,6 +3,8 @@ const {
   authenticate,
   checkSchoolAccess,
   authorize,
+  checkSystemAccess,
+  requireSuperAdmin,
 } = require("../middleware/auth");
 const {
   validate,
@@ -16,7 +18,9 @@ const router = express.Router();
 router.get(
   "/",
   authenticate,
-  authorize(["super_admin", "admin"]),
+  authorize(["super_admin", "admin", "teacher", "student", "parent"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   validateQuery(schemas.pagination),
   schoolSectionController.getAll,
 );
@@ -24,14 +28,18 @@ router.get(
 router.get(
   "/:id",
   authenticate,
-  authorize(["super_admin", "admin"]),
+  authorize(["super_admin", "admin", "teacher", "student", "parent"]),
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolSectionController.getById,
 );
 
 router.post(
   "/",
   authenticate,
-  authorize(["super_admin", "admin"]),
+  requireSuperAdmin,
+  checkSchoolAccess,
+  checkSystemAccess,
   validate(schemas.schoolSectionCreation),
   schoolSectionController.create,
 );
@@ -39,14 +47,18 @@ router.post(
 router.put(
   "/:id",
   authenticate,
-  authorize(["super_admin", "admin"]),
+  requireSuperAdmin,
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolSectionController.update,
 );
 
 router.delete(
   "/:id",
   authenticate,
-  authorize(["super_admin", "admin"]),
+  requireSuperAdmin,
+  checkSchoolAccess,
+  checkSystemAccess,
   schoolSectionController.delete,
 );
 

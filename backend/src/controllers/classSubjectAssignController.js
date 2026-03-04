@@ -23,34 +23,6 @@ class ClassSubjectAssignController extends BaseController {
     ]);
   }
 
-  /**
-   * Flexible assignment creation endpoint that handles both single and bulk assignments
-   *
-   * Single Assignment Request Body:
-   * {
-   *   "school_class_id": 1,
-   *   "school_subject_id": 2,
-   *   "school_staff_id": 3
-   * }
-   *
-   * Bulk Assignment Request Body:
-   * {
-   *   "assignments": [
-   *     {
-   *       "school_class_id": 1,
-   *       "school_subject_id": 2,
-   *       "school_staff_id": 3
-   *     },
-   *     {
-   *       "school_class_id": 1,
-   *       "school_subject_id": 4,
-   *       "school_staff_id": 5
-   *     }
-   *   ],
-   *   "school_class_id": 1  // Optional: for reference
-   * }
-   */
-
   // Custom validation middleware for flexible assignment creation
   validateAssignmentRequest = (req, res, next) => {
     const { assignments } = req.body;
@@ -376,10 +348,10 @@ class ClassSubjectAssignController extends BaseController {
           school_subject_id: subject_id,
           current_session_id: current_session_id,
           current_class_id: current_class_id,
-          current_term_id: [1, 2, 3]
+          current_term_id: [1, 2, 3],
         },
-        attributes: ['student_id'],
-        group: ['student_id'], // Group by student to get unique students
+        attributes: ["student_id"],
+        group: ["student_id"], // Group by student to get unique students
         transaction,
       });
 
@@ -547,90 +519,102 @@ class ClassSubjectAssignController extends BaseController {
     }
   });
 
-  // getClassAssignedSubject = asyncHandler(async (req, res) => {
-  //   const { classId } = req.params;
+  removeSubjectFromClassStudents = asyncHandler(async (req, res) => {
+    const {
+      subject_id,
+      current_class_id,
+      current_session_id,
+      class_subject_assign_id,
+    } = req.body;
 
-  //   const assignments = await ClassSubjectAssign.findAll({
-  //     where: { school_class_id: classId },
-  //     include: [
-  //       {
-  //         model: SchoolSubject,
-  //         as: "Subject",
-  //         attributes: ["id", "subject_name"],
-  //       },
-  //       {
-  //         model: SchoolStaff,
-  //         as: "Staff",
-  //         attributes: ["id", "full_name"],
-  //       },
-  //     ],
-  //   });
+    const TERMS = [1, 2, 3];
 
-  //   res.status(200).json({
-  //     success: true,
-  //     data: assignments,
-  //   });
-  // });
+    /* -------------------- Validation -------------------- */
+    if (
+      !subject_id ||
+      !current_class_id ||
+      !current_session_id ||
+      !class_subject_assign_id
+    ) {
+      return res.status(400).json({
+        status: "error",
+        message:
+          "subject_id, current_class_id, current_session_id and class_subject_assign_id are required",
+      });
+    }
 
-  // getClassAssignedSubject = asyncHandler(async (req, res) => {
-  //   const { classId } = req.params;
+    const transaction = await sequelize.transaction();
 
-  //   // 1️⃣ Get active session
-  //   const activeSession = await SchoolSession.findOne({
-  //     where: { status: "active" }, // OR { status: "active" }
-  //     attributes: ["id"],
-  //   });
+    try {
+      /* -------------------- Verify Subject -------------------- */
+      const subject = await SchoolSubject.findByPk(subject_id, {
+        attributes: ["id", "subject_name"],
+        transaction,
+      });
 
-  //   if (!activeSession) {
-  //     return res.status(404).json({
-  //       success: false,
-  //       message: "No active session found",
-  //     });
-  //   }
+      if (!subject) {
+        await transaction.rollback();
+        return res.status(404).json({
+          status: "error",
+          message: "Subject not found",
+        });
+      }
 
-  //   // 2️⃣ Get subjects + student count for active session
-  //   const assignments = await ClassSubjectAssign.findAll({
-  //     where: { school_class_id: classId },
-  //     attributes: [
-  //       "id",
-  //       "school_subject_id",
-  //       "school_staff_id",
-  //       [
-  //         Sequelize.fn("COUNT", Sequelize.col("StudentAssignments.id")),
-  //         "total_students",
-  //       ],
-  //     ],
-  //     include: [
-  //       {
-  //         model: SchoolSubject,
-  //         as: "Subject",
-  //         attributes: ["id", "subject_name"],
-  //       },
-  //       {
-  //         model: SchoolStaff,
-  //         as: "Staff",
-  //         attributes: ["id", "full_name"],
-  //       },
-  //       {
-  //         model: StudentSubjectAssign,
-  //         as: "StudentAssignments",
-  //         attributes: [],
-  //         where: {
-  //           current_class_id: classId,
-  //           current_session_id: activeSession.id, // 🔥 ACTIVE SESSION FILTER
-  //         },
-  //         required: false,
-  //       },
-  //     ],
-  //     group: ["ClassSubjectAssign.id", "Subject.id", "Staff.id"],
-  //   });
+      /* -------------------- Remove student assignments (optional) -------------------- */
+      const removedStudentAssignments = await StudentSubjectAssign.destroy({
+        where: {
+          school_subject_id: subject_id,
+          current_class_id,
+          current_session_id,
+          current_term_id: {
+            [Op.in]: TERMS,
+          },
+        },
+        transaction,
+      });
+      // 👉 If no students exist, this will simply be 0
 
-  //   res.status(200).json({
-  //     success: true,
-  //     data: assignments,
-  //     activeSessionId: activeSession.id,
-  //   });
-  // });
+      /* -------------------- Remove class-subject assignment -------------------- */
+      const removedClassSubject = await ClassSubjectAssign.destroy({
+        where: {
+          id: class_subject_assign_id,
+          school_subject_id: subject_id,
+          school_class_id: current_class_id,
+        },
+        transaction,
+      });
+
+      await transaction.commit();
+
+      return res.status(200).json({
+        status: "success",
+        message: `Subject ${subject.subject_name} removed from class`,
+        data: {
+          subject: {
+            id: subject.id,
+            name: subject.subject_name,
+          },
+          class_id: current_class_id,
+          session_id: current_session_id,
+          terms_checked: TERMS,
+          summary: {
+            students_found: removedStudentAssignments > 0,
+            removed_student_assignments: removedStudentAssignments,
+            removed_class_subject_assignment: removedClassSubject === 1,
+          },
+        },
+      });
+    } catch (error) {
+      await transaction.rollback();
+
+      console.error("Error removing subject completely:", error);
+
+      return res.status(500).json({
+        status: "error",
+        message: "Failed to fully remove subject from class",
+      });
+    }
+  });
 
   getClassAssignedSubject = asyncHandler(async (req, res) => {
     const { classId } = req.params;

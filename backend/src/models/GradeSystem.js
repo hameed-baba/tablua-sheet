@@ -17,7 +17,6 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-
   GradeSystem.init(
     {
       grade_list_id: DataTypes.INTEGER,
@@ -25,13 +24,15 @@ module.exports = (sequelize, DataTypes) => {
       to_mark: DataTypes.DECIMAL,
       grade: DataTypes.STRING,
       remark: DataTypes.STRING,
+      principal_remark: DataTypes.STRING,
+      class_teacher_remark: DataTypes.STRING,
     },
     {
       sequelize,
       modelName: "GradeSystem",
       tableName: "grade_systems",
       paranoid: true,
-    }
+    },
   );
 
   return GradeSystem;

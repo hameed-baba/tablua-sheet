@@ -124,6 +124,12 @@
         </template>
       </nav>
 
+      <!-- <div class="upgrade-card">
+        <h3>School Invoice</h3>
+        <p>Manage, generate, and track all school invoices in one place.</p>
+        <button class="upgrade-btn">View Now</button>
+      </div> -->
+
       <button class="logout-btn" @click="logout">
         <svg
           class="nav-icon"
@@ -310,15 +316,6 @@ const navigationItems = computed(() => {
       roles: ["super_admin"],
     },
 
-    // Staff Activity - only super_admin
-    {
-      name: "staff-activity",
-      path: "/staff/activity",
-      label: "Staff Activity",
-      icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
-      roles: ["super_admin"],
-    },
-
     // Classes - available to super_admin and admin
     {
       name: "classes",
@@ -366,6 +363,13 @@ const navigationItems = computed(() => {
           roles: ["super_admin", "admin"],
         },
       ],
+    },
+    {
+      name: "school-invoice",
+      path: "/school-invoice",
+      label: "School Invoice",
+      icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
+      roles: ["super_admin"],
     },
 
     // Configuration - only super_admin

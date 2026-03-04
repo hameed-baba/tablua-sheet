@@ -232,6 +232,9 @@
                 <option value="part-time">Part-time</option>
                 <option value="contract">Contract</option>
                 <option value="internship">Internship</option>
+                <option value="substitute">Substitute</option>
+                <option value="temporary">Temporary</option>
+                <option value="teaching-practise">Teaching Practise</option>
               </vee-form-field>
               <vee-form-error
                 name="employment_type"

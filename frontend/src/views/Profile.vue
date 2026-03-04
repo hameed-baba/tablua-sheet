@@ -12,27 +12,23 @@
       <div class="profile-header-card">
         <div class="profile-avatar-section">
           <div class="profile-avatar-large">
-            {{ getInitials(user.full_name) }}
+            {{ getInitials(staffMember.full_name) }}
           </div>
           <div class="profile-header-info">
             <h2>{{ user.full_name || "User Name" }}</h2>
-            <p class="profile-role">{{ user.role?.role_name || "User" }}</p>
-            <div class="profile-badges">
-              <span class="status-badge status-active">Active</span>
-              <span class="role-badge">{{ user.employee_id || "N/A" }}</span>
-            </div>
+            <p class="mb-0 status-badge status-active">{{ staffMember.Role?.role_name || "User" }}</p>
           </div>
         </div>
         <div class="profile-stats">
           <div class="stat-item">
             <span class="stat-value">{{
-              formatDate(user.date_of_employment)
+              formatDate(staffMember.date_of_employment)
             }}</span>
             <span class="stat-label">Employment Date</span>
           </div>
           <div class="stat-item">
             <span class="stat-value">{{
-              user.year_of_experience || "N/A"
+              staffMember.year_of_experience || "N/A"
             }}</span>
             <span class="stat-label">Years Experience</span>
           </div>
@@ -62,43 +58,43 @@
           <div class="info-grid">
             <div class="info-item">
               <span class="info-label">Full Name</span>
-              <span class="info-value">{{ user.full_name || "N/A" }}</span>
+              <span class="info-value">{{ staffMember.full_name || "N/A" }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Email Address</span>
-              <span class="info-value">{{ user.email || "N/A" }}</span>
+              <span class="info-value">{{ staffMember.email || "N/A" }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Phone Number</span>
-              <span class="info-value">{{ user.phone_number || "N/A" }}</span>
+              <span class="info-value">{{ staffMember.phone_number || "N/A" }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Gender</span>
               <span class="info-value capitalize">{{
-                user.gender || "N/A"
+                staffMember.gender || "N/A"
               }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Date of Birth</span>
               <span class="info-value">{{
-                formatDate(user.date_of_birth)
+                formatDate(staffMember.date_of_birth)
               }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Employee ID</span>
-              <span class="info-value">{{ user.employee_id || "N/A" }}</span>
+              <span class="info-value">{{ staffMember.employee_id || "N/A" }}</span>
             </div>
             <div class="info-item full-width">
               <span class="info-label">Address</span>
-              <span class="info-value">{{ user.address || "N/A" }}</span>
+              <span class="info-value">{{ staffMember.address || "N/A" }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">State</span>
-              <span class="info-value">{{ user.state || "N/A" }}</span>
+              <span class="info-value text-capitalize">{{ staffMember.state || "N/A" }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Local Government</span>
-              <span class="info-value">{{ user.local_gov || "N/A" }}</span>
+              <span class="info-value text-capitalize">{{ staffMember.local_gov || "N/A" }}</span>
             </div>
           </div>
         </div>
@@ -126,31 +122,31 @@
             <div class="info-item">
               <span class="info-label">Role</span>
               <span class="info-value">{{
-                user.role?.role_name || "N/A"
+                staffMember.Role?.role_name || "N/A"
               }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Employment Type</span>
               <span class="info-value capitalize">{{
-                user.employment_type || "N/A"
+                staffMember.employment_type || "N/A"
               }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Date of Employment</span>
               <span class="info-value">{{
-                formatDate(user.date_of_employment)
+                formatDate(staffMember.date_of_employment)
               }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Years of Experience</span>
               <span class="info-value">{{
-                user.year_of_experience || "N/A"
+                staffMember.year_of_experience || "N/A"
               }}</span>
             </div>
             <div class="info-item full-width">
               <span class="info-label">Specializations</span>
               <span class="info-value">{{
-                user.specializations || "N/A"
+                staffMember.specializations || "N/A"
               }}</span>
             </div>
           </div>
@@ -184,21 +180,21 @@
           <div class="info-grid">
             <div class="info-item">
               <span class="info-label">Highest Qualification</span>
-              <span class="info-value">{{ user.qualifications || "N/A" }}</span>
+              <span class="info-value">{{ staffMember.qualifications || "N/A" }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Qualification Title</span>
               <span class="info-value">{{
-                user.qualification_title || "N/A"
+                staffMember.qualification_title || "N/A"
               }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Institution</span>
-              <span class="info-value">{{ user.institution || "N/A" }}</span>
+              <span class="info-value">{{ staffMember.institution || "N/A" }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Year Obtained</span>
-              <span class="info-value">{{ user.year_obtained || "N/A" }}</span>
+              <span class="info-value">{{ staffMember.year_obtained || "N/A" }}</span>
             </div>
           </div>
         </div>
@@ -226,19 +222,19 @@
             <div class="info-item">
               <span class="info-label">Contact Name</span>
               <span class="info-value">{{
-                user.emergency_contact_name || "N/A"
+                staffMember.emergency_contact_name || "N/A"
               }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Contact Number</span>
               <span class="info-value">{{
-                user.emergency_contact || "N/A"
+                staffMember.emergency_contact || "N/A"
               }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Relationship</span>
               <span class="info-value capitalize">{{
-                user.emergency_contact_relation || "N/A"
+                staffMember.emergency_contact_relation || "N/A"
               }}</span>
             </div>
           </div>
@@ -272,29 +268,13 @@
             </div>
             <div class="info-item">
               <span class="info-label">Member Since</span>
-              <span class="info-value">{{ formatDate(user.createdAt) }}</span>
+              <span class="info-value">{{ formatDate(staffMember.createdAt) }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Last Updated</span>
-              <span class="info-value">{{ formatDate(user.updatedAt) }}</span>
+              <span class="info-value">{{ formatDate(staffMember.updatedAt) }}</span>
             </div>
-            <div class="info-item">
-              <span class="info-label">System Access</span>
-              <span class="info-value">
-                <span
-                  :class="[
-                    'access-badge',
-                    user.has_system_access
-                      ? 'access-granted'
-                      : 'access-limited',
-                  ]"
-                >
-                  {{
-                    user.has_system_access ? "Full Access" : "Limited Access"
-                  }}
-                </span>
-              </span>
-            </div>
+         
           </div>
         </div>
       </div>
@@ -303,11 +283,16 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useLoginStore } from "../../store/loginStore";
+import { computed, onMounted, ref } from "vue";
+import { useLoginStore } from "../store/loginStore";
+import apiServices from "../services/apiServices";
+import { useToast } from "../composables/useToast";
 
 const loginStore = useLoginStore();
+const toast = useToast()
 const user = computed(() => loginStore.user || {});
+const staffMember = ref({})
+const loading = ref(false)
 
 const getInitials = (name) => {
   if (!name) return "U";
@@ -327,6 +312,41 @@ const formatDate = (date) => {
     day: "numeric",
   });
 };
+
+  const getStaffById = () => {
+  loading.value = true;
+  return apiServices
+    .getStaffProfile(user.value.id)
+    .then((response) => {
+      // The array of roles is inside response.data.data
+      staffMember.value = response.data.data || {};
+
+      // Format salary for display
+      // if (staffMember.value.salary) {
+      //   displaySalary.value = formatNumber(staffMember.value.salary.toString());
+      // }
+
+  
+      
+    })
+    .catch((error) => {
+      console.error("Error fetching staff:", error);
+      toast.error(
+        "Failed to get the Staff",
+        error.response?.data?.message ||
+        "An error occurred while getting the staff. Please try again."
+      );
+      if (error.response?.status == 404) {
+        router.push("/staff");
+      }
+    })
+    .finally(() => {
+      loading.value = false;
+    });
+};
+onMounted(()=>{
+  getStaffById()
+})
 </script>
 
 <style scoped>
@@ -338,7 +358,7 @@ const formatDate = (date) => {
 }
 
 .profile-header-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   border-radius: 16px;
   padding: 32px;
   color: white;

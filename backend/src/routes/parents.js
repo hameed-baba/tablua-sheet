@@ -1,5 +1,10 @@
 const express = require("express");
-const { authenticate, authorize } = require("../middleware/auth");
+const {
+  authenticate,
+  authorize,
+  checkSchoolAccess,
+  checkSystemAccess,
+} = require("../middleware/auth");
 const {
   validate,
   validateQuery,
@@ -14,14 +19,18 @@ router.get(
   authenticate,
   authorize(["super_admin", "admin"]),
   validateQuery(schemas.pagination),
-  parentController.getAll
+  parentController.getAll,
+  checkSchoolAccess,
+  checkSystemAccess,
 );
 
 router.get(
   "/:id",
   authenticate,
   authorize(["super_admin", "admin"]),
-  parentController.getById
+  parentController.getById,
+  checkSchoolAccess,
+  checkSystemAccess,
 );
 
 router.post(
@@ -29,21 +38,27 @@ router.post(
   authenticate,
   authorize(["super_admin", "admin"]),
   validate(schemas.parentRegistration),
-  parentController.createParent
+  parentController.createParent,
+  checkSchoolAccess,
+  checkSystemAccess,
 );
 
 router.put(
   "/:id",
   authenticate,
   authorize(["super_admin", "admin"]),
-  parentController.updateParent
+  parentController.updateParent,
+  checkSchoolAccess,
+  checkSystemAccess,
 );
 
 router.delete(
   "/:id",
   authenticate,
   authorize(["super_admin", "admin"]),
-  parentController.delete
+  parentController.delete,
+  checkSchoolAccess,
+  checkSystemAccess,
 );
 
 module.exports = router;

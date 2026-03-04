@@ -5,6 +5,7 @@ const {
   requireAdmin,
   requireSuperAdmin,
   authorize,
+  checkSchoolAccess,
 } = require("../middleware/auth");
 const {
   validate,
@@ -20,6 +21,8 @@ router.post(
   "/",
   authenticate,
   requireSuperAdmin,
+  checkSystemAccess,
+  checkSchoolAccess,
   validate(schemas.staffRegistration),
   schoolStaffController.register,
 );
@@ -29,6 +32,8 @@ router.get(
   "/",
   authenticate,
   requireSuperAdmin,
+  checkSystemAccess,
+  checkSchoolAccess,
   validateQuery(schemas.pagination),
   schoolStaffController.getAll,
 );
@@ -38,27 +43,36 @@ router.get(
   "/:id",
   authenticate,
   requireSuperAdmin,
+  checkSystemAccess,
+  checkSchoolAccess,
   schoolStaffController.getById,
 );
 
 router.get(
   "/profile/:id",
   authenticate,
-  requireSuperAdmin,
+  authorize(["super_admin", "admin", "teacher"]),
   schoolStaffController.getStaffProfile,
+  checkSystemAccess,
+  checkSchoolAccess,
 );
 
 router.get(
   "/section/:id",
   authenticate,
-  requireSuperAdmin,
+  authorize(["super_admin", "admin", "teacher"]),
+  checkSystemAccess,
+  checkSchoolAccess,
   schoolStaffController.getAllStaffBySection,
 );
 
 router.get(
   "/assigned-subjects/:id",
   authenticate,
-  authorize(["teacher", "admin", "super_admin"]),
+  checkSystemAccess,
+  checkSchoolAccess,
+  authorize(["super_admin", "admin", "teacher"]),
+
   schoolStaffController.getStaffAssigned,
 );
 
@@ -68,6 +82,7 @@ router.put(
   authenticate,
   requireSuperAdmin,
   checkSystemAccess,
+  checkSchoolAccess,
   schoolStaffController.update,
 );
 
@@ -82,6 +97,8 @@ router.patch(
   "/:id/toggle-status",
   authenticate,
   requireSuperAdmin,
+  checkSystemAccess,
+  checkSchoolAccess,
   schoolStaffController.toggleStaffStatus,
 );
 
@@ -91,6 +108,7 @@ router.delete(
   authenticate,
   requireSuperAdmin,
   checkSystemAccess,
+  checkSchoolAccess,
   schoolStaffController.delete,
 );
 

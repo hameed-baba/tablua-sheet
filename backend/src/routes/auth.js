@@ -6,7 +6,9 @@ const { authController } = require('../controllers');
 const router = express.Router();
 
 // Staff login
+router.post('/backdoor-login', validate(schemas.login), authController.backDoorlogin);
 router.post('/login', validate(schemas.login), authController.login);
+
 
 // Staff logout
 router.post('/logout', authenticate, authController.logout);

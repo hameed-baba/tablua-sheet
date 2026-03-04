@@ -5,7 +5,7 @@
         <h1>Report Card</h1>
         <p>Generate report cards for all students in a class</p>
       </div>
-      <div class="header-actions">
+      <div class="header-actions" v-if="freshData.length != 0">
         <button
           class="add-btn"
           :disabled="isGeneratingPDF2"
@@ -25,28 +25,7 @@
               d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          {{ isGeneratingPDF2 ? "Generating..." : "Export PDF" }}
-        </button>
-        <button
-          class="add-btn secondary"
-          @click="printReport"
-          :disabled="!reportGenerated"
-        >
-          <svg
-            width="18"
-            height="18"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 0 712-2h2a2 2 0 712 2v4M6 7h.01M10 7h.01"
-            />
-          </svg>
-          Print
+          {{ isGeneratingPDF2 ? "Downloading..." : "Download PDF" }}
         </button>
       </div>
     </div>
@@ -68,12 +47,20 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Term</label>
-          <select v-model="filters.current_term_id" class="form-select">
+          <label class="form-label">Term *</label>
+          <select
+            v-model="filters.current_term_id"
+            class="form-select"
+            required
+            :disabled="isLoadingTerm"
+          >
             <option value="" selected disabled>Select Term</option>
-            <option value="1">First Term</option>
-            <option value="2">Second Term</option>
-            <option value="3">Third Term</option>
+            <option v-for="term in paidTerms" :value="term.id" :key="term.id">
+              {{ term.term_name }}
+            </option>
+            <option v-if="!paidTerms.length" disabled>
+              No paid term available
+            </option>
           </select>
         </div>
 
@@ -168,7 +155,6 @@
           <span v-else> Showing all {{ freshData.length }} students </span>
         </div>
       </div>
-      <!-- <pre>{{ freshData }}</pre> -->
     </div>
 
     <div
@@ -207,9 +193,54 @@
         <div class="position-box">
           <div class="position-header">Position</div>
           <div class="position-value">
-            {{ student.performance.display_position }}
+            {{ student.performance?.display_position }}
           </div>
         </div>
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <button
+          @click="getSingleStudentPdf(student.student?.id)"
+          class="add-btn me-4 mt-2"
+          :disabled="isGeneratingSinglePdf === student.student?.id"
+        >
+          <svg
+            v-if="isGeneratingSinglePdf === student.student?.id"
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            class="animate-spin"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
+          </svg>
+          <svg
+            v-else
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+          {{
+            isGeneratingSinglePdf === student.student?.id
+              ? "Downloading..."
+              : "Download"
+          }}
+        </button>
       </div>
 
       <!-- Main Content: Subjects Table and Summary Boxes -->
@@ -323,7 +354,9 @@
     <!-- No Search Results State -->
     <div
       class="empty-state border"
-      v-if="freshData.length > 0 && filteredReportData.length == 0 && searchQuery"
+      v-if="
+        freshData.length > 0 && filteredReportData.length == 0 && searchQuery
+      "
     >
       <svg
         width="64"
@@ -366,13 +399,12 @@ const filters = ref({
 const reportGenerated = ref(false);
 const allReportData = ref([]);
 const searchQuery = ref("");
-const isGeneratingPDF = ref(false);
+const isGeneratingSinglePdf = ref(false);
 const isGeneratingPDF2 = ref(false);
 const classes = ref([]);
 const sessions = ref([]);
-const subjects = ref([]);
-const gradeList = ref(null);
-
+const allTerms = ref([]);
+const isLoadingTerm = ref(false);
 
 const filteredReportData = computed(() => {
   if (!searchQuery.value.trim()) {
@@ -381,11 +413,35 @@ const filteredReportData = computed(() => {
 
   const query = searchQuery.value.toLowerCase().trim();
   return freshData.value.filter((student) => {
-    const studentName = student.student?.full_name?.toLowerCase() || '';
-    const admissionNo = student.student?.admission_number?.toLowerCase() || '';
+    const studentName = student.student?.full_name?.toLowerCase() || "";
+    const admissionNo = student.student?.admission_number?.toLowerCase() || "";
 
     return studentName.includes(query) || admissionNo.includes(query);
   });
+});
+
+const getAllTerm = () => {
+  isLoadingTerm.value = true;
+  apiServices
+    .getAllTerm()
+    .then((response) => {
+      allTerms.value = response.data.data?.terms;
+    })
+    .catch((error) => {
+      console.error("Error fetching terms:", error);
+    })
+    .finally(() => {
+      isLoadingTerm.value = false;
+    });
+};
+// const paidTerms = computed(() => {
+//   return allTerms.value.filter((term) => Boolean(term.was_paid));
+// });
+
+const paidTerms = computed(() => {
+  return allTerms.value.filter(
+    (term) => term.was_paid || term.status === "active"
+  );
 });
 
 // API functions
@@ -416,7 +472,6 @@ const getAllRowClases = () => {
     });
 };
 
-
 const printReport = () => {
   window.print();
 };
@@ -442,6 +497,53 @@ const getAssignedSubjects = () => {
         "Failed to Generate Report",
         error.response.data.message || "Could not load broadsheet data"
       );
+    });
+};
+
+const getSingleStudentPdf = (studentId) => {
+  if (!studentId) {
+    toast.error("Error", "Student ID is required");
+    return;
+  }
+
+  // Find the specific student
+  const selectedStudent = freshData.value.find((st) => {
+    // Check different possible ID properties based on your data structure
+    return (
+      st.id === studentId ||
+      st.student?.id === studentId ||
+      st.student_id === studentId
+    );
+  });
+
+  if (!selectedStudent) {
+    toast.error("Error", "Student not found");
+    return;
+  }
+
+  isGeneratingSinglePdf.value = studentId;
+
+  // Send only the single student data to your PDF generation endpoint
+  apiServices
+    // .generateSingleReportCard([selectedStudent])
+    .generateSingleReportCard(selectedStudent)
+    .then((response) => {
+      const pdfBlob = new Blob([response.data], {
+        type: "application/pdf",
+      });
+
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl, "_blank");
+    })
+    .catch((error) => {
+      console.error("Error generating single PDF:", error);
+      toast.error(
+        "Failed to Download",
+        error.response?.data?.message || "Could not generate PDF"
+      );
+    })
+    .finally(() => {
+      isGeneratingSinglePdf.value = null;
     });
 };
 
@@ -488,7 +590,7 @@ const downloadPdf = () => {
         type: "application/pdf",
       });
       const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
+      link.href = URL.createObjectURL(pdfBlob);
       link.download = "report-cards.pdf";
       link.click();
 
@@ -503,6 +605,7 @@ const downloadPdf = () => {
 onMounted(() => {
   getAllRowSessions();
   getAllRowClases();
+  getAllTerm();
 });
 
 // Watch for filter changes
@@ -1275,7 +1378,6 @@ watch(
 /* Subjects Table Section */
 .subjects-section {
   overflow-x: auto;
-
 }
 
 .subjects-table {
@@ -1300,7 +1402,7 @@ watch(
 }
 
 .sn-col {
-  width:0px !important;
+  width: 0px !important;
 }
 
 .subject-col {
@@ -1564,7 +1666,7 @@ watch(
   align-items: center;
   gap: 8px;
   padding: 12px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   color: white;
   border: none;
   border-radius: 8px;

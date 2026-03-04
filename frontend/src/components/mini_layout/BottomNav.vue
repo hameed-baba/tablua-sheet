@@ -6,7 +6,7 @@
         v-if="item.id !== 'logout'"
         :to="item.route"
         :class="['nav-item']"
-        active-class="active"
+        exact-active-class="active"
       >
         <component :is="item.icon" />
         <span>{{ item.label }}</span>

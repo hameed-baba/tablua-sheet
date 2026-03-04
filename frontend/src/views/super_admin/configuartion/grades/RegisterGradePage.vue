@@ -217,6 +217,24 @@
                     placeholder="e.g., Excellent, Good"
                   />
                 </div>
+                <div class="form-group">
+                  <label class="form-label">Principal Remark *</label>
+                  <input
+                    type="text"
+                    v-model="range.principal_remark"
+                    class="form-input"
+                    placeholder="e.g., Excellent, Good"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Class Teacher Remark *</label>
+                  <input
+                    type="text"
+                    v-model="range.class_teacher_remark"
+                    class="form-input"
+                    placeholder="e.g., Excellent, Good"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -268,6 +286,8 @@ const formData = ref({
       to_mark: "",
       grade: "",
       remark: "",
+      principal_remark: "",
+      class_teacher_remark: "",
     },
   ],
 });
@@ -449,7 +469,7 @@ const handleSubmit = async () => {
 }
 
 .summary-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
   border-radius: 8px;
   padding: 1.25rem;
   margin-bottom: 1.5rem;

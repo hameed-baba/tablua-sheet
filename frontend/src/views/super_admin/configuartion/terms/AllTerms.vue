@@ -30,6 +30,7 @@
           <tr>
             <th>Secton Name</th>
             <th class="d-none d-lg-table-cell">Status</th>
+            <th class="d-none d-lg-table-cell">Payment Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -48,6 +49,17 @@
                   ]"
                 >
                   {{ term.status == "active" ? "Active" : "Inactive" }}
+                </small>
+              </div>
+              <div class="d-lg-none">
+                <!-- <small class="text-muted">{{ term.status }}</small> -->
+                <small
+                  :class="[
+                    'status-badge',
+                    term.was_paid == true ? 'status-active' : 'status-pending',
+                  ]"
+                >
+                  {{ term.was_paid == true ? "Paid" : "Pending" }}
                 </small>
               </div>
               <div class="d-xl-none">
@@ -72,14 +84,30 @@
               </span>
             </td>
 
+            <td class="d-none d-lg-table-cell">
+              <span
+                :class="[
+                  'status-badge',
+                  term.was_paid == true ? 'status-active' : 'status-pending',
+                ]"
+              >
+                {{ term.was_paid == true ? "Paid" : "Pending" }}
+              </span>
+            </td>
+
             <td>
               <button
+                v-if="term.status !== 'active'"
                 class="action-btn"
                 :class="term.buttonState === 'activate' ? 'present' : 'warning'"
                 @click="handleButtonClick(term)"
               >
                 {{ term.buttonState === "activate" ? "Activate" : "Confirm" }}
               </button>
+              <button v-else class="action-btn" disabled>Active</button>
+              <!-- <button class="action-btn" @click="generateInvoice(term)">
+                Generate Invoice
+              </button> -->
             </td>
           </tr>
         </tbody>
@@ -91,25 +119,22 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import apiServices from "../../../../services/apiServices";
-import ActivateTerm from "./ActivateTerm.vue";
 import { useToast } from "../../../../composables/useToast";
 
 const toast = useToast();
 const loading = ref(false);
 const allTerms = ref([]);
-const modifyRef = ref(null);
 const selectedTerm = ref({});
-const activateRef = ref(null);
-const buttonState = ref("activate");
+const sessionId = ref("");
 
 const getAllTerm = () => {
   loading.value = true;
   apiServices
     .getAllTerm()
     .then((response) => {
-      // The array of roles is inside response.data.data
-      // allTerms.value = response.data.data?.schoolterms;
-      allTerms.value = response.data.data?.schoolterms.map((term) => ({
+      const data = response.data.data;
+      sessionId.value = data.session_id;
+      allTerms.value = data.terms.map((term) => ({
         ...term,
         buttonState: "activate", // add button state per term
       }));
@@ -121,8 +146,6 @@ const getAllTerm = () => {
       loading.value = false;
     });
 };
-
-
 
 const handleButtonClick = (term) => {
   if (term.buttonState === "activate") {
@@ -159,8 +182,11 @@ const activateSelectedTerm = (term) => {
         term.buttonState = "activate";
 
         selectedTerm.value = null; // reset selection
+
+        // Automatically generate invoice after successful activation
+        generateInvoice(term);
       }
-      getAllTerm()
+      getAllTerm();
     })
     .catch((error) => {
       console.error("Error activating term:", error);
@@ -178,10 +204,35 @@ const activateSelectedTerm = (term) => {
     });
 };
 
+const generateInvoice = (term) => {
+  const payload = {
+    school_session_id: sessionId.value,
+    school_term_id: term.id,
+  };
+
+  console.log(payload);
+
+  // call API
+  apiServices
+    .createSchoolInvoice(payload)
+    .then((response) => {
+      toast.success("Success", "Invoice generated successfully");
+    })
+    .catch((error) => {
+      toast.error("Error", error.response?.data?.message);
+    });
+};
+
 onMounted(() => {
   getAllTerm();
 });
 </script>
 
 <style lang="scss" scoped>
+.disabled-btn {
+  background-color: #9e9e9e !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+  opacity: 1;
+}
 </style>

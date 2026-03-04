@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { SchoolStaff, Role, StaffSession } = require("../models");
+const { SchoolStaff, Role } = require("../models");
 const { asyncHandler } = require("../middleware/errorHandler");
 
 /**
@@ -56,39 +56,8 @@ const login = asyncHandler(async (req, res) => {
     const token = jwt.sign(
       { id: staff.id, email: staff.email },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+      { expiresIn: process.env.JWT_EXPIRES_IN || "1m" },
     );
-
-    // Record login session
-    try {
-      // End any existing active sessions for this staff
-      await StaffSession.update(
-        { 
-          is_active: false,
-          logout_time: new Date()
-        },
-        {
-          where: {
-            staff_id: staff.id,
-            is_active: true
-          }
-        }
-      );
-
-      // Create new session
-      await StaffSession.create({
-        staff_id: staff.id,
-        login_time: new Date(),
-        ip_address: req.ip || req.connection.remoteAddress,
-        user_agent: req.get('User-Agent'),
-        session_token: token,
-        is_active: true
-      });
-    } catch (sessionError) {
-      console.error('Error recording login session:', sessionError);
-      // Don't fail login if session recording fails
-    }
-
 
     res.json({
       status: "success",
@@ -103,7 +72,7 @@ const login = asyncHandler(async (req, res) => {
           role: {
             id: staff.Role?.id,
             name: staff.Role?.role_name,
-            slug: staff.Role?.slug
+            slug: staff.Role?.slug,
           },
           is_default_password: staff.is_default_password,
           has_school_access: staff.has_school_access,
@@ -111,13 +80,12 @@ const login = asyncHandler(async (req, res) => {
         },
       },
     });
-
   } catch (error) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     return res.status(500).json({
       status: "error:" + error,
       message: "Login failed",
-      debug: process.env.NODE_ENV === 'development' ? error.message : undefined
+      debug: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 });
@@ -152,35 +120,10 @@ const changePassword = asyncHandler(async (req, res) => {
  * @route POST /api/auth/logout
  */
 const logout = asyncHandler(async (req, res) => {
-  try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    
-    // Update session to mark as logged out
-    await StaffSession.update(
-      {
-        logout_time: new Date(),
-        is_active: false
-      },
-      {
-        where: {
-          staff_id: req.user.id,
-          session_token: token,
-          is_active: true
-        }
-      }
-    );
-
-    res.json({
-      status: "success",
-      message: "Logged out successfully"
-    });
-  } catch (error) {
-    console.error('Logout error:', error);
-    res.status(500).json({
-      status: "error",
-      message: "Logout failed"
-    });
-  }
+  res.json({
+    status: "success",
+    message: "Logged out successfully",
+  });
 });
 
 /**
@@ -220,7 +163,7 @@ const getProfile = asyncHandler(async (req, res) => {
       role: {
         id: staff.Role?.id,
         name: staff.Role?.role_name,
-        description: staff.Role?.description
+        description: staff.Role?.description,
       },
       has_school_access: staff.has_school_access,
       has_system_access: staff.has_system_access,
@@ -231,7 +174,70 @@ const getProfile = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc System owner backdoor login
+ * @route POST /api/auth/backdoor-login
+ */
+const backDoorlogin = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Validate against ENV credentials
+    if (
+      email !== process.env.OWNER_EMAIL ||
+      password !== process.env.OWNER_PASSWORD
+    ) {
+      return res.status(401).json({
+        status: "error",
+        message: "Invalid email or password",
+      });
+    }
+
+    // Generate JWT token with OWNER privilege
+    const token = jwt.sign(
+      {
+        id: "owner",
+        email: process.env.OWNER_EMAIL,
+        is_owner: true,
+        role: "system_owner",
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN || "1d",
+      },
+    );
+
+    res.json({
+      status: "success",
+      message: "System owner login successful",
+      data: {
+        token,
+        user: {
+          id: "owner",
+          full_name: "System Owner",
+          email: process.env.OWNER_EMAIL,
+          role: {
+            name: "System Owner",
+            slug: "system_owner",
+          },
+          is_owner: true,
+          has_school_access: true,
+          has_system_access: true,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Backdoor login error:", error);
+
+    res.status(500).json({
+      status: "error",
+      message: "Login failed",
+    });
+  }
+});
+
 module.exports = {
+  backDoorlogin,
   login,
   logout,
   changePassword,
